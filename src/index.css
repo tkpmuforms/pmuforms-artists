@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --pmu-primary: #8e2d8e;
   --pmu-primary-light: #c158c1;
