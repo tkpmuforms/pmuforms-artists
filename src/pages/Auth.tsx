@@ -1,27 +1,67 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import React, { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar"
-import "./authpage.scss"
+import "./auth.scss"
 import LoginPage from "./authsubs/Login"
 import SignupPage from "./authsubs/SignUp"
-import { GoogleLoginSvg , FacebookLoginSvg, AppleLoginSvg} from "../assets/svgs/AuthSvg";
+import { GoogleLoginSvg, FacebookLoginSvg, AppleLoginSvg } from "../assets/svgs/AuthSvg"
 
+// Define a type for the page state
+type AuthPage = "login" | "signup"
 
 const Auth: React.FC = () => {
-  const [page, setPage] = useState<"login" | "signup">("login")
+  const [page, setPage] = useState<AuthPage>("login")
   const navigate = useNavigate()
 
-  const handlePageChange = (newPage: "login" | "signup") => setPage(newPage)
+  const handlePageChange = (newPage: AuthPage): void => setPage(newPage)
 
   return (
     <>
       <UnauthenticatedNavbar CreatenewClick={() => handlePageChange("signup")} />
-       <div className="auth-container">
+      <div className="auth-container">
         {page === "login" ? <LoginPage /> : <SignupPage />}
-        <div className="switch-auth">
+     
+      
+     
+        <p className="before-socials">Or sign in with</p>
+        <div className="social-signin">
+          <GoogleLoginSvg
+            // Uncomment and implement the onClick handler for social login
+            // onClick={() =>
+            //   HandleSocialLogin(
+            //     googleProvider,
+            //     navigate,
+            //     handleAuthSuccess,
+            //     showAlert
+            //   )
+            // }
+          />
+          <FacebookLoginSvg
+            // Uncomment and implement the onClick handler for social login
+            // onClick={() =>
+            //   HandleSocialLogin(
+            //     facebookProvider,
+            //     navigate,
+            //     handleAuthSuccess,
+            //     showAlert
+            //   )
+            // }
+          />
+          <AppleLoginSvg
+            // Uncomment and implement the onClick handler for social login
+            // onClick={() =>
+            //   HandleSocialLogin(
+            //     appleProvider,
+            //     navigate,
+            //     handleAuthSuccess,
+            //     showAlert
+            //   )
+            // }
+          />
+        </div>
+           <div className="switch-auth">
           {page === "login" ? (
             <p className="switch-auth-text">
               Don't have an account?{" "}
@@ -44,43 +84,10 @@ const Auth: React.FC = () => {
             </p>
           )}
         </div>
-        <p>Or sign in with</p>
-        <div className="social-signin">
-          <GoogleLoginSvg
-            // onClick={() =>
-            //   HandleSocialLogin(
-            //     googleProvider,
-            //     navigate,
-            //     handleAuthSuccess,
-            //     showAlert
-            //   )
-            // }
-          />
-          <FacebookLoginSvg
-            // onClick={() =>
-            //   HandleSocialLogin(
-            //     facebookProvider,
-            //     navigate,
-            //     handleAuthSuccess,
-            //     showAlert
-            //   )
-            // }
-          />
-          <AppleLoginSvg
-            // onClick={() =>
-            //   HandleSocialLogin(
-            //     appleProvider,
-            //     navigate,
-            //     handleAuthSuccess,
-            //     showAlert
-            //   )
-            // }
-          />
-        </div>
         <p className="terms-text">
           By proceeding, you agree to our{" "}
-          <Link to="/terms-and-agreement">Terms and conditions</Link> {"   "}and
-          our <Link to="/privacy-policy">Privacy policy</Link>
+          <Link to="/terms-and-agreement">Terms and conditions</Link> and our{" "}
+          <Link to="/privacy-policy">Privacy policy</Link>
         </p>
       </div>
     </>
