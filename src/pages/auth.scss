@@ -9,13 +9,11 @@
     display: flex;
     justify-content: center;
   }
-  .before-socials{
+  .before-socials {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
   }
-
-
 
   .switch-auth {
     margin-top: 10px;
@@ -45,7 +43,8 @@
 
   .social-signin {
     display: flex;
-    gap: 20px;
+    gap: 10px;
+    width: 600px;
   }
 
   .terms-text {
