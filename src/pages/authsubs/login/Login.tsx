@@ -1,22 +1,21 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import ForgotPasswordForm from "./ForgotPasswordForm"
-import "./login.scss"
+import type React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ForgotPasswordForm from "../forgot-password/ForgotPasswordForm";
+import "./login.scss";
 
 interface LoginFormValues {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 const LoginPage: React.FC = () => {
-const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   // const { handleAuthSuccess } = useAuth();
   const [forgetpassword, setForgotPassword] = useState(false);
-
 
   const navigate = useNavigate();
 
@@ -43,12 +42,9 @@ const [email, setEmail] = useState("");
       ) : (
         <div className="login-page">
           <div className="login-container">
-            <h2>
-              Sign in now to complete required forms for your next appointment
-            </h2>
+            <h2>Hi, Welcome Back</h2>
             <p className="subtext">
-              Important: Don't wait until the day of your appointment. Some of
-              this information must be filled out a few days in advance.
+              Enter your login details to access your account
             </p>
 
             {/* Email and Password Login Form */}
@@ -92,4 +88,4 @@ const [email, setEmail] = useState("");
   );
 };
 
-export default LoginPage
+export default LoginPage;

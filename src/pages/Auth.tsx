@@ -1,67 +1,71 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar"
-import "./auth.scss"
-import LoginPage from "./authsubs/Login"
-import SignupPage from "./authsubs/SignUp"
-import { GoogleLoginSvg, FacebookLoginSvg, AppleLoginSvg } from "../assets/svgs/AuthSvg"
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar";
+import "./auth.scss";
+import LoginPage from "./authsubs/login/Login";
+import SignupPage from "./authsubs/sigup/SignUp";
+import {
+  GoogleLoginSvg,
+  FacebookLoginSvg,
+  AppleLoginSvg,
+} from "../assets/svgs/AuthSvg";
 
 // Define a type for the page state
-type AuthPage = "login" | "signup"
+type AuthPage = "login" | "signup";
 
 const Auth: React.FC = () => {
-  const [page, setPage] = useState<AuthPage>("login")
-  const navigate = useNavigate()
+  const [page, setPage] = useState<AuthPage>("login");
+  const navigate = useNavigate();
 
-  const handlePageChange = (newPage: AuthPage): void => setPage(newPage)
+  const handlePageChange = (newPage: AuthPage): void => setPage(newPage);
 
   return (
     <>
-      <UnauthenticatedNavbar CreatenewClick={() => handlePageChange("signup")} />
+      <UnauthenticatedNavbar
+        CreatenewClick={() => handlePageChange("signup")}
+      />
       <div className="auth-container">
         {page === "login" ? <LoginPage /> : <SignupPage />}
-     
-      
-     
+
         <p className="before-socials">Or sign in with</p>
         <div className="social-signin">
           <GoogleLoginSvg
-            // Uncomment and implement the onClick handler for social login
-            // onClick={() =>
-            //   HandleSocialLogin(
-            //     googleProvider,
-            //     navigate,
-            //     handleAuthSuccess,
-            //     showAlert
-            //   )
-            // }
+          // Uncomment and implement the onClick handler for social login
+          // onClick={() =>
+          //   HandleSocialLogin(
+          //     googleProvider,
+          //     navigate,
+          //     handleAuthSuccess,
+          //     showAlert
+          //   )
+          // }
           />
           <FacebookLoginSvg
-            // Uncomment and implement the onClick handler for social login
-            // onClick={() =>
-            //   HandleSocialLogin(
-            //     facebookProvider,
-            //     navigate,
-            //     handleAuthSuccess,
-            //     showAlert
-            //   )
-            // }
+          // Uncomment and implement the onClick handler for social login
+          // onClick={() =>
+          //   HandleSocialLogin(
+          //     facebookProvider,
+          //     navigate,
+          //     handleAuthSuccess,
+          //     showAlert
+          //   )
+          // }
           />
           <AppleLoginSvg
-            // Uncomment and implement the onClick handler for social login
-            // onClick={() =>
-            //   HandleSocialLogin(
-            //     appleProvider,
-            //     navigate,
-            //     handleAuthSuccess,
-            //     showAlert
-            //   )
-            // }
+          // Uncomment and implement the onClick handler for social login
+          // onClick={() =>
+          //   HandleSocialLogin(
+          //     appleProvider,
+          //     navigate,
+          //     handleAuthSuccess,
+          //     showAlert
+          //   )
+          // }
           />
         </div>
-           <div className="switch-auth">
+        <div className="switch-auth">
           {page === "login" ? (
             <p className="switch-auth-text">
               Don't have an account?{" "}
@@ -91,7 +95,7 @@ const Auth: React.FC = () => {
         </p>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Auth
+export default Auth;

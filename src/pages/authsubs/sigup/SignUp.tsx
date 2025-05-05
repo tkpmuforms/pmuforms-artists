@@ -1,7 +1,7 @@
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useNavigate } from "react-router-dom";
-import * as Yup from 'yup';
-import "./signup.scss"
+import * as Yup from "yup";
+import "./signup.scss";
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
@@ -35,9 +35,7 @@ const SignupPage: React.FC = () => {
     //     email,
     //     password
     //   );
-
     //   const user = userCredential.user;
-
     //   await createCustomer({
     //     accessToken: await user.getIdToken(),
     //     artistId: artistId,
@@ -56,12 +54,9 @@ const SignupPage: React.FC = () => {
   return (
     <div className="signup-page">
       <div className="signup-container">
-        <h2>
-          Sign up now to complete required forms for your next appointment
-        </h2>
+        <h2>Hi there, Let’s get you started</h2>
         <p className="subtext">
-          Important: Don't wait until the day of your appointment. Some of this
-          information must be filled out a few days in advance.
+          Enter the email you’d like to use to register with PMU Forms
         </p>
         <Formik
           initialValues={initialValues}
