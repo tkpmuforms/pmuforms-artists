@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .login-page {
   display: flex;
   align-items: center;
@@ -69,7 +71,7 @@
         transition: background-color 0.3s;
 
         &:hover {
-          background-color: darken(#8e2d8e, 10%);
+          background-color: color.adjust(#8e2d8e, $lightness: -10%);
         }
       }
     }

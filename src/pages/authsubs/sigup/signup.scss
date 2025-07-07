@@ -7,7 +7,7 @@
 
   .signup-container {
     text-align: center;
-    width: 100%; /* Full width for mobile */
+    // width: 100%; /* Full width for mobile */
 
     h2 {
       font-size: 16px; /* Smaller font size for mobile */
@@ -102,10 +102,10 @@
   }
 }
 
-/* Desktop and larger screens */
-@media (min-width: 1024px) {
-  .signup-page {
-    width: 600px;
-    margin: 50px auto;
-  }
-}
+// /* Desktop and larger screens */
+// @media (min-width: 1024px) {
+//   .signup-page {
+//     width: 600px;
+//     margin: 50px auto;
+//   }
+// }

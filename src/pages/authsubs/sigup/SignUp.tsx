@@ -72,6 +72,7 @@ const SignupPage: React.FC = () => {
                   id="email"
                   name="email"
                   placeholder="Enter your email address"
+                  width="100%"
                 />
                 <ErrorMessage name="email" component="div" className="error" />
               </div>
@@ -83,6 +84,7 @@ const SignupPage: React.FC = () => {
                   id="password"
                   name="password"
                   placeholder="Enter Password"
+                  width="100%"
                 />
                 <ErrorMessage
                   name="password"
