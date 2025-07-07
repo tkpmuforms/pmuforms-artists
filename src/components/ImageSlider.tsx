@@ -11,7 +11,25 @@ import artistauth2 from "../assets/images/artistauth2.png";
 import artistauth3 from "../assets/images/artistauth3.jpg";
 
 const ImageSlider: React.FC = () => {
-  const images = [artistauth1, artistauth2, artistauth3];
+  const slides = [
+    {
+      image: artistauth1,
+      title: "Welcome to PMU Forms",
+      description:
+        "Streamline your consent form management with our easy-to-use app.",
+    },
+    {
+      image: artistauth2,
+      title: "Create and Manage Consent Forms",
+      description: "Quickly create, customize, and track your consent forms.",
+    },
+    {
+      image: artistauth3,
+      title: "Stay Organized with Clients",
+      description:
+        "Manage client details and appointments easily. Keep everything at your fingertips.",
+    },
+  ];
 
   return (
     <div className="image-slider">
@@ -38,19 +56,23 @@ const ImageSlider: React.FC = () => {
           loop={true}
           className="image-swiper"
         >
-          {images.map((image, index) => (
+          {slides.map((slide, index) => (
             <SwiperSlide key={index}>
               <div className="slide">
                 <img
-                  src={image}
+                  src={slide.image}
                   alt={`Artist ${index + 1}`}
-                  onError={(e) => {
+                  onError={() => {
                     console.error(
                       `Failed to load image at index ${index}:`,
-                      image
+                      slide.image
                     );
                   }}
                 />
+                <div className="slide-content">
+                  <h2 className="slide-title">{slide.title}</h2>
+                  <p className="slide-description">{slide.description}</p>
+                </div>
               </div>
             </SwiperSlide>
           ))}

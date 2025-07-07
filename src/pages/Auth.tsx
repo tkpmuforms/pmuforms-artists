@@ -51,17 +51,10 @@ const Auth: React.FC = () => {
               <div className="auth-slider-section">
                 <ImageSlider />
               </div>
-              <div className="mobile-get-started">
-                <button
-                  className="get-started-button"
-                  onClick={handleGetStarted}
-                >
-                  Get Started
-                </button>
-                <p className="mobile-tagline">
-                  Join thousands of satisfied customers
-                </p>
-              </div>
+
+              <button className="get-started-button" onClick={handleGetStarted}>
+                Get Started
+              </button>
             </div>
           ) : (
             <div className="mobile-auth-view">

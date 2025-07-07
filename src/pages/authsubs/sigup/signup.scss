@@ -2,15 +2,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%; /* Full width for mobile */
-  padding: 0 20px;
+  width: 100%;
+  max-width: 450px; // Set consistent max-width
+  margin: 0 auto; // Center the page
 
   .signup-container {
     text-align: center;
-    // width: 100%; /* Full width for mobile */
+    width: 100%;
+    max-width: 400px; // Contain the form
 
     h2 {
-      font-size: 16px; /* Smaller font size for mobile */
+      font-size: 16px;
       margin-bottom: 10px;
       line-height: 1.4;
     }
@@ -36,7 +38,7 @@
         }
 
         input {
-          width: 100%; /* Full width for mobile */
+          width: 100%;
           padding: 12px;
           border: 1px solid #ddd;
           background-color: #bcbbc133;
@@ -44,10 +46,16 @@
           font-size: 14px;
           box-sizing: border-box;
         }
+
+        .error {
+          color: red;
+          font-size: 12px;
+          margin-top: 5px;
+        }
       }
 
       .signup-button {
-        width: 100%; /* Aligns with input fields */
+        width: 100%;
         padding: 12px;
         background-color: var(--pmu-primary);
         color: #fff;
@@ -56,9 +64,10 @@
         font-size: 16px;
         cursor: pointer;
         transition: background-color 0.3s;
+        box-sizing: border-box;
 
         &:hover {
-          background-color: #6e1d6e; /* Darker shade of primary color */
+          background-color: #6e1d6e;
         }
 
         &:disabled {
@@ -73,7 +82,7 @@
 /* Tablet and larger screens */
 @media (min-width: 768px) {
   .signup-page {
-    width: 550px;
+    max-width: 450px;
     margin: 40px auto;
   }
 
@@ -102,10 +111,21 @@
   }
 }
 
-// /* Desktop and larger screens */
-// @media (min-width: 1024px) {
-//   .signup-page {
-//     width: 600px;
-//     margin: 50px auto;
-//   }
-// }
+@media screen and (max-width: 768px) {
+  .signup-page {
+    width: 100%;
+    padding: 0 20px;
+
+    .signup-container {
+      max-width: 100%;
+    }
+  }
+}
+
+// Global input styles
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  font-size: 16px !important;
+  box-sizing: border-box !important;
+}
