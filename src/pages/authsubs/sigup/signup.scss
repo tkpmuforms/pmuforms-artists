@@ -76,6 +76,20 @@
         }
       }
     }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      color: var(--pmu-primary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.3s;
+
+      &:hover {
+        color: #6e1d6e;
+      }
+    }
   }
 }
 

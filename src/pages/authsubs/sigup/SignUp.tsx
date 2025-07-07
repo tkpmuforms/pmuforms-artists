@@ -1,28 +1,20 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import * as Yup from "yup";
+import EmailStep from "./EmailStep";
+import PasswordStep from "./PasswordStep";
 import "./signup.scss";
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
-  const initialValues = {
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const [currentStep, setCurrentStep] = useState<'email' | 'password'>('email');
+  const [email, setEmail] = useState<string>('');
+
+  const handleEmailSubmit = (submittedEmail: string) => {
+    setEmail(submittedEmail);
+    setCurrentStep('password');
   };
 
-  const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email format").required("Required"),
-    password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Required"),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password"), null], "Passwords must match")
-      .required("Required"),
-  });
-
-  const handleSignup = async (values, { setSubmitting }) => {
-    // const { email, password } = values;
+  const handlePasswordSubmit = async (email: string, password: string) => {
     // const artistId = localStorage.getItem("artistId");
     // if (!artistId) {
     //   console.error("Artist ID is missing");
@@ -48,78 +40,26 @@ const SignupPage: React.FC = () => {
     //   console.error("Error creating user:", error);
     //   showAlert("error", error.message);
     // }
-    // setSubmitting(false);
+    
+    console.log("Signup with:", email, password);
+    // Navigate to next step or dashboard
+    navigate("/dashboard");
   };
 
+  const handleBack = () => {
+    setCurrentStep('email');
+  };
+
+  if (currentStep === 'email') {
+    return <EmailStep onEmailSubmit={handleEmailSubmit} />;
+  }
+
   return (
-    <div className="signup-page">
-      <div className="signup-container">
-        <h2>Hi there, Let’s get you started</h2>
-        <p className="subtext">
-          Enter the email you’d like to use to register with PMU Forms
-        </p>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSignup}
-        >
-          {({ isSubmitting }) => (
-            <Form className="signup-form">
-              <div className="form-group">
-                <label htmlFor="email">Email Address</label>
-                <Field
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Enter your email address"
-                  width="100%"
-                />
-                <ErrorMessage name="email" component="div" className="error" />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password">Create Password</label>
-                <Field
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="Enter Password"
-                  width="100%"
-                />
-                <ErrorMessage
-                  name="password"
-                  component="div"
-                  className="error"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="confirmPassword">Confirm Password</label>
-                <Field
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  placeholder="Re-enter Password"
-                />
-                <ErrorMessage
-                  name="confirmPassword"
-                  component="div"
-                  className="error"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="signup-button"
-                disabled={isSubmitting}
-              >
-                Create Account
-              </button>
-            </Form>
-          )}
-        </Formik>
-      </div>
-    </div>
+    <PasswordStep 
+      email={email} 
+      onPasswordSubmit={handlePasswordSubmit} 
+      onBack={handleBack} 
+    />
   );
 };
 

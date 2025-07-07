@@ -1,17 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar";
+import React, { useEffect, useState } from "react";
+import {
+  AppleLoginSvg,
+  FacebookLoginSvg,
+  GoogleLoginSvg,
+} from "../assets/svgs/AuthSvg";
 import ImageSlider from "../components/ImageSlider";
+import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar";
 import "./auth.scss";
 import LoginPage from "./authsubs/login/Login";
 import SignupPage from "./authsubs/sigup/SignUp";
-import {
-  GoogleLoginSvg,
-  FacebookLoginSvg,
-  AppleLoginSvg,
-} from "../assets/svgs/AuthSvg";
 
 type AuthPage = "login" | "signup";
 
