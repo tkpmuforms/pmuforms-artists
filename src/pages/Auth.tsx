@@ -13,11 +13,14 @@ import LoginPage from "./authsubs/login/Login";
 import SignupPage from "./authsubs/sigup/SignUp";
 
 type AuthPage = "login" | "signup";
+type SignupStep = "email" | "password";
 
 const Auth: React.FC = () => {
   const [page, setPage] = useState<AuthPage>("signup");
   const [showMobileAuth, setShowMobileAuth] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [signupStep, setSignupStep] = useState<SignupStep>("email");
+  const [signupEmail, setSignupEmail] = useState<string>("");
 
   useEffect(() => {
     const checkMobile = () => {
@@ -29,14 +32,26 @@ const Auth: React.FC = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const handlePageChange = (newPage: AuthPage): void => setPage(newPage);
+  const handlePageChange = (newPage: AuthPage): void => {
+    setPage(newPage);
+    // Reset signup step when switching between login/signup
+    if (newPage === "signup") {
+      setSignupStep("email");
+      setSignupEmail("");
+    }
+  };
+
+  const handleEmailSubmit = (email: string) => {
+    setSignupEmail(email);
+    setSignupStep("password");
+  };
+
+  const handleBackToEmailStep = () => {
+    setSignupStep("email");
+  };
 
   const handleGetStarted = () => {
     setShowMobileAuth(true);
-  };
-
-  const handleBackToSlider = () => {
-    setShowMobileAuth(false);
   };
 
   if (isMobile) {
@@ -45,7 +60,7 @@ const Auth: React.FC = () => {
         <UnauthenticatedNavbar />
         <div className="auth-main-container mobile">
           {!showMobileAuth ? (
-            // Mobile Slider View
+            // Mobile Slider View - only show if not on password step
             <div className="mobile-slider-view">
               <div className="auth-slider-section">
                 <ImageSlider />
@@ -56,10 +71,32 @@ const Auth: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="mobile-auth-view">
+            // Mobile Auth View - show auth form
+            <div
+              className={`mobile-auth-view ${
+                page === "signup" && signupStep === "password"
+                  ? "password-step"
+                  : ""
+              }`}
+            >
+              {/* Only show slider section if not on password step */}
+              {!(page === "signup" && signupStep === "password") && (
+                <div className="auth-slider-section">
+                  <ImageSlider />
+                </div>
+              )}
               <div className="auth-form-section">
                 <div className="auth-container">
-                  {page === "login" ? <LoginPage /> : <SignupPage />}
+                  {page === "login" ? (
+                    <LoginPage />
+                  ) : (
+                    <SignupPage
+                      currentStep={signupStep}
+                      email={signupEmail}
+                      onEmailSubmit={handleEmailSubmit}
+                      onBack={handleBackToEmailStep}
+                    />
+                  )}
 
                   <p className="before-socials">Or sign in with</p>
                   <div className="social-signin">
@@ -103,13 +140,29 @@ const Auth: React.FC = () => {
   return (
     <div style={{ width: "100%", backgroundColor: "#f8f9fa" }}>
       <UnauthenticatedNavbar />
-      <div className="auth-main-container desktop">
-        <div className="auth-slider-section">
-          <ImageSlider />
-        </div>
+      <div
+        className={`auth-main-container desktop ${
+          page === "signup" && signupStep === "password" ? "password-step" : ""
+        }`}
+      >
+        {/* Only show slider if not on password step */}
+        {!(page === "signup" && signupStep === "password") && (
+          <div className="auth-slider-section">
+            <ImageSlider />
+          </div>
+        )}
         <div className="auth-form-section">
           <div className="auth-container">
-            {page === "login" ? <LoginPage /> : <SignupPage />}
+            {page === "login" ? (
+              <LoginPage />
+            ) : (
+              <SignupPage
+                currentStep={signupStep}
+                email={signupEmail}
+                onEmailSubmit={handleEmailSubmit}
+                onBack={handleBackToEmailStep}
+              />
+            )}
 
             <p className="before-socials">Or sign in with</p>
             <div className="social-signin">

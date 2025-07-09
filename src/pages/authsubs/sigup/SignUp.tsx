@@ -4,14 +4,34 @@ import EmailStep from "./EmailStep";
 import PasswordStep from "./PasswordStep";
 import "./signup.scss";
 
-const SignupPage: React.FC = () => {
+interface SignupPageProps {
+  currentStep?: "email" | "password";
+  email?: string;
+  onEmailSubmit?: (email: string) => void;
+  onBack?: () => void;
+}
+
+const SignupPage: React.FC<SignupPageProps> = ({
+  currentStep: propCurrentStep,
+  email: propEmail,
+  onEmailSubmit: propOnEmailSubmit,
+  onBack: propOnBack,
+}) => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<'email' | 'password'>('email');
-  const [email, setEmail] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState<"email" | "password">(
+    propCurrentStep || "email"
+  );
+  const [email, setEmail] = useState<string>(propEmail || "");
 
   const handleEmailSubmit = (submittedEmail: string) => {
-    setEmail(submittedEmail);
-    setCurrentStep('password');
+    if (propOnEmailSubmit) {
+      // Use the prop function if provided (managed by parent)
+      propOnEmailSubmit(submittedEmail);
+    } else {
+      // Fallback to local state management
+      setEmail(submittedEmail);
+      setCurrentStep("password");
+    }
   };
 
   const handlePasswordSubmit = async (email: string, password: string) => {
@@ -40,25 +60,35 @@ const SignupPage: React.FC = () => {
     //   console.error("Error creating user:", error);
     //   showAlert("error", error.message);
     // }
-    
+
     console.log("Signup with:", email, password);
     // Navigate to next step or dashboard
     navigate("/dashboard");
   };
 
   const handleBack = () => {
-    setCurrentStep('email');
+    if (propOnBack) {
+      // Use the prop function if provided (managed by parent)
+      propOnBack();
+    } else {
+      // Fallback to local state management
+      setCurrentStep("email");
+    }
   };
 
-  if (currentStep === 'email') {
+  // Use prop values if provided, otherwise fall back to local state
+  const activeStep = propCurrentStep || currentStep;
+  const activeEmail = propEmail || email;
+
+  if (activeStep === "email") {
     return <EmailStep onEmailSubmit={handleEmailSubmit} />;
   }
 
   return (
-    <PasswordStep 
-      email={email} 
-      onPasswordSubmit={handlePasswordSubmit} 
-      onBack={handleBack} 
+    <PasswordStep
+      email={activeEmail}
+      onPasswordSubmit={handlePasswordSubmit}
+      onBack={handleBack}
     />
   );
 };

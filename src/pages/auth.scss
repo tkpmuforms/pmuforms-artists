@@ -141,6 +141,28 @@
   }
 }
 
+// Password step - when slider is hidden
+.auth-main-container.desktop.password-step {
+  .auth-form-section {
+    flex: none;
+    width: 100%;
+    max-width: 600px;
+    margin: 50px auto;
+  }
+}
+
+// Mobile password step styling
+.mobile-auth-view.password-step {
+  .auth-slider-section {
+    display: none;
+  }
+
+  .auth-form-section {
+    flex: 1;
+    padding: 20px;
+  }
+}
+
 // Large screen adjustments
 @media screen and (min-width: 1400px) {
   .auth-main-container.desktop {
