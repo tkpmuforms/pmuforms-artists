@@ -14,12 +14,15 @@
     max-width: 400px; // Contain the form
 
     h2 {
-      font-size: 18px;
+      font-size: 24px;
+      font-family: BoldFont;
+      color: #333;
+      font-weight: 700;
       margin-bottom: 10px;
     }
 
     .subtext {
-      font-size: 14px;
+      font-size: 16px;
       color: #666;
       margin-bottom: 30px;
     }
@@ -32,7 +35,7 @@
         label {
           display: block;
           margin-bottom: 8px;
-          font-size: 14px;
+          font-size: 16px;
           font-family: BoldFont;
           color: #333;
         }

@@ -102,8 +102,31 @@
 
   .before-socials {
     display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 300;
     justify-content: center;
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: #ddd;
+      margin: 0 15px;
+    }
+
+    &::before {
+      margin-right: 5px;
+    }
+
+    &::after {
+      margin-left: 5px;
+    }
   }
 
   .switch-auth {
@@ -136,7 +159,7 @@
     display: flex;
     gap: 10px;
     width: 100%;
-    max-width: 350px; // Reduced to fit better
+    max-width: 400px; // Reduced to fit better
     justify-content: center;
   }
 }
@@ -159,7 +182,6 @@
 
   .auth-form-section {
     flex: 1;
-    padding: 20px;
   }
 }
 

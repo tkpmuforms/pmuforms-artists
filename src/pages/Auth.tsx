@@ -5,6 +5,7 @@ import {
   AppleLoginSvg,
   FacebookLoginSvg,
   GoogleLoginSvg,
+  LogoSvg,
 } from "../assets/svgs/AuthSvg";
 import ImageSlider from "../components/ImageSlider";
 import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar";
@@ -13,7 +14,12 @@ import LoginPage from "./authsubs/login/Login";
 import SignupPage from "./authsubs/sigup/SignUp";
 
 type AuthPage = "login" | "signup";
-type SignupStep = "email" | "password";
+type SignupStep =
+  | "email"
+  | "password"
+  | "verification"
+  | "business"
+  | "services";
 
 const Auth: React.FC = () => {
   const [page, setPage] = useState<AuthPage>("signup");
@@ -34,7 +40,6 @@ const Auth: React.FC = () => {
 
   const handlePageChange = (newPage: AuthPage): void => {
     setPage(newPage);
-    // Reset signup step when switching between login/signup
     if (newPage === "signup") {
       setSignupStep("email");
       setSignupEmail("");
@@ -46,6 +51,10 @@ const Auth: React.FC = () => {
     setSignupStep("password");
   };
 
+  const handleStepChange = (newStep: SignupStep) => {
+    setSignupStep(newStep);
+  };
+
   const handleBackToEmailStep = () => {
     setSignupStep("email");
   };
@@ -54,13 +63,29 @@ const Auth: React.FC = () => {
     setShowMobileAuth(true);
   };
 
+  const shouldHideSlider = () => {
+    if (page === "login") return false;
+    return ["password", "verification", "business", "services"].includes(
+      signupStep
+    );
+  };
+
+  const shouldShowSocialLogin = () => {
+    if (page === "login") return true;
+    return ["email", "password"].includes(signupStep);
+  };
+
+  const shouldShowAuthSwitch = () => {
+    if (page === "login") return true;
+    return ["email", "password"].includes(signupStep);
+  };
+
   if (isMobile) {
     return (
       <>
         <UnauthenticatedNavbar />
         <div className="auth-main-container mobile">
           {!showMobileAuth ? (
-            // Mobile Slider View - only show if not on password step
             <div className="mobile-slider-view">
               <div className="auth-slider-section">
                 <ImageSlider />
@@ -71,20 +96,11 @@ const Auth: React.FC = () => {
               </button>
             </div>
           ) : (
-            // Mobile Auth View - show auth form
             <div
               className={`mobile-auth-view ${
-                page === "signup" && signupStep === "password"
-                  ? "password-step"
-                  : ""
+                shouldHideSlider() ? "full-screen-step" : ""
               }`}
             >
-              {/* Only show slider section if not on password step */}
-              {!(page === "signup" && signupStep === "password") && (
-                <div className="auth-slider-section">
-                  <ImageSlider />
-                </div>
-              )}
               <div className="auth-form-section">
                 <div className="auth-container">
                   {page === "login" ? (
@@ -94,40 +110,51 @@ const Auth: React.FC = () => {
                       currentStep={signupStep}
                       email={signupEmail}
                       onEmailSubmit={handleEmailSubmit}
+                      onStepChange={handleStepChange}
                       onBack={handleBackToEmailStep}
                     />
                   )}
 
-                  <p className="before-socials">Or sign in with</p>
-                  <div className="social-signin">
-                    <GoogleLoginSvg />
-                    <FacebookLoginSvg />
-                    <AppleLoginSvg />
-                  </div>
+                  {shouldShowSocialLogin() && (
+                    <>
+                      <p className="before-socials">
+                        {page === "login"
+                          ? "Or continue with"
+                          : "Or sign up with"}
+                      </p>
+                      <div className="social-signin">
+                        <GoogleLoginSvg />
+                        <FacebookLoginSvg />
+                        <AppleLoginSvg />
+                      </div>
+                    </>
+                  )}
 
-                  <div className="switch-auth">
-                    {page === "login" ? (
-                      <p className="switch-auth-text">
-                        Don't have an account?{" "}
-                        <button
-                          onClick={() => handlePageChange("signup")}
-                          className="switch-auth-button"
-                        >
-                          Sign up
-                        </button>
-                      </p>
-                    ) : (
-                      <p className="switch-auth-text">
-                        Already have an account?{" "}
-                        <button
-                          onClick={() => handlePageChange("login")}
-                          className="switch-auth-button"
-                        >
-                          Log in
-                        </button>
-                      </p>
-                    )}
-                  </div>
+                  {shouldShowAuthSwitch() && (
+                    <div className="switch-auth">
+                      {page === "login" ? (
+                        <p className="switch-auth-text">
+                          Don't have an account?{" "}
+                          <button
+                            onClick={() => handlePageChange("signup")}
+                            className="switch-auth-button"
+                          >
+                            Sign up
+                          </button>
+                        </p>
+                      ) : (
+                        <p className="switch-auth-text">
+                          Already have an account?{" "}
+                          <button
+                            onClick={() => handlePageChange("login")}
+                            className="switch-auth-button"
+                          >
+                            Log in
+                          </button>
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -142,17 +169,17 @@ const Auth: React.FC = () => {
       <UnauthenticatedNavbar />
       <div
         className={`auth-main-container desktop ${
-          page === "signup" && signupStep === "password" ? "password-step" : ""
+          shouldHideSlider() ? "full-screen-step" : ""
         }`}
       >
-        {/* Only show slider if not on password step */}
-        {!(page === "signup" && signupStep === "password") && (
+        {!shouldHideSlider() && (
           <div className="auth-slider-section">
             <ImageSlider />
           </div>
         )}
         <div className="auth-form-section">
           <div className="auth-container">
+            {signupStep === "email" && <LogoSvg />}
             {page === "login" ? (
               <LoginPage />
             ) : (
@@ -160,39 +187,47 @@ const Auth: React.FC = () => {
                 currentStep={signupStep}
                 email={signupEmail}
                 onEmailSubmit={handleEmailSubmit}
+                onStepChange={handleStepChange}
                 onBack={handleBackToEmailStep}
               />
             )}
-
-            <p className="before-socials">Or sign in with</p>
-            <div className="social-signin">
-              <GoogleLoginSvg />
-              <FacebookLoginSvg />
-              <AppleLoginSvg />
-            </div>
-            <div className="switch-auth">
-              {page === "login" ? (
-                <p className="switch-auth-text">
-                  Don't have an account?{" "}
-                  <button
-                    onClick={() => handlePageChange("signup")}
-                    className="switch-auth-button"
-                  >
-                    Sign up
-                  </button>
+            {shouldShowSocialLogin() && (
+              <>
+                <p className="before-socials">
+                  {page === "login" ? "Or continue with" : "Or sign up with"}
                 </p>
-              ) : (
-                <p className="switch-auth-text">
-                  Already have an account?{" "}
-                  <button
-                    onClick={() => handlePageChange("login")}
-                    className="switch-auth-button"
-                  >
-                    Log in
-                  </button>
-                </p>
-              )}
-            </div>
+                <div className="social-signin">
+                  <GoogleLoginSvg />
+                  <FacebookLoginSvg />
+                  <AppleLoginSvg />
+                </div>
+              </>
+            )}
+            {shouldShowAuthSwitch() && (
+              <div className="switch-auth">
+                {page === "login" ? (
+                  <p className="switch-auth-text">
+                    Don't have an account?{" "}
+                    <button
+                      onClick={() => handlePageChange("signup")}
+                      className="switch-auth-button"
+                    >
+                      Sign up
+                    </button>
+                  </p>
+                ) : (
+                  <p className="switch-auth-text">
+                    Already have an account?{" "}
+                    <button
+                      onClick={() => handlePageChange("login")}
+                      className="switch-auth-button"
+                    >
+                      Log in
+                    </button>
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

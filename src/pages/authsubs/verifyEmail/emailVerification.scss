@@ -1,4 +1,4 @@
-.business-name-step {
+.email-verification-step {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6,7 +6,7 @@
   max-width: 450px;
   margin: 0 auto;
 
-  .business-name-container {
+  .verification-container {
     text-align: center;
     width: 100%;
     max-width: 400px;
@@ -44,36 +44,35 @@
       color: #333;
     }
 
-    .business-name-subtext {
+    .verification-subtext {
       font-size: 16px;
       color: #666;
       margin-bottom: 40px;
       line-height: 1.5;
+
+      .email-highlight {
+        color: var(--pmu-primary);
+        font-weight: 600;
+      }
     }
 
-    .business-name-form {
-      .form-group {
-        margin-bottom: 30px;
-        text-align: left;
+    .verification-form {
+      .code-inputs {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 20px;
 
-        label {
-          display: block;
-          margin-bottom: 8px;
-          font-size: 14px;
-          font-weight: 600;
-          color: #333;
-          line-height: 20px;
-        }
-
-        input {
-          width: 100%;
-          padding: 14px;
+        .code-input {
+          width: 50px;
+          height: 50px;
           border: 2px solid #ddd;
-          background-color: #f8f9fa;
           border-radius: 10px;
-          font-size: 16px;
+          text-align: center;
+          font-size: 18px;
+          font-weight: 600;
+          background-color: #f8f9fa;
           transition: all 0.3s ease;
-          box-sizing: border-box;
 
           &:focus {
             outline: none;
@@ -87,17 +86,39 @@
             background-color: #fff5f5;
           }
 
-          &::placeholder {
-            color: #999;
-            font-size: 14px;
+          &::-webkit-outer-spin-button,
+          &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
           }
         }
+      }
 
-        .error-message {
-          color: #dc3545;
-          font-size: 12px;
-          margin-top: 5px;
-          text-align: left;
+      .error-message {
+        color: #dc3545;
+        font-size: 14px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .resend-button {
+        background: none;
+        border: none;
+        color: var(--pmu-primary);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 30px;
+        transition: color 0.3s ease;
+
+        &:hover:not(.disabled) {
+          color: #6e1d6e;
+          text-decoration: underline;
+        }
+
+        &.disabled {
+          color: #999;
+          cursor: not-allowed;
         }
       }
 
@@ -148,28 +169,28 @@
 
 // Mobile responsiveness
 @media screen and (max-width: 768px) {
-  .business-name-step {
+  .email-verification-step {
     padding: 20px;
 
-    .business-name-container {
+    .verification-container {
       max-width: 100%;
 
       h2 {
         font-size: 24px;
       }
 
-      .business-name-subtext {
+      .verification-subtext {
         font-size: 14px;
         margin-bottom: 30px;
-        br {
-          display: none;
-        }
       }
 
-      .business-name-form {
-        .form-group {
-          input {
-            padding: 12px;
+      .verification-form {
+        .code-inputs {
+          gap: 8px;
+
+          .code-input {
+            width: 45px;
+            height: 45px;
             font-size: 16px;
           }
         }
@@ -177,6 +198,24 @@
         .continue-button {
           font-size: 16px;
           padding: 12px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .email-verification-step {
+    .verification-container {
+      .verification-form {
+        .code-inputs {
+          gap: 6px;
+
+          .code-input {
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+          }
         }
       }
     }

@@ -3,94 +3,198 @@ import { useNavigate } from "react-router-dom";
 import EmailStep from "./EmailStep";
 import PasswordStep from "./PasswordStep";
 import "./signup.scss";
+import BusinessNameStep from "../business-name/BusinessName";
+import EmailVerificationStep from "../verifyEmail/EmailVerification";
+import ServicesSelectionStep from "../servicesPage/ServicesSelection";
+
+type SignupStep =
+  | "email"
+  | "password"
+  | "verification"
+  | "business"
+  | "services";
 
 interface SignupPageProps {
-  currentStep?: "email" | "password";
+  currentStep?: SignupStep;
   email?: string;
   onEmailSubmit?: (email: string) => void;
+  onStepChange?: (step: SignupStep) => void;
   onBack?: () => void;
+}
+
+interface SignupData {
+  email: string;
+  password: string;
+  verificationCode: string;
+  businessName: string;
+  selectedServices: string[];
 }
 
 const SignupPage: React.FC<SignupPageProps> = ({
   currentStep: propCurrentStep,
   email: propEmail,
   onEmailSubmit: propOnEmailSubmit,
+  onStepChange: propOnStepChange,
   onBack: propOnBack,
 }) => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<"email" | "password">(
+  const [currentStep, setCurrentStep] = useState<SignupStep>(
     propCurrentStep || "email"
   );
-  const [email, setEmail] = useState<string>(propEmail || "");
+  const [signupData, setSignupData] = useState<Partial<SignupData>>({
+    email: propEmail || "",
+    password: "",
+    verificationCode: "",
+    businessName: "",
+    selectedServices: [],
+  });
+
+  const changeStep = (newStep: SignupStep) => {
+    if (propOnStepChange) {
+      propOnStepChange(newStep);
+    } else {
+      setCurrentStep(newStep);
+    }
+  };
 
   const handleEmailSubmit = (submittedEmail: string) => {
     if (propOnEmailSubmit) {
-      // Use the prop function if provided (managed by parent)
       propOnEmailSubmit(submittedEmail);
     } else {
-      // Fallback to local state management
-      setEmail(submittedEmail);
-      setCurrentStep("password");
+      setSignupData((prev) => ({ ...prev, email: submittedEmail }));
+      changeStep("password");
     }
   };
 
   const handlePasswordSubmit = async (email: string, password: string) => {
-    // const artistId = localStorage.getItem("artistId");
-    // if (!artistId) {
-    //   console.error("Artist ID is missing");
-    //   toast.error("error", "Artist ID is missing");
-    //   return;
-    // }
-    // try {
-    //   const userCredential = await createUserWithEmailAndPassword(
-    //     auth,
-    //     email,
-    //     password
-    //   );
-    //   const user = userCredential.user;
-    //   await createCustomer({
-    //     accessToken: await user.getIdToken(),
-    //     artistId: artistId,
-    //   }).then((res) => {
-    //     localStorage.setItem("userId", res.data?.customer?.id);
-    //     localStorage.setItem("accessToken", res.data?.access_token);
-    //     navigate("/dashboard");
-    //   });
-    // } catch (error) {
-    //   console.error("Error creating user:", error);
-    //   showAlert("error", error.message);
-    // }
+    try {
+      setSignupData((prev) => ({ ...prev, email, password }));
 
-    console.log("Signup with:", email, password);
-    // Navigate to next step or dashboard
-    navigate("/dashboard");
-  };
+      console.log("Sending verification email to:", email);
 
-  const handleBack = () => {
-    if (propOnBack) {
-      // Use the prop function if provided (managed by parent)
-      propOnBack();
-    } else {
-      // Fallback to local state management
-      setCurrentStep("email");
+      changeStep("verification");
+    } catch (error) {
+      console.error("Error during password submission:", error);
     }
   };
 
-  // Use prop values if provided, otherwise fall back to local state
+  const handleVerificationComplete = async (code: string) => {
+    try {
+      setSignupData((prev) => ({ ...prev, verificationCode: code }));
+
+      console.log("Verifying code:", code);
+
+      changeStep("business");
+    } catch (error) {
+      console.error("Error during verification:", error);
+    }
+  };
+
+  const handleBusinessNameSubmit = async (businessName: string) => {
+    try {
+      setSignupData((prev) => ({ ...prev, businessName }));
+      changeStep("services");
+    } catch (error) {
+      console.error("Error during business name submission:", error);
+    }
+  };
+
+  const handleServicesSubmit = async (selectedServices: string[]) => {
+    try {
+      const completeSignupData = {
+        ...signupData,
+        selectedServices,
+      };
+
+      console.log("Complete signup data:", completeSignupData);
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error during services submission:", error);
+    }
+  };
+
+  const handleResendCode = async () => {
+    try {
+      console.log("Resending verification code to:", signupData.email);
+    } catch (error) {
+      console.error("Error resending code:", error);
+    }
+  };
+
+  const handleBack = () => {
+    const activeStep = propCurrentStep || currentStep;
+
+    if (propOnBack && activeStep === "password") {
+      propOnBack();
+      return;
+    }
+
+    switch (activeStep) {
+      case "password":
+        changeStep("email");
+        break;
+      case "verification":
+        changeStep("password");
+        break;
+      case "business":
+        changeStep("verification");
+        break;
+      case "services":
+        changeStep("business");
+        break;
+      default:
+        changeStep("email");
+    }
+  };
+
   const activeStep = propCurrentStep || currentStep;
-  const activeEmail = propEmail || email;
+  const activeEmail = propEmail || signupData.email || "";
 
-  if (activeStep === "email") {
-    return <EmailStep onEmailSubmit={handleEmailSubmit} />;
+  switch (activeStep) {
+    case "email":
+      return <EmailStep onEmailSubmit={handleEmailSubmit} />;
+
+    case "password":
+      return (
+        <PasswordStep
+          email={activeEmail}
+          onPasswordSubmit={handlePasswordSubmit}
+          onBack={handleBack}
+        />
+      );
+
+    case "verification":
+      return (
+        <EmailVerificationStep
+          email={activeEmail}
+          onVerificationComplete={handleVerificationComplete}
+          onBack={handleBack}
+          onResendCode={handleResendCode}
+        />
+      );
+
+    case "business":
+      return (
+        <BusinessNameStep
+          onBusinessNameSubmit={handleBusinessNameSubmit}
+          onBack={handleBack}
+          initialBusinessName={signupData.businessName}
+        />
+      );
+
+    case "services":
+      return (
+        <ServicesSelectionStep
+          onServicesSubmit={handleServicesSubmit}
+          onBack={handleBack}
+          initialSelectedServices={signupData.selectedServices}
+        />
+      );
+
+    default:
+      return <EmailStep onEmailSubmit={handleEmailSubmit} />;
   }
-
-  return (
-    <PasswordStep
-      email={activeEmail}
-      onPasswordSubmit={handlePasswordSubmit}
-      onBack={handleBack}
-    />
-  );
 };
 
 export default SignupPage;
