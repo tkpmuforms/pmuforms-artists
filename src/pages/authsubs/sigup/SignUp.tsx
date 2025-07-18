@@ -134,9 +134,7 @@ const SignupPage: React.FC<SignupPageProps> = ({
       case "password":
         changeStep("email");
         break;
-      case "verification":
-        changeStep("password");
-        break;
+      // Remove the ability to go back from verification to password
       case "business":
         changeStep("verification");
         break;
@@ -223,33 +221,36 @@ const SignupPage: React.FC<SignupPageProps> = ({
   };
 
   return (
-    <div className="signup-page">
+    <div
+      className={`signup-page${
+        ["password", "verification", "business", "services"].includes(
+          activeStep
+        )
+          ? " password-step"
+          : ""
+      }`}
+    >
       <div className="signup-container">
-        {shouldShowProgressBar(activeStep) && (
-          <div className="progress-bar">
-            <div className="progress-line">
-              <div
-                className="progress-fill"
-                style={{ width: `${getProgressPercentage(activeStep)}%` }}
-              ></div>
-            </div>
+        {(shouldShowBackButton(activeStep) ||
+          shouldShowProgressBar(activeStep)) && (
+          <div className="signup-header-row">
+            {shouldShowBackButton(activeStep) && (
+              <div className="back-button" onClick={handleBack}>
+                ← Back
+              </div>
+            )}
+            {shouldShowProgressBar(activeStep) && (
+              <div className="progress-bar">
+                <div className="progress-line">
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${getProgressPercentage(activeStep)}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
           </div>
         )}
-
-        {shouldShowBackButton(activeStep) && (
-          <div
-            className="back-button"
-            onClick={handleBack}
-            style={{
-              textAlign: "left",
-              marginBottom: "20px",
-              cursor: "pointer",
-            }}
-          >
-            ← Back
-          </div>
-        )}
-
         {renderStepContent()}
       </div>
     </div>

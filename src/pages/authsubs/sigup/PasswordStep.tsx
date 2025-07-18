@@ -37,7 +37,6 @@ const PasswordStep: React.FC<PasswordStepProps> = ({
   return (
     <div className="signup-page">
       <div className="signup-container">
-        <h2>Create your Password</h2>
         <p className="subtext">Create your password</p>
         <Formik
           initialValues={initialValues}
