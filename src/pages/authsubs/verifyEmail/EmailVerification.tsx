@@ -4,14 +4,13 @@ import "./emailVerification.scss";
 interface EmailVerificationStepProps {
   email: string;
   onVerificationComplete: (code: string) => void;
-  onBack: () => void;
+  onBack?: () => void;
   onResendCode: () => void;
 }
 
 const EmailVerificationStep: React.FC<EmailVerificationStepProps> = ({
   email,
   onVerificationComplete,
-  onBack,
   onResendCode,
 }) => {
   const [verificationCode, setVerificationCode] = useState<string[]>([
@@ -97,12 +96,6 @@ const EmailVerificationStep: React.FC<EmailVerificationStepProps> = ({
   return (
     <div className="email-verification-step">
       <div className="verification-container">
-        <div className="progress-bar">
-          <div className="progress-line">
-            <div className="progress-fill" style={{ width: "40%" }}></div>
-          </div>
-        </div>
-
         <h2>Verify your email address</h2>
         <p className="verification-subtext">
           Enter the 6 digits code that was sent to{" "}
@@ -147,10 +140,6 @@ const EmailVerificationStep: React.FC<EmailVerificationStepProps> = ({
             {isLoading ? "Verifying..." : "Continue"}
           </button>
         </form>
-
-        <button type="button" onClick={onBack} className="back-button">
-          ← Back
-        </button>
       </div>
     </div>
   );

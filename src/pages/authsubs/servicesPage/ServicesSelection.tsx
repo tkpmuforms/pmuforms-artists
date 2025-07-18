@@ -9,13 +9,12 @@ interface Service {
 
 interface ServicesSelectionStepProps {
   onServicesSubmit: (selectedServices: string[]) => void;
-  onBack: () => void;
+  onBack?: () => void;
   initialSelectedServices?: string[];
 }
 
 const ServicesSelectionStep: React.FC<ServicesSelectionStepProps> = ({
   onServicesSubmit,
-  onBack,
   initialSelectedServices = [],
 }) => {
   // PMU Services based on the image provided
@@ -88,12 +87,6 @@ const ServicesSelectionStep: React.FC<ServicesSelectionStepProps> = ({
   return (
     <div className="services-selection-step">
       <div className="services-container">
-        <div className="progress-bar">
-          <div className="progress-line">
-            <div className="progress-fill" style={{ width: "80%" }}></div>
-          </div>
-        </div>
-
         <h2>Select your PMU Services</h2>
         <p className="services-subtext">
           Please select the Permanent make up services you offer
@@ -133,10 +126,6 @@ const ServicesSelectionStep: React.FC<ServicesSelectionStepProps> = ({
             {isLoading ? "Saving..." : "Continue"}
           </button>
         </form>
-
-        <button type="button" onClick={onBack} className="back-button">
-          ← Back
-        </button>
       </div>
     </div>
   );

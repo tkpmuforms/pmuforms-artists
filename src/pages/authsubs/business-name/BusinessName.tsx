@@ -3,13 +3,12 @@ import "./businessName.scss";
 
 interface BusinessNameStepProps {
   onBusinessNameSubmit: (businessName: string) => void;
-  onBack: () => void;
+  onBack?: () => void;
   initialBusinessName?: string;
 }
 
 const BusinessNameStep: React.FC<BusinessNameStepProps> = ({
   onBusinessNameSubmit,
-  onBack,
   initialBusinessName = "",
 }) => {
   const [businessName, setBusinessName] = useState(initialBusinessName);
@@ -52,15 +51,6 @@ const BusinessNameStep: React.FC<BusinessNameStepProps> = ({
   return (
     <div className="business-name-step">
       <div className="business-name-container">
-        <div className="progress-bar">
-          <div className="progress-line">
-            <button type="button" onClick={onBack} className="back-button">
-              ← Back
-            </button>
-            <div className="progress-fill" style={{ width: "60%" }}></div>
-          </div>
-        </div>
-
         <h2>Tell us your Business name</h2>
         <p className="business-name-subtext">
           Ensure all spelling is accurate and professional as it will be

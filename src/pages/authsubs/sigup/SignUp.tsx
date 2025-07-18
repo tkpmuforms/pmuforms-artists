@@ -151,50 +151,109 @@ const SignupPage: React.FC<SignupPageProps> = ({
   const activeStep = propCurrentStep || currentStep;
   const activeEmail = propEmail || signupData.email || "";
 
-  switch (activeStep) {
-    case "email":
-      return <EmailStep onEmailSubmit={handleEmailSubmit} />;
+  // Function to get progress percentage based on current step
+  const getProgressPercentage = (step: SignupStep): number => {
+    switch (step) {
+      case "email":
+        return 0;
+      case "password":
+        return 20;
+      case "verification":
+        return 40;
+      case "business":
+        return 60;
+      case "services":
+        return 80;
+      default:
+        return 0;
+    }
+  };
 
-    case "password":
-      return (
-        <PasswordStep
-          email={activeEmail}
-          onPasswordSubmit={handlePasswordSubmit}
-          onBack={handleBack}
-        />
-      );
+  // Function to determine if back button should be shown
+  const shouldShowBackButton = (step: SignupStep): boolean => {
+    return step !== "email";
+  };
 
-    case "verification":
-      return (
-        <EmailVerificationStep
-          email={activeEmail}
-          onVerificationComplete={handleVerificationComplete}
-          onBack={handleBack}
-          onResendCode={handleResendCode}
-        />
-      );
+  // Function to determine if progress bar should be shown
+  const shouldShowProgressBar = (step: SignupStep): boolean => {
+    return step !== "email";
+  };
 
-    case "business":
-      return (
-        <BusinessNameStep
-          onBusinessNameSubmit={handleBusinessNameSubmit}
-          onBack={handleBack}
-          initialBusinessName={signupData.businessName}
-        />
-      );
+  const renderStepContent = () => {
+    switch (activeStep) {
+      case "email":
+        return <EmailStep onEmailSubmit={handleEmailSubmit} />;
 
-    case "services":
-      return (
-        <ServicesSelectionStep
-          onServicesSubmit={handleServicesSubmit}
-          onBack={handleBack}
-          initialSelectedServices={signupData.selectedServices}
-        />
-      );
+      case "password":
+        return (
+          <PasswordStep
+            email={activeEmail}
+            onPasswordSubmit={handlePasswordSubmit}
+          />
+        );
 
-    default:
-      return <EmailStep onEmailSubmit={handleEmailSubmit} />;
-  }
+      case "verification":
+        return (
+          <EmailVerificationStep
+            email={activeEmail}
+            onVerificationComplete={handleVerificationComplete}
+            onResendCode={handleResendCode}
+          />
+        );
+
+      case "business":
+        return (
+          <BusinessNameStep
+            onBusinessNameSubmit={handleBusinessNameSubmit}
+            initialBusinessName={signupData.businessName}
+          />
+        );
+
+      case "services":
+        return (
+          <ServicesSelectionStep
+            onServicesSubmit={handleServicesSubmit}
+            initialSelectedServices={signupData.selectedServices}
+          />
+        );
+
+      default:
+        return <EmailStep onEmailSubmit={handleEmailSubmit} />;
+    }
+  };
+
+  return (
+    <div className="signup-page">
+      <div className="signup-container">
+        {shouldShowProgressBar(activeStep) && (
+          <div className="progress-bar">
+            <div className="progress-line">
+              <div
+                className="progress-fill"
+                style={{ width: `${getProgressPercentage(activeStep)}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
+
+        {shouldShowBackButton(activeStep) && (
+          <div
+            className="back-button"
+            onClick={handleBack}
+            style={{
+              textAlign: "left",
+              marginBottom: "20px",
+              cursor: "pointer",
+            }}
+          >
+            ← Back
+          </div>
+        )}
+
+        {renderStepContent()}
+      </div>
+    </div>
+  );
 };
 
 export default SignupPage;

@@ -36,6 +36,20 @@
         }
       }
     }
+    .back-button {
+      display: flex;
+      background: none;
+      border: none;
+      color: var(--pmu-primary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #6e1d6e;
+      }
+    }
 
     h2 {
       font-size: 28px;
@@ -145,23 +159,6 @@
           cursor: not-allowed;
           transform: none;
         }
-      }
-    }
-
-    .back-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      color: var(--pmu-primary);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: color 0.3s ease;
-
-      &:hover {
-        color: #6e1d6e;
       }
     }
   }

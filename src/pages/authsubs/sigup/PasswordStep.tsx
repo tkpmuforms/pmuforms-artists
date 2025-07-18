@@ -5,13 +5,12 @@ import "./signup.scss";
 interface PasswordStepProps {
   email: string;
   onPasswordSubmit: (email: string, password: string) => void;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 const PasswordStep: React.FC<PasswordStepProps> = ({
   email,
   onPasswordSubmit,
-  onBack,
 }) => {
   const initialValues = {
     password: "",
@@ -38,13 +37,6 @@ const PasswordStep: React.FC<PasswordStepProps> = ({
   return (
     <div className="signup-page">
       <div className="signup-container">
-        <div
-          className="back-button"
-          onClick={onBack}
-          style={{ textAlign: "left", marginBottom: "20px", cursor: "pointer" }}
-        >
-          ← Back
-        </div>
         <h2>Create your Password</h2>
         <p className="subtext">Create your password</p>
         <Formik
