@@ -6,6 +6,7 @@ import "./signup.scss";
 import BusinessNameStep from "../business-name/BusinessName";
 import EmailVerificationStep from "../verifyEmail/EmailVerification";
 import ServicesSelectionStep from "../servicesPage/ServicesSelection";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 type SignupStep =
   | "email"
@@ -236,7 +237,7 @@ const SignupPage: React.FC<SignupPageProps> = ({
           <div className="signup-header-row">
             {shouldShowBackButton(activeStep) && (
               <div className="back-button" onClick={handleBack}>
-                ← Back
+                <ArrowBackIcon />
               </div>
             )}
             {shouldShowProgressBar(activeStep) && (

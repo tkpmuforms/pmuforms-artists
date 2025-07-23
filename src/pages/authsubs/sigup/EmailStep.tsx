@@ -4,9 +4,10 @@ import "./signup.scss";
 
 interface EmailStepProps {
   onEmailSubmit: (email: string) => void;
+  isMobile?: boolean;
 }
 
-const EmailStep: React.FC<EmailStepProps> = ({ onEmailSubmit }) => {
+const EmailStep: React.FC<EmailStepProps> = ({ onEmailSubmit, isMobile }) => {
   const initialValues = {
     email: "",
   };
@@ -26,9 +27,11 @@ const EmailStep: React.FC<EmailStepProps> = ({ onEmailSubmit }) => {
   return (
     <div className="signup-page">
       <div className="signup-container">
-        <h2>Get Started</h2>
+        <h2>{isMobile ? "Lets get you started" : "Get Started"}</h2>
         <p className="subtext">
-          Enter your login details to access your account
+          {isMobile
+            ? "Create an account to continue"
+            : "Enter your email to create an account"}
         </p>
         <Formik
           initialValues={initialValues}

@@ -145,7 +145,6 @@
       color: var(--pmu-primary);
       cursor: pointer;
       font-weight: bold;
-      text-decoration: underline;
       padding: 0;
       margin-left: 5px;
     }
@@ -210,6 +209,10 @@
     .social-signin {
       gap: 10px;
       width: 100%;
+      max-width: none; // Remove max-width for better responsiveness
+      justify-content: center;
+      display: flex;
+      flex-direction: column;
     }
   }
 

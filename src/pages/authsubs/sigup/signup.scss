@@ -88,7 +88,6 @@
       font-weight: 500;
       cursor: pointer;
       transition: color 0.3s;
-
       &:hover {
         color: #6e1d6e;
       }
@@ -121,8 +120,8 @@
 }
 .signup-header-row .back-button {
   margin-bottom: 0;
-  margin-right: 16px;
-  min-width: 60px;
+  min-width: 30px;
+  font-size: 24px;
   text-align: left;
 }
 .signup-header-row .progress-bar {

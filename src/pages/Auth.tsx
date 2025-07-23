@@ -6,6 +6,9 @@ import {
   FacebookLoginSvg,
   GoogleLoginSvg,
   LogoSvg,
+  MobileAppleLoginSvg,
+  MobileFacebookLoginSvg,
+  MobileGoogleLoginSvg,
 } from "../assets/svgs/AuthSvg";
 import ImageSlider from "../components/ImageSlider";
 import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar";
@@ -103,7 +106,7 @@ const Auth: React.FC = () => {
             >
               <div className="auth-form-section">
                 <div className="auth-container">
-                  {signupStep === "email" && <LogoSvg />}
+                  {/* {signupStep === "email" && <LogoSvg />} */}
                   {page === "login" ? (
                     <LoginPage />
                   ) : (
@@ -124,9 +127,9 @@ const Auth: React.FC = () => {
                           : "Or sign up with"}
                       </p>
                       <div className="social-signin">
-                        <GoogleLoginSvg />
-                        <FacebookLoginSvg />
-                        <AppleLoginSvg />
+                        <MobileGoogleLoginSvg />
+                        <MobileFacebookLoginSvg />
+                        <MobileAppleLoginSvg />
                       </div>
                     </>
                   )}
@@ -150,7 +153,7 @@ const Auth: React.FC = () => {
                             onClick={() => handlePageChange("login")}
                             className="switch-auth-button"
                           >
-                            Log in
+                            Login
                           </button>
                         </p>
                       )}
@@ -212,6 +215,7 @@ const Auth: React.FC = () => {
                     <button
                       onClick={() => handlePageChange("signup")}
                       className="switch-auth-button"
+                      style={{ textDecoration: "none" }}
                     >
                       Sign up
                     </button>
@@ -222,8 +226,9 @@ const Auth: React.FC = () => {
                     <button
                       onClick={() => handlePageChange("login")}
                       className="switch-auth-button"
+                      style={{ textDecoration: "none" }}
                     >
-                      Log in
+                      Login
                     </button>
                   </p>
                 )}
