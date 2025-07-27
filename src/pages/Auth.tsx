@@ -1,97 +1,244 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar"
-import "./auth.scss"
-import LoginPage from "./authsubs/Login"
-import SignupPage from "./authsubs/SignUp"
-import { GoogleLoginSvg, FacebookLoginSvg, AppleLoginSvg } from "../assets/svgs/AuthSvg"
+import React, { useEffect, useState } from "react";
+import {
+  AppleLoginSvg,
+  FacebookLoginSvg,
+  GoogleLoginSvg,
+  LogoSvg,
+  MobileAppleLoginSvg,
+  MobileFacebookLoginSvg,
+  MobileGoogleLoginSvg,
+} from "../assets/svgs/AuthSvg";
+import ImageSlider from "../components/ImageSlider";
+import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar";
+import "./auth.scss";
+import LoginPage from "./authsubs/login/Login";
+import SignupPage from "./authsubs/sigup/SignUp";
 
-// Define a type for the page state
-type AuthPage = "login" | "signup"
+type AuthPage = "login" | "signup";
+type SignupStep =
+  | "email"
+  | "password"
+  | "verification"
+  | "business"
+  | "services";
 
 const Auth: React.FC = () => {
-  const [page, setPage] = useState<AuthPage>("login")
-  const navigate = useNavigate()
+  const [page, setPage] = useState<AuthPage>("signup");
+  const [showMobileAuth, setShowMobileAuth] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [signupStep, setSignupStep] = useState<SignupStep>("email");
+  const [signupEmail, setSignupEmail] = useState<string>("");
 
-  const handlePageChange = (newPage: AuthPage): void => setPage(newPage)
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
 
-  return (
-    <>
-      <UnauthenticatedNavbar CreatenewClick={() => handlePageChange("signup")} />
-      <div className="auth-container">
-        {page === "login" ? <LoginPage /> : <SignupPage />}
-     
-      
-     
-        <p className="before-socials">Or sign in with</p>
-        <div className="social-signin">
-          <GoogleLoginSvg
-            // Uncomment and implement the onClick handler for social login
-            // onClick={() =>
-            //   HandleSocialLogin(
-            //     googleProvider,
-            //     navigate,
-            //     handleAuthSuccess,
-            //     showAlert
-            //   )
-            // }
-          />
-          <FacebookLoginSvg
-            // Uncomment and implement the onClick handler for social login
-            // onClick={() =>
-            //   HandleSocialLogin(
-            //     facebookProvider,
-            //     navigate,
-            //     handleAuthSuccess,
-            //     showAlert
-            //   )
-            // }
-          />
-          <AppleLoginSvg
-            // Uncomment and implement the onClick handler for social login
-            // onClick={() =>
-            //   HandleSocialLogin(
-            //     appleProvider,
-            //     navigate,
-            //     handleAuthSuccess,
-            //     showAlert
-            //   )
-            // }
-          />
-        </div>
-           <div className="switch-auth">
-          {page === "login" ? (
-            <p className="switch-auth-text">
-              Don't have an account?{" "}
-              <button
-                onClick={() => handlePageChange("signup")}
-                className="switch-auth-button"
-              >
-                Sign up
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const handlePageChange = (newPage: AuthPage): void => {
+    setPage(newPage);
+    if (newPage === "signup") {
+      setSignupStep("email");
+      setSignupEmail("");
+    }
+  };
+
+  const handleEmailSubmit = (email: string) => {
+    setSignupEmail(email);
+    setSignupStep("password");
+  };
+
+  const handleStepChange = (newStep: SignupStep) => {
+    setSignupStep(newStep);
+  };
+
+  const handleBackToEmailStep = () => {
+    setSignupStep("email");
+  };
+
+  const handleGetStarted = () => {
+    setShowMobileAuth(true);
+  };
+
+  const shouldHideSlider = () => {
+    if (page === "login") return false;
+    return ["password", "verification", "business", "services"].includes(
+      signupStep
+    );
+  };
+
+  const shouldShowSocialLogin = () => {
+    if (page === "login") return true;
+    return ["email", "password"].includes(signupStep);
+  };
+
+  const shouldShowAuthSwitch = () => {
+    if (page === "login") return true;
+    return ["email", "password"].includes(signupStep);
+  };
+
+  if (isMobile) {
+    return (
+      <>
+        <UnauthenticatedNavbar />
+        <div className="auth-main-container mobile">
+          {!showMobileAuth ? (
+            <div className="mobile-slider-view">
+              <div className="auth-slider-section">
+                <ImageSlider />
+              </div>
+
+              <button className="get-started-button" onClick={handleGetStarted}>
+                Get Started
               </button>
-            </p>
+            </div>
           ) : (
-            <p className="switch-auth-text">
-              Already have an account?{" "}
-              <button
-                onClick={() => handlePageChange("login")}
-                className="switch-auth-button"
-              >
-                Log in
-              </button>
-            </p>
+            <div
+              className={`mobile-auth-view ${
+                shouldHideSlider() ? "full-screen-step" : ""
+              }`}
+            >
+              <div className="auth-form-section">
+                <div className="auth-container">
+                  {/* {signupStep === "email" && <LogoSvg />} */}
+                  {page === "login" ? (
+                    <LoginPage />
+                  ) : (
+                    <SignupPage
+                      currentStep={signupStep}
+                      email={signupEmail}
+                      onEmailSubmit={handleEmailSubmit}
+                      onStepChange={handleStepChange}
+                      onBack={handleBackToEmailStep}
+                    />
+                  )}
+
+                  {shouldShowSocialLogin() && (
+                    <>
+                      <p className="before-socials">
+                        {page === "login"
+                          ? "Or continue with"
+                          : "Or sign up with"}
+                      </p>
+                      <div className="social-signin">
+                        <MobileGoogleLoginSvg />
+                        <MobileFacebookLoginSvg />
+                        <MobileAppleLoginSvg />
+                      </div>
+                    </>
+                  )}
+
+                  {shouldShowAuthSwitch() && (
+                    <div className="switch-auth">
+                      {page === "login" ? (
+                        <p className="switch-auth-text">
+                          Don't have an account?{" "}
+                          <button
+                            onClick={() => handlePageChange("signup")}
+                            className="switch-auth-button"
+                          >
+                            Sign up
+                          </button>
+                        </p>
+                      ) : (
+                        <p className="switch-auth-text">
+                          Already have an account?{" "}
+                          <button
+                            onClick={() => handlePageChange("login")}
+                            className="switch-auth-button"
+                          >
+                            Login
+                          </button>
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
         </div>
-        <p className="terms-text">
-          By proceeding, you agree to our{" "}
-          <Link to="/terms-and-agreement">Terms and conditions</Link> and our{" "}
-          <Link to="/privacy-policy">Privacy policy</Link>
-        </p>
-      </div>
-    </>
-  )
-}
+      </>
+    );
+  }
 
-export default Auth
+  return (
+    <div style={{ width: "100%", backgroundColor: "#f8f9fa" }}>
+      <UnauthenticatedNavbar />
+      <div
+        className={`auth-main-container desktop ${
+          shouldHideSlider() ? "full-screen-step" : ""
+        }`}
+      >
+        {!shouldHideSlider() && (
+          <div className="auth-slider-section">
+            <ImageSlider />
+          </div>
+        )}
+        <div className="auth-form-section">
+          <div className="auth-container">
+            {signupStep === "email" && <LogoSvg />}
+            {page === "login" ? (
+              <LoginPage />
+            ) : (
+              <SignupPage
+                currentStep={signupStep}
+                email={signupEmail}
+                onEmailSubmit={handleEmailSubmit}
+                onStepChange={handleStepChange}
+                onBack={handleBackToEmailStep}
+              />
+            )}
+            {shouldShowSocialLogin() && (
+              <>
+                <p className="before-socials">
+                  {page === "login" ? "Or continue with" : "Or sign up with"}
+                </p>
+                <div className="social-signin">
+                  <GoogleLoginSvg />
+                  <FacebookLoginSvg />
+                  <AppleLoginSvg />
+                </div>
+              </>
+            )}
+            {shouldShowAuthSwitch() && (
+              <div className="switch-auth">
+                {page === "login" ? (
+                  <p className="switch-auth-text">
+                    Don't have an account?{" "}
+                    <button
+                      onClick={() => handlePageChange("signup")}
+                      className="switch-auth-button"
+                      style={{ textDecoration: "none" }}
+                    >
+                      Sign up
+                    </button>
+                  </p>
+                ) : (
+                  <p className="switch-auth-text">
+                    Already have an account?{" "}
+                    <button
+                      onClick={() => handlePageChange("login")}
+                      className="switch-auth-button"
+                      style={{ textDecoration: "none" }}
+                    >
+                      Login
+                    </button>
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Auth;

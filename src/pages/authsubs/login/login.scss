@@ -1,0 +1,130 @@
+@use "sass:color";
+
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 450px; // Set consistent max-width
+  margin: 0 auto; // Center the page
+
+  .login-container {
+    text-align: center;
+    width: 100%;
+    max-width: 400px; // Contain the form
+
+    h2 {
+      font-size: 24px;
+      font-family: BoldFont;
+      color: #333;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .subtext {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .login-form {
+      .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+
+        label {
+          display: block;
+          margin-bottom: 8px;
+          font-size: 16px;
+          font-family: BoldFont;
+          color: #333;
+        }
+
+        input {
+          width: 100%; // Full width of container
+          padding: 12px;
+          border: 1px solid #ddd;
+          background-color: #bcbbc133;
+          border-radius: 10px;
+          font-size: 14px;
+          box-sizing: border-box; // Include padding in width
+        }
+      }
+
+      .forgot-password {
+        text-align: right;
+        margin-bottom: 20px;
+
+        p {
+          color: #800080;
+          text-decoration: none;
+          cursor: pointer;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .login-button {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--pmu-primary);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        box-sizing: border-box;
+
+        &:hover {
+          background-color: color.adjust(#8e2d8e, $lightness: -10%);
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .login-page {
+    width: 100%;
+
+    .login-container {
+      max-width: 100%;
+
+      h2 {
+        font-size: 16px;
+      }
+
+      .subtext {
+        font-size: 12px;
+        margin-bottom: 20px;
+      }
+
+      .login-form {
+        .form-group {
+          label {
+            font-size: 12px;
+          }
+
+          input {
+            padding: 10px;
+            font-size: 16px;
+          }
+        }
+
+        .forgot-password {
+          p {
+            font-size: 12px;
+          }
+        }
+
+        .login-button {
+          font-size: 14px;
+          padding: 12px;
+        }
+      }
+    }
+  }
+}

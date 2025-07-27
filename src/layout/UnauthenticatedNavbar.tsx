@@ -1,21 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LogoSvg } from "../assets/svgs/AuthSvg";
-import "./navbar.scss"
+import "./navbar.scss";
 
-const UnauthenticatedNavbar = ({ CreatenewClick }) => {
-   const navigate = useNavigate();
+const UnauthenticatedNavbar = () => {
+  const navigate = useNavigate();
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const mobileMenuRef = useRef(null);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuVisible(!mobileMenuVisible);
-  };
-
-  const handleClickOutside = (event) => {
+  const handleClickOutside = (event: MouseEvent) => {
     if (
       mobileMenuRef.current &&
-      !mobileMenuRef.current.contains(event.target)
+      !(mobileMenuRef.current as HTMLDivElement).contains(event.target as Node)
     ) {
       setMobileMenuVisible(false);
     }
@@ -42,13 +38,12 @@ const UnauthenticatedNavbar = ({ CreatenewClick }) => {
         <LogoSvg />
       </div>
 
-      {/* Hamburger Menu Button (Visible only on mobile) */}
-      <div className="hamburger-menu" onClick={toggleMobileMenu}>
+      {/* <div className="hamburger-menu" onClick={toggleMobileMenu}>
         &#9776;
-      </div>
+      </div> */}
 
       {/* Navigation Links */}
-      <div
+      {/* <div
         ref={mobileMenuRef}
         className={`links ${mobileMenuVisible ? "visible" : ""}`}
       >
@@ -65,14 +60,14 @@ const UnauthenticatedNavbar = ({ CreatenewClick }) => {
             <Link to="/support">Contact Support</Link>
           </li>
         </ul>
-      </div>
+      </div> */}
 
       {/* Buttons (Hidden in Mobile) */}
-      <div className="buttons">
+      {/* <div className="buttons">
         <button onClick={CreatenewClick} className="create-an-account">
           Create an Account
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
