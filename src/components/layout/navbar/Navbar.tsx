@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogoSvg } from "../assets/svgs/AuthSvg";
+import { LogoSvg } from "../../../assets/svgs/AuthSvg";
 import "./navbar.scss";
 
-const UnauthenticatedNavbar = () => {
+const Navbar = () => {
   const navigate = useNavigate();
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const mobileMenuRef = useRef(null);
@@ -72,4 +72,4 @@ const UnauthenticatedNavbar = () => {
   );
 };
 
-export default UnauthenticatedNavbar;
+export default Navbar;

@@ -1,20 +1,23 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import {
-  AppleLoginSvg,
   FacebookLoginSvg,
   GoogleLoginSvg,
   LogoSvg,
-  MobileAppleLoginSvg,
   MobileFacebookLoginSvg,
   MobileGoogleLoginSvg,
-} from "../assets/svgs/AuthSvg";
-import ImageSlider from "../components/ImageSlider";
-import UnauthenticatedNavbar from "../layout/UnauthenticatedNavbar";
+} from "../../assets/svgs/AuthSvg";
+import Navbar from "../../components/layout/navbar/Navbar";
+import ImageSlider from "../../components/slider/ImageSlider";
+import useAuth from "../../context/useAuth";
+import { googleProvider } from "../../firebase/firebase";
+import { HandleSocialLogin } from "../authsubs/authUtils";
+import LoginPage from "../authsubs/login/Login";
+import SignupPage from "../authsubs/sigup/SignUp";
 import "./auth.scss";
-import LoginPage from "./authsubs/login/Login";
-import SignupPage from "./authsubs/sigup/SignUp";
 
 type AuthPage = "login" | "signup";
 type SignupStep =
@@ -30,6 +33,8 @@ const Auth: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [signupStep, setSignupStep] = useState<SignupStep>("email");
   const [signupEmail, setSignupEmail] = useState<string>("");
+  const { handleAuthSuccess, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -83,10 +88,14 @@ const Auth: React.FC = () => {
     return ["email", "password"].includes(signupStep);
   };
 
+  const showAlert = () => {
+    toast.success("exe");
+  };
+
   if (isMobile) {
     return (
       <>
-        <UnauthenticatedNavbar />
+        <Navbar />
         <div className="auth-main-container mobile">
           {!showMobileAuth ? (
             <div className="mobile-slider-view">
@@ -127,9 +136,17 @@ const Auth: React.FC = () => {
                           : "Or sign up with"}
                       </p>
                       <div className="social-signin">
-                        <MobileGoogleLoginSvg />
+                        <MobileGoogleLoginSvg
+                          onClick={() =>
+                            HandleSocialLogin(
+                              googleProvider,
+                              navigate,
+                              handleAuthSuccess,
+                              showAlert
+                            )
+                          }
+                        />
                         <MobileFacebookLoginSvg />
-                        <MobileAppleLoginSvg />
                       </div>
                     </>
                   )}
@@ -170,7 +187,7 @@ const Auth: React.FC = () => {
 
   return (
     <div style={{ width: "100%", backgroundColor: "#f8f9fa" }}>
-      <UnauthenticatedNavbar />
+      <Navbar />
       <div
         className={`auth-main-container desktop ${
           shouldHideSlider() ? "full-screen-step" : ""
@@ -201,9 +218,17 @@ const Auth: React.FC = () => {
                   {page === "login" ? "Or continue with" : "Or sign up with"}
                 </p>
                 <div className="social-signin">
-                  <GoogleLoginSvg />
+                  <GoogleLoginSvg
+                    onClick={() =>
+                      HandleSocialLogin(
+                        googleProvider,
+                        navigate,
+                        handleAuthSuccess,
+                        showAlert
+                      )
+                    }
+                  />
                   <FacebookLoginSvg />
-                  <AppleLoginSvg />
                 </div>
               </>
             )}

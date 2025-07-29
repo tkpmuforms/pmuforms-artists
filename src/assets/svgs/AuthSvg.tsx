@@ -46,14 +46,14 @@ export const GoogleLoginSvg: React.FC<{
   return (
     <svg
       onClick={onClick}
-      width="136"
+      width="200"
       height="56"
-      viewBox="0 0 136 56"
+      viewBox="0 0 200 56"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       cursor={onClick ? "pointer" : "default"}
     >
-      <rect y="0.00830078" width="136" height="56" rx="16" fill="#E2E8F0" />
+      <rect y="0.00830078" width="200" height="56" rx="16" fill="#E2E8F0" />
       <path
         d="M51.8055 26.0498H51V26.0083H42V30.0083H47.6515C46.827 32.3368 44.6115 34.0083 42 34.0083C38.6865 34.0083 36 31.3218 36 28.0083C36 24.6948 38.6865 22.0083 42 22.0083C43.5295 22.0083 44.921 22.5853 45.9805 23.5278L48.809 20.6993C47.023 19.0348 44.634 18.0083 42 18.0083C36.4775 18.0083 32 22.4858 32 28.0083C32 33.5308 36.4775 38.0083 42 38.0083C47.5225 38.0083 52 33.5308 52 28.0083C52 27.3378 51.931 26.6833 51.8055 26.0498Z"
         fill="#FFC107"
@@ -89,6 +89,7 @@ export const MobileGoogleLoginSvg: React.FC<{
       viewBox="0 0 380 56"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      cursor={onClick ? "pointer" : "default"}
     >
       <rect y="0.00830078" width="380" height="56" rx="16" fill="#E2E8F0" />
       <path
@@ -121,14 +122,14 @@ export const FacebookLoginSvg: React.FC<{
   return (
     <svg
       onClick={onClick}
-      width="136"
+      width="200"
       height="56"
-      viewBox="0 0 136 56"
+      viewBox="0 0 200 56"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       cursor={onClick ? "pointer" : "default"}
     >
-      <rect y="0.00830078" width="136" height="56" rx="16" fill="#1877F2" />
+      <rect y="0.00830078" width="200" height="56" rx="16" fill="#1877F2" />
       <g clip-path="url(#clip0_74_10124)">
         <path
           d="M44.5 28.0083C44.5 21.3809 39.1274 16.0083 32.5 16.0083C25.8726 16.0083 20.5 21.3809 20.5 28.0083C20.5 33.9978 24.8882 38.9623 30.625 39.8625V31.4771H27.5781V28.0083H30.625V25.3646C30.625 22.3571 32.4166 20.6958 35.1576 20.6958C36.4705 20.6958 37.8438 20.9302 37.8438 20.9302V23.8833H36.3306C34.8399 23.8833 34.375 24.8083 34.375 25.7574V28.0083H37.7031L37.1711 31.4771H34.375V39.8625C40.1117 38.9623 44.5 33.9979 44.5 28.0083Z"
@@ -168,6 +169,7 @@ export const MobileFacebookLoginSvg: React.FC<{
       viewBox="0 0 380 56"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      cursor={onClick ? "pointer" : "default"}
     >
       <rect y="0.00830078" width="380" height="56" rx="16" fill="#1877F2" />
       <g clip-path="url(#clip0_58_13008)">
@@ -234,6 +236,7 @@ export const MobileAppleLoginSvg: React.FC<{
       viewBox="0 0 380 56"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      cursor={onClick ? "pointer" : "default"}
     >
       <rect y="0.00830078" width="380" height="56" rx="16" fill="black" />
       <path
@@ -259,6 +262,7 @@ export const CongratulationsSetupSvg: React.FC<{
       viewBox="0 0 383 380"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      cursor={onClick ? "pointer" : "default"}
     >
       <path
         fill-rule="evenodd"
@@ -458,6 +462,7 @@ export const RegistrationSuccessSvg: React.FC<{
       viewBox="0 0 72 72"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      cursor={onClick ? "pointer" : "default"}
     >
       <path
         d="M36 6C19.47 6 6 19.47 6 36C6 52.53 19.47 66 36 66C52.53 66 66 52.53 66 36C66 19.47 52.53 6 36 6ZM50.34 29.1L33.33 46.11C32.91 46.53 32.34 46.77 31.74 46.77C31.14 46.77 30.57 46.53 30.15 46.11L21.66 37.62C20.79 36.75 20.79 35.31 21.66 34.44C22.53 33.57 23.97 33.57 24.84 34.44L31.74 41.34L47.16 25.92C48.03 25.05 49.47 25.05 50.34 25.92C51.21 26.79 51.21 28.2 50.34 29.1Z"

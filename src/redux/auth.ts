@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface User {
+export interface User {
   id?: string;
   name?: string;
   email?: string;
@@ -14,7 +14,7 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  loading: false,
+  loading: true,
   user: {},
   isAuthenticated: false,
 };

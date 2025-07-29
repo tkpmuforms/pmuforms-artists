@@ -1,7 +1,7 @@
 import axiosInstance from "../utils/axios/axiosSetup";
 
-export const createArtist = async (data: []) =>
-  axiosInstance.post("/artist/create", data);
+export const createArtist = async (accessToken: string) =>
+  axiosInstance.post("/api/auth/artist/create", { accessToken });
 
 export const updateServices = async (data: { services: number[] }) =>
   axiosInstance.put("/services/update-services", data);
