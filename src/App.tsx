@@ -1,19 +1,20 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import "./App.css";
-import Auth from "./pages/Auth";
+import { BrowserRouter as Router } from "react-router-dom";
 
+import { AuthProvider } from "./context/AuthContext";
+import RouteGuard from "./routes/RouteGuard";
 
 function App() {
-  return <> 
-  <Router>
-  <Routes>
-    <Route path="/" element={<Auth />} />
-    <Route path="/forgot-password" element={<Auth />} />
-    <Route path="/register" element={<Auth />} />
-
-  </Routes>
-  </Router>
- </>;
+  return (
+    <>
+      <Router>
+        {/* <SnackbarProvider>     */}
+        <AuthProvider>
+          <RouteGuard />
+        </AuthProvider>
+        {/* </SnackbarProvider> */}
+      </Router>
+    </>
+  );
 }
 
 export default App;

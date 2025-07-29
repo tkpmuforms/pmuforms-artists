@@ -1,0 +1,216 @@
+.subscription-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  &__content {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  &__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 32px;
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 16px 0 8px 0;
+    }
+
+    p {
+      color: #64748b;
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+
+  &__logo {
+    margin-bottom: 16px;
+
+    .pmu-logo {
+      display: inline-block;
+      background: #a855f7;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 1.2;
+      text-align: center;
+    }
+  }
+
+  &__pricing {
+    margin-bottom: 32px;
+
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+      text-align: center;
+      margin: 0 0 20px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .pricing-plans {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pricing-plan {
+    position: relative;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &--popular {
+      border-color: #a855f7;
+      background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+    }
+
+    &__badge {
+      position: absolute;
+      top: -8px;
+      right: 16px;
+      background: #a855f7;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+
+      &--special {
+        background: #a855f7;
+      }
+    }
+
+    &__trial {
+      position: absolute;
+      top: -8px;
+      left: 16px;
+      background: #a855f7;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    &__name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+
+    &__price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    &__amount {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    &__period {
+      font-size: 16px;
+      color: #64748b;
+    }
+
+    &__subtitle {
+      font-size: 14px;
+      color: #64748b;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__restore {
+    width: 100%;
+    background: transparent;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #a855f7;
+      color: #a855f7;
+    }
+  }
+
+  &__subscribe {
+    width: 100%;
+    background: #a855f7;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #9333ea;
+    }
+  }
+}
