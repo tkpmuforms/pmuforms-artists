@@ -4,40 +4,40 @@ export const createArtist = async (accessToken: string) =>
   axiosInstance.post("/api/auth/artist/create", { accessToken });
 
 export const updateServices = async (data: { services: number[] }) =>
-  axiosInstance.put("/services/update-services", data);
+  axiosInstance.put("/api/services/update-services", data);
 
-export const getServices = async () => axiosInstance.get("/services");
+export const getServices = async () => axiosInstance.get("/api/services");
 
 export const getServiceById = async (serviceId: number | string) =>
-  axiosInstance.get(`/services/${serviceId}`);
+  axiosInstance.get(`/api/services/${serviceId}`);
 
-export const getAuthMe = async () => axiosInstance.get("/auth/me");
+export const getAuthMe = async () => axiosInstance.get("/api/auth/me");
 
 export const sendEmailVerification = async (uid: string) =>
-  axiosInstance.get(`/auth/send-email-verification/${uid}`);
+  axiosInstance.get(`/api/auth/send-email-verification/${uid}`);
 
 export const getAppointmentsForCustomer = async (customerId: number | string) =>
-  axiosInstance.get(`/appointments/artist/one-customer/${customerId}`);
+  axiosInstance.get(`/api/api/appointments/artist/one-customer/${customerId}`);
 
 export const getArtistAppointments = async () =>
-  axiosInstance.get("/appointments/artist");
+  axiosInstance.get("/api/appointments/artist");
 
 export const bookAppointment = async (data: {
   appointmentDate: string;
   artistId: number | string;
   services: number[];
-}) => axiosInstance.post("/appointments/book-appointment", data);
+}) => axiosInstance.post("/api/appointments/book-appointment", data);
 
 export const sendMessage = async (data: {
   email: string;
   firstName: string;
   subject: string;
   message: string;
-}) => axiosInstance.post("/messages", data);
+}) => axiosInstance.post("/api/messages", data);
 
 export const getFilledFormsByAppointment = async (
   appointmentId: string | number
-) => axiosInstance.get(`/filled-forms/appointment/${appointmentId}`);
+) => axiosInstance.get(`/api/filled-forms/appointment/${appointmentId}`);
 
 export const getFilledFormByAppointmentAndTemplate = async (
   appointmentId: string | number,

@@ -5,6 +5,7 @@ export interface User {
   documentPath?: string;
   documentId?: string;
   userId?: string;
+  email?: string;
   businessName?: string;
   businessUri?: string;
   isActive?: boolean;
@@ -14,13 +15,23 @@ export interface User {
   createdAt?: string;
   updatedAt?: string;
   __v?: number;
-  services?: any[];
+  services?: Service[];
   lastLoggedIn?: Date | null;
   // Optional fields for compatibility with other parts of the app
   info?: {
     avatar_url?: string;
   };
   notifications?: number;
+}
+
+export interface Service {
+  _id: string;
+  id: number;
+  service: string;
+  documentPath?: string;
+  documentId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface UserState {

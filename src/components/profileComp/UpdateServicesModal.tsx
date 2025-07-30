@@ -1,8 +1,17 @@
 "use client";
-
-import type React from "react";
-import { useState } from "react";
 import { X } from "lucide-react";
+import type React from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import useAuth from "../../context/useAuth";
+import { Service, setUser } from "../../redux/auth";
+import {
+  getAuthMe,
+  getServices,
+  updateServices,
+} from "../../services/artistServices";
+import { LoadingSmall } from "../loading/Loading";
 import "./update-services-modal.scss";
 
 interface UpdateServicesModalProps {
@@ -14,51 +23,81 @@ const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
   onClose,
   onGoBack,
 }) => {
-  const [selectedServices, setSelectedServices] = useState<string[]>([
-    "Tattoo Removal",
-    "Nano Brows",
-    "Brow Lamination",
-    "Teeth Whitening",
-    "Henna Brows",
+  const { user } = useAuth();
+  const [selectedServices, setSelectedServices] = useState<Service[]>([
+    ...(user?.services || []),
   ]);
+  const [allServices, setAllServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useDispatch();
 
-  const allServices = [
-    "Microblading",
-    "Lips Shading",
-    "Beauty Marks",
-    "Tattoo Removal",
-    "Lashes",
-    "BB Glow",
-    "Dry Needling",
-    "Nano Brows",
-    "Lash Lift",
-    "Brow Lamination",
-    "Areola Reconstruction",
-    "Touch Ups",
-    "Beauty Marks",
-    "Coverup Work",
-    "Tooth Gums",
-    "Teeth Whitening",
-    "Brows",
-    "Chemical Peel",
-    "Combo Brows",
-    "Plasma Skin Tightening",
-    "Micro Needling",
-    "Henna Brows",
-    "Scalp Micropigmentation",
-  ];
+  useEffect(() => {
+    setLoading(true);
+    getServices()
+      .then((response) => {
+        console.log("Fetched services:", response.data.services);
 
-  const toggleService = (service: string) => {
-    setSelectedServices((prev) =>
-      prev.includes(service)
-        ? prev.filter((s) => s !== service)
-        : [...prev, service]
-    );
+        const services: Service[] = response.data.services.map(
+          (service: Service) => ({
+            _id: service._id,
+            id: service.id,
+            service: service.service,
+          })
+        );
+        console.log("Processed services:", services);
+        setSelectedServices((prev) => {
+          return services.filter((service) =>
+            prev.some(
+              (selected) =>
+                selected._id === service._id || selected.id === service.id
+            )
+          );
+        });
+
+        setAllServices(services);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        toast.error("Failed to fetch services. Please try again.");
+        console.error("Error fetching services:", error);
+      });
+  }, []);
+
+  const toggleService = (service: Service) => {
+    setSelectedServices((prev) => {
+      const isSelected = prev.some((s) => s._id === service._id);
+      if (isSelected) {
+        return prev.filter((s) => s._id !== service._id);
+      } else {
+        return [...prev, service];
+      }
+    });
   };
 
   const handleSave = () => {
-    console.log("Selected services:", selectedServices);
-    onClose();
+    const serviceIds = selectedServices.map((s) => s.id);
+    updateServices({ services: serviceIds })
+      .then(() => {
+        getAuthUser();
+        console.log("Services updated successfully");
+        toast.success("Services updated successfully!");
+        onGoBack();
+      })
+      .catch((error) => {
+        console.error("Error updating services:", error);
+        toast.error("Failed to update services. Please try again.");
+      });
+  };
+
+  const getAuthUser = () => {
+    getAuthMe()
+      .then((response) => {
+        dispatch(setUser(response?.data?.user));
+      })
+      .catch((error) => {
+        console.error("Error fetching auth user:", error);
+      });
   };
 
   return (
@@ -76,28 +115,38 @@ const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
 
         <div className="update-services-modal__body">
           <h3>Select services</h3>
-          <div className="services-grid">
-            {allServices.map((service) => (
-              <button
-                key={service}
-                className={`service-tag ${
-                  selectedServices.includes(service)
-                    ? "service-tag--selected"
-                    : ""
-                }`}
-                onClick={() => toggleService(service)}
-              >
-                {service}
-              </button>
-            ))}
-          </div>
+          {loading ? (
+            <div className="services-loading">
+              <LoadingSmall height="300px" />
+            </div>
+          ) : (
+            <div className="services-grid">
+              {allServices.map((service) => (
+                <button
+                  key={service._id}
+                  className={`service-tag ${
+                    selectedServices.some((s) => s._id === service._id)
+                      ? "service-tag--selected"
+                      : ""
+                  }`}
+                  onClick={() => toggleService(service)}
+                >
+                  {service.service}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="update-services-modal__actions">
           <button className="update-services-modal__go-back" onClick={onGoBack}>
             Go Back
           </button>
-          <button className="update-services-modal__save" onClick={handleSave}>
+          <button
+            className="update-services-modal__save"
+            onClick={handleSave}
+            disabled={loading}
+          >
             Save Changes
           </button>
         </div>

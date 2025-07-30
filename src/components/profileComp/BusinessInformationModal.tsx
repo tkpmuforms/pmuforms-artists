@@ -3,6 +3,8 @@
 import type React from "react";
 import { X, Edit } from "lucide-react";
 import "./business-information-modal.scss";
+import useAuth from "../../context/useAuth";
+import { Service } from "../../redux/auth";
 
 interface BusinessInformationModalProps {
   onClose: () => void;
@@ -15,13 +17,8 @@ const BusinessInformationModal: React.FC<BusinessInformationModalProps> = ({
   onEditServices,
   onEditBusinessName,
 }) => {
-  const registeredServices = [
-    "BB Glow",
-    "Dry Needling",
-    "Brow Lamination",
-    "Tattoo Removal",
-    "Areola Reconstruction",
-  ];
+  const { user } = useAuth();
+  const registeredServices = user?.services || [];
 
   return (
     <div className="business-information-modal">
@@ -37,7 +34,7 @@ const BusinessInformationModal: React.FC<BusinessInformationModalProps> = ({
           <div className="section-header">
             <div>
               <label>Business Name</label>
-              <div className="business-name">Glow Beauty Bar</div>
+              <div className="business-name">{user?.businessName}</div>
             </div>
             <button className="edit-button" onClick={onEditBusinessName}>
               <Edit size={16} />
@@ -51,10 +48,10 @@ const BusinessInformationModal: React.FC<BusinessInformationModalProps> = ({
             <div>
               <label>Registered Services</label>
               <div className="services-list">
-                {registeredServices.map((service, index) => (
+                {registeredServices.map((service: Service, index) => (
                   <div key={index} className="service-item">
                     <span className="service-bullet">•</span>
-                    {service}
+                    {service.service}
                   </div>
                 ))}
               </div>

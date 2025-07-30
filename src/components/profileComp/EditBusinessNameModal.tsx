@@ -4,6 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import "./edit-business-name-modal.scss";
+import useAuth from "../../context/useAuth";
 
 interface EditBusinessNameModalProps {
   onClose: () => void;
@@ -14,7 +15,8 @@ const EditBusinessNameModal: React.FC<EditBusinessNameModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const [businessName, setBusinessName] = useState("Glow Beauty Bar");
+  const { user } = useAuth();
+  const [businessName, setBusinessName] = useState(user?.businessName || "");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSave = () => {
