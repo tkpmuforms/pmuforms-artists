@@ -25,7 +25,7 @@
     background: white;
     border-radius: 20px;
     padding: 40px;
-    max-width: 400px;
+    max-width: 900px;
     width: 100%;
   }
 
@@ -78,7 +78,7 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #e879f9 0%, #a855f7 100%);
+      background: linear-gradient(135deg, #e879f9 0%, var(--pmu-primary) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -94,7 +94,7 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: #a855f7;
+      background: var(--pmu-primary);
       color: white;
       border: 2px solid white;
       display: flex;
@@ -137,7 +137,7 @@
 
     &:focus {
       outline: none;
-      border-color: #a855f7;
+      border-color: var(--pmu-primary);
       box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
       background: white;
     }
@@ -145,7 +145,7 @@
 
   &__save {
     width: 100%;
-    background: #a855f7;
+    background: var(--pmu-primary);
     color: white;
     border: none;
     padding: 16px;

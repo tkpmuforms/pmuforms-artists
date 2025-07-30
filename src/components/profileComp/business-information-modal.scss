@@ -22,10 +22,10 @@
 
   &__content {
     position: relative;
-    background: white;
+    background: #f8f8f8;
     border-radius: 20px;
     padding: 40px;
-    max-width: 500px;
+    max-width: 900px;
     width: 100%;
   }
 
@@ -102,7 +102,7 @@
     color: #1e293b;
 
     .service-bullet {
-      color: #a855f7;
+      color: var(--pmu-primary);
       font-weight: bold;
     }
   }
@@ -111,7 +111,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #a855f7;
+    background: var(--pmu-primary);
     color: white;
     border: none;
     padding: 8px 16px;

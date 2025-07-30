@@ -18,6 +18,7 @@ import BusinessInformationModal from "../../components/profileComp/BusinessInfor
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
 import ChangePasswordModal from "../../components/profileComp/ChangePasswordModal";
 import EditProfileModal from "../../components/profileComp/EditProfileModal";
+import { Avatar } from "@mui/material";
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -29,27 +30,27 @@ const ProfilePage: React.FC = () => {
 
   const profileMenuItems = [
     {
-      icon: <Building2 size={20} />,
+      icon: <Building2 size={28} />,
       title: "Business Information",
       onClick: () => setShowBusinessInfo(true),
     },
     {
-      icon: <Key size={20} />,
+      icon: <Key size={28} />,
       title: "Change Password",
       onClick: () => setShowChangePassword(true),
     },
     {
-      icon: <HelpCircle size={20} />,
+      icon: <HelpCircle size={28} />,
       title: "Help & Support",
       onClick: () => console.log("Help & Support"),
     },
     {
-      icon: <FileText size={20} />,
+      icon: <FileText size={28} />,
       title: "Privacy Policy",
       onClick: () => console.log("Privacy Policy"),
     },
     {
-      icon: <LogOut size={20} />,
+      icon: <LogOut size={28} />,
       title: "Log Out",
       onClick: () => console.log("Log Out"),
       variant: "danger" as const,
@@ -62,15 +63,19 @@ const ProfilePage: React.FC = () => {
         <div className="profile-page__header">
           <div className="profile-page__user">
             <div className="profile-page__avatar">
-              <span>LL</span>
+              <Avatar
+                src={user?.info?.avatar_url ?? ""}
+                alt={user?.businessName ?? ""}
+                sx={{ width: 60, height: 60 }}
+              />
             </div>
             <div className="profile-page__user-info">
-              <h1>Linda Lovely</h1>
+              <h1>{user?.businessName}</h1>
               <button
                 className="profile-page__edit-btn"
                 onClick={() => setShowEditProfile(true)}
               >
-                <Edit size={16} />
+                <Edit size={20} />
                 Edit Profile
               </button>
             </div>
@@ -92,10 +97,6 @@ const ProfilePage: React.FC = () => {
               <span className="profile-page__menu-title">{item.title}</span>
             </button>
           ))}
-        </div>
-
-        <div className="profile-page__pagination">
-          <span>144 / 157</span>
         </div>
       </div>
 

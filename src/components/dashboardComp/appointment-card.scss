@@ -84,7 +84,7 @@
   &__schedule-button {
     background: transparent;
     border: none;
-    color: #8b5cf6;
+    color: var(--pmu-primary);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -93,12 +93,12 @@
     transition: color 0.2s ease;
 
     &:hover {
-      color: #7c3aed;
+      color: var(--pmu-primary-dark);
       text-decoration: underline;
     }
 
     &:focus {
-      outline: 2px solid #8b5cf6;
+      outline: 2px solid var(--pmu-primary);
       outline-offset: 2px;
       border-radius: 4px;
     }

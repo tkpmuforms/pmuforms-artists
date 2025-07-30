@@ -25,7 +25,7 @@
     background: white;
     border-radius: 20px;
     padding: 40px;
-    max-width: 700px;
+    max-width: 900px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
@@ -95,14 +95,14 @@
     transition: all 0.2s ease;
 
     &:hover {
-      border-color: #a855f7;
-      color: #a855f7;
+      border-color: var(--pmu-primary);
+      color: var(--pmu-primary);
     }
 
     &--selected {
-      background: #a855f7;
+      background: var(--pmu-primary);
       color: white;
-      border-color: #a855f7;
+      border-color: var(--pmu-primary);
     }
   }
 
@@ -123,14 +123,14 @@
     transition: all 0.2s ease;
 
     &:hover {
-      border-color: #a855f7;
-      color: #a855f7;
+      border-color: var(--pmu-primary);
+      color: var(--pmu-primary);
     }
   }
 
   &__save {
     flex: 1;
-    background: #a855f7;
+    background: var(--pmu-primary);
     color: white;
     border: none;
     padding: 16px;

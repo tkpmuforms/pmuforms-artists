@@ -17,10 +17,8 @@ export interface User {
   services?: any[];
   lastLoggedIn?: Date | null;
   // Optional fields for compatibility with other parts of the app
-  id?: string; // For compatibility with other parts of the app
   info?: {
     avatar_url?: string;
-    client_name?: string;
   };
   notifications?: number;
 }
