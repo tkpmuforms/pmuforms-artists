@@ -3,20 +3,15 @@ import "./AuthenticatedNavbar.scss";
 import useAuth from "../../../context/useAuth";
 import { Avatar } from "@mui/material";
 
-interface BreadcrumbItem {
-  label: string;
-  path?: string;
-}
-
 interface AuthenticatedNavbarProps {
-  breadcrumbs?: BreadcrumbItem[];
+  breadcrumbs?: string[];
   onSearch?: (query: string) => void;
   onNotificationClick?: () => void;
   onAvatarClick?: () => void;
 }
 
 const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
-  breadcrumbs = [{ label: "Dashboard" }],
+  breadcrumbs = [],
   onSearch,
   onNotificationClick,
   onAvatarClick,
@@ -34,25 +29,20 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
     onSearch?.(searchQuery);
   };
 
+  // Get only the last breadcrumb
+  const lastBreadcrumb =
+    breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : null;
+
   return (
     <nav className="authenticated-navbar">
       <div className="navbar-container">
-        {/* Breadcrumbs Section */}
+        {/* Breadcrumbs Section - Show only the last one */}
         <div className="navbar-breadcrumbs">
-          {breadcrumbs.map((crumb, index) => (
-            <div key={index} className="breadcrumb-item">
-              {crumb.path ? (
-                <a href={crumb.path} className="breadcrumb-link">
-                  {crumb.label}
-                </a>
-              ) : (
-                <span className="breadcrumb-text">{crumb.label}</span>
-              )}
-              {index < breadcrumbs.length - 1 && (
-                <span className="breadcrumb-separator">/</span>
-              )}
+          {lastBreadcrumb && (
+            <div className="breadcrumb-item">
+              <span className="breadcrumb-text">{lastBreadcrumb}</span>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Search Section */}
@@ -110,7 +100,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
               />
             </svg>
             {user?.notifications > 0 && (
-              <span className="notification-badge">{user.notifications}</span>
+              <span className="notification-badge">{user?.notifications}</span>
             )}
           </button>
 
@@ -127,7 +117,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
                 sx={{ width: 40, height: 40 }}
               />
             </div>
-            <span className="user-name">{user.name}</span>
+            <span className="user-name">{user?.businessName}</span>
             <svg
               className="dropdown-icon"
               width="16"

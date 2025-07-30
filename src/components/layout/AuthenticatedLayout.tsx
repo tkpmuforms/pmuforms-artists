@@ -6,14 +6,9 @@ import "./authenticatedLayout.scss";
 import Sidebar from "./sidebar/Sidebar";
 import AuthenticatedNavbar from "./navbar/AuthenticatedNavbar";
 
-interface BreadcrumbItem {
-  label: string;
-  path?: string;
-}
-
 interface AuthenticatedLayoutProps {
   children: ReactNode;
-  breadcrumbs?: BreadcrumbItem[];
+  breadcrumbs?: string[];
   showAds?: boolean;
   onSearch?: (query: string) => void;
   onNotificationClick?: () => void;

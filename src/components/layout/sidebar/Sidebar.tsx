@@ -116,13 +116,15 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* User Profile Section */}
         <div className="sidebar__header">
           <div className="sidebar__user">
-            <div className="sidebar__avatar">
-              <Avatar
-                src={user?.info?.avatar_url ?? ""}
-                alt={user?.businessName ?? user?.info?.client_name ?? ""}
-                sx={{ width: 40, height: 40 }}
-              />
-            </div>
+            {!isCollapsed && (
+              <div className="sidebar__avatar">
+                <Avatar
+                  src={user?.info?.avatar_url ?? ""}
+                  alt={user?.businessName ?? user?.info?.client_name ?? ""}
+                  sx={{ width: 40, height: 40 }}
+                />
+              </div>
+            )}
             {!isCollapsed && (
               <div className="sidebar__user-info">
                 <h3 className="sidebar__user-name">

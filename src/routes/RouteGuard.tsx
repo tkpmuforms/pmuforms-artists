@@ -8,7 +8,7 @@ import { authorizedRoutes, nonAuthRoutes } from "./routeConfig";
 
 interface DisplayElementProps {
   element: React.ReactNode;
-  breadcrumbs?: React.ReactNode;
+  breadcrumbs?: string[];
   showAds?: boolean;
 }
 
@@ -43,7 +43,7 @@ const RouteGuard = () => {
     showAds,
   }: DisplayElementProps) => {
     return (
-      <AuthenticatedLayout breadcrumb={breadcrumbs} showAds={showAds}>
+      <AuthenticatedLayout breadcrumbs={breadcrumbs} showAds={showAds}>
         <Suspense
           fallback={
             <CircularProgress
