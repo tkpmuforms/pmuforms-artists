@@ -1,10 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface User {
-  id?: string;
-  name?: string;
-  email?: string;
-  accessToken?: string;
+  _id?: string;
+  documentPath?: string;
+  documentId?: string;
+  userId?: string;
+  businessName?: string;
+  businessUri?: string;
+  isActive?: boolean;
+  appStorePurchaseActive?: boolean;
+  canSendPromotionEmails?: boolean;
+  clients?: any[];
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+  services?: any[];
+  lastLoggedIn?: Date | null;
+  // Optional fields for compatibility with other parts of the app
+  id?: string; // For compatibility with other parts of the app
   info?: {
     avatar_url?: string;
     client_name?: string;

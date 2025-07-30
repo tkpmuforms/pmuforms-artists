@@ -123,7 +123,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
             <div className="avatar-container">
               <Avatar
                 src={user?.info?.avatar_url ?? ""}
-                alt={user?.name ?? user?.info?.client_name ?? ""}
+                alt={user?.businessName ?? user?.info?.client_name ?? ""}
                 sx={{ width: 40, height: 40 }}
               />
             </div>

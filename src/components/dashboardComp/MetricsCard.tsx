@@ -1,12 +1,12 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 import "./metrics-card.scss";
 
-interface MetricsCardProps {
+export interface MetricsCardProps {
   title: string;
   value: string;
-  icon: string;
+  icon: React.ElementType;
   color: string;
 }
 
@@ -20,7 +20,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
     <div className="metrics-card">
       <div className="metrics-card__header">
         <div className="metrics-card__icon" style={{ color }}>
-          {icon}
+          {React.createElement(icon, { size: 24 })}
         </div>
         <h3 className="metrics-card__title">{title}</h3>
       </div>

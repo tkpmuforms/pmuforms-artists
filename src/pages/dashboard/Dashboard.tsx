@@ -1,98 +1,34 @@
 "use client";
 
+import { ChevronDown, Plus } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
-import { Plus, ChevronDown } from "lucide-react";
 
-import "./dashboard.scss";
-import MetricsCard from "../../components/dashboardComp/MetricsCard";
-import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
 import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
-import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
 import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
+import MetricsCard from "../../components/dashboardComp/MetricsCard";
 import PricingModal from "../../components/dashboardComp/PricingModal";
+import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
+import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
+import useAuth from "../../context/useAuth";
+import "./dashboard.scss";
+import { appointments, metricsData, quickActions } from "../../jsons/TestData";
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
-
-  const metricsData = [
-    {
-      title: "Total Clients",
-      value: "32",
-      icon: "👥",
-      color: "var(--pmu-primary)",
-    },
-    {
-      title: "Forms Shared",
-      value: "12",
-      icon: "📋",
-      color: "#560056",
-    },
-    {
-      title: "Pending Submissions",
-      value: "04",
-      icon: "📝",
-      color: "#f59e0b",
-    },
-    {
-      title: "Today's Schedule",
-      value: "07",
-      icon: "📅",
-      color: "#ef4444",
-    },
-  ];
-
-  const quickActions = [
-    {
-      title: "Add New Client",
-      icon: "👤",
-      color: "var(--pmu-primary)",
-      onClick: () => console.log("Add client"),
-    },
-    {
-      title: "Create Form",
-      icon: "📋",
-      color: "#f59e0b",
-      onClick: () => console.log("Create form"),
-    },
-    {
-      title: "Send Form",
-      icon: "📤",
-      color: "#10b981",
-      onClick: () => console.log("Send form"),
-    },
-  ];
-
-  const appointments = [
-    {
-      name: "Evelyn Carter",
-      avatar: "/api/placeholder/40/40",
-      time: "9:00 AM",
-    },
-    {
-      name: "Ava Montgomery",
-      avatar: "/api/placeholder/40/40",
-      time: "11:00 AM",
-    },
-    {
-      name: "Sophie Bennett",
-      avatar: "/api/placeholder/40/40",
-      time: "2:00 PM",
-    },
-    {
-      name: "Maya Sinclair",
-      avatar: "/api/placeholder/40/40",
-      time: "4:00 PM",
-    },
-  ];
 
   return (
     <div className="dashboard">
       <div className="dashboard__header">
         <div className="dashboard__welcome">
-          <h1>Hey, Linda 👋</h1>
+          <h1>
+            {user?.businessName
+              ? `Hey, ${user.businessName} 👋`
+              : "Hey there 👋"}
+          </h1>
           <p>Here's your activity for today</p>
         </div>
         <div className="dashboard__actions">

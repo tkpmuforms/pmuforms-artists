@@ -119,13 +119,15 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="sidebar__avatar">
               <Avatar
                 src={user?.info?.avatar_url ?? ""}
-                alt={user?.name ?? user?.info?.client_name ?? ""}
+                alt={user?.businessName ?? user?.info?.client_name ?? ""}
                 sx={{ width: 40, height: 40 }}
               />
             </div>
             {!isCollapsed && (
               <div className="sidebar__user-info">
-                <h3 className="sidebar__user-name">{user?.name || ""}</h3>
+                <h3 className="sidebar__user-name">
+                  {user?.businessName || ""}
+                </h3>
               </div>
             )}
           </div>

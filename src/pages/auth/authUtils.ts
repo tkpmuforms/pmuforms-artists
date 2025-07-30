@@ -1,12 +1,15 @@
 import { auth, signInWithPopup } from "../../firebase/firebase";
 import { createArtist } from "../../services/artistServices";
-import type { AuthProvider, UserCredential } from "firebase/auth";
+import type { AuthProvider, UserCredential, User } from "firebase/auth";
 
 export const HandleSocialLogin = async (
   provider: AuthProvider,
   navigate: (path: string) => void,
-  handleAuthSuccess: (customer: any, accessToken: string) => void,
-  showAlert: (type: string, message: string) => void
+  handleAuthSuccess: (artist: any, accessToken: string) => void,
+  showAlert: (
+    type: "error" | "success" | "warning" | "info",
+    message: string
+  ) => void
 ) => {
   if (!provider) {
     console.error("Authentication provider is undefined");
@@ -18,7 +21,7 @@ export const HandleSocialLogin = async (
     const result = await signInWithPopup(auth, provider);
     if (!result) throw new Error("Authentication failed. No result received.");
 
-    const user = result.user;
+    const user: User = result.user;
     const userToken = await user.getIdToken();
     const businessUri = localStorage.getItem("businessUri");
 
@@ -27,32 +30,37 @@ export const HandleSocialLogin = async (
 
     const res = await createArtist(userToken);
 
-    localStorage.setItem("userId", res.data?.customer?.id ?? "");
+    localStorage.setItem("userId", res.data?.artist?.id ?? "");
     localStorage.setItem("accessToken", res.data?.access_token ?? "");
-    handleAuthSuccess(res?.data?.customer, res.data?.access_token ?? "");
+    handleAuthSuccess(res?.data?.artist, res.data?.access_token ?? "");
     console.log(businessUri);
     if (businessUri) {
-      navigate(`${businessUri}/customer/dashboard/`);
+      navigate(`${businessUri}/dashboard`);
     } else {
-      navigate("/customer/dashboard");
+      navigate("/dashboard");
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Social login error:", error);
-    showAlert(
-      "error",
-      error?.message ||
-        error?.response?.data?.error ||
-        "Login failed! Try again later."
-    );
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : (error as any)?.response?.data?.error ||
+          "Login failed! Try again later.";
+
+    showAlert("error", errorMessage);
   }
 };
+
 export const SignInSuccessWithAuthResult = async (
   authResult: UserCredential,
   navigate: (path: string) => void,
-  handleAuthSuccess: (customer: any, accessToken: string) => void,
-  showAlert: (type: string, message: string) => void
+  handleAuthSuccess: (artist: any, accessToken: string) => void,
+  showAlert: (
+    type: "error" | "success" | "warning" | "info",
+    message: string
+  ) => void
 ) => {
-  const user = authResult.user;
+  const user: User = authResult.user;
   const userToken = await user.getIdToken();
   const businessUri = localStorage.getItem("businessUri");
 
@@ -62,23 +70,24 @@ export const SignInSuccessWithAuthResult = async (
 
     const res = await createArtist(userToken);
 
-    localStorage.setItem("userId", res.data?.customer?.id ?? "");
+    localStorage.setItem("userId", res.data?.artist?.id ?? "");
     localStorage.setItem("accessToken", res.data?.access_token ?? "");
-    handleAuthSuccess(res?.data?.customer, res.data?.access_token ?? "");
+    handleAuthSuccess(res?.data?.artist, res.data?.access_token ?? "");
 
     if (businessUri) {
-      navigate(`${businessUri}/customer/dashboard/`);
+      navigate(`${businessUri}/dashboard`);
     } else {
-      navigate("/customer/dashboard");
+      navigate("/dashboard");
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error during login callback:", error);
 
-    showAlert(
-      "error",
-      error?.message ||
-        error?.response?.data?.error ||
-        "Login failed! Try again later."
-    );
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : (error as any)?.response?.data?.error ||
+          "Login failed! Try again later.";
+
+    showAlert("error", errorMessage);
   }
 };
