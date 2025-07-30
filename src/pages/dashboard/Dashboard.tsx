@@ -22,13 +22,13 @@ const Dashboard: React.FC = () => {
       title: "Total Clients",
       value: "32",
       icon: "👥",
-      color: "#a855f7",
+      color: "var(--pmu-primary)",
     },
     {
       title: "Forms Shared",
       value: "12",
       icon: "📋",
-      color: "#10b981",
+      color: "#560056",
     },
     {
       title: "Pending Submissions",
@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
     {
       title: "Add New Client",
       icon: "👤",
-      color: "#a855f7",
+      color: "var(--pmu-primary)",
       onClick: () => console.log("Add client"),
     },
     {
@@ -115,6 +115,7 @@ const Dashboard: React.FC = () => {
       <div className="dashboard__content">
         <section className="dashboard__metrics">
           <h2 className="dashboard__section-title">KEY METRICS</h2>
+
           <div className="dashboard__metrics-grid">
             {metricsData.map((metric, index) => (
               <MetricsCard key={index} {...metric} />

@@ -3,6 +3,7 @@ $sidebar-width: 256px;
 $sidebar-collapsed-width: 72px;
 $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 $mobile: 768px;
+$navbar-height: 64px;
 
 .authenticated-layout {
   display: flex;
@@ -22,19 +23,12 @@ $mobile: 768px;
     }
   }
 
-  &__breadcrumb {
-    background: #ffffff;
-    border-bottom: 1px solid #f1f5f9;
-    padding: 16px 24px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
   &__main {
     flex: 1;
     padding: 24px;
     overflow-x: auto;
+    // Add top margin to account for the fixed navbar
+    margin-top: 0;
 
     @media (max-width: $mobile) {
       padding: 16px;
@@ -51,4 +45,12 @@ $mobile: 768px;
       }
     }
   }
+}
+
+// Ensure the navbar spans the full width of the content area
+.authenticated-layout__content .authenticated-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
 }

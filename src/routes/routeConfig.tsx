@@ -16,6 +16,11 @@ export const authorizedRoutes: RouteProps[] = [
     element: <Dashboard />,
     breadcrumbs: [],
   },
+  {
+    path: "/clients",
+    element: <Dashboard />,
+    breadcrumbs: [],
+  },
 ];
 
 export const nonAuthRoutes: RouteProps[] = [

@@ -123,7 +123,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       navigate("/");
     }
   };
-
   const value = {
     method: "JWT",
     logout,

@@ -1,10 +1,19 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, type MenuItem } from "../menu";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "./sidebar.scss";
+import {
+  ClientIcon,
+  DashboardIcon,
+  FormsIcon,
+  ProfileIcon,
+} from "../../../assets/svgs/DashboardSvg.tsx";
+import useAuth from "../../../context/useAuth.ts";
+import { Avatar } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface SidebarProps {
   activeItem?: string;
@@ -13,16 +22,34 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
-  activeItem = "Dashboard",
+  activeItem,
   onItemClick,
   className = "",
 }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const getCurrentActiveItem = () => {
+    if (activeItem) return activeItem;
+
+    const currentPath = location.pathname;
+    const activeMenuItem = Menu.find(
+      (item) =>
+        currentPath === item.basePath ||
+        currentPath.startsWith(item.basePath + "/")
+    );
+
+    return activeMenuItem?.TSKey || "Dashboard";
+  };
+
+  const currentActiveItem = getCurrentActiveItem();
 
   const handleItemClick = (item: MenuItem) => {
     onItemClick?.(item);
-    // Close mobile menu after selection
+    navigate(item?.basePath);
     setIsMobileOpen(false);
   };
 
@@ -34,14 +61,19 @@ const Sidebar: React.FC<SidebarProps> = ({
     setIsCollapsed(!isCollapsed);
   };
 
-  const renderIcon = (iconName: string) => {
-    const iconMap: { [key: string]: string } = {
-      dashboard: "📊",
-      clients: "👥",
-      forms: "📋",
-      profile: "👤",
+  const renderIcon = (iconName: string, isActive: boolean = false) => {
+    const iconMap: { [key: string]: React.FC<{ isActive?: boolean }> } = {
+      dashboard: DashboardIcon,
+      clients: ClientIcon,
+      forms: FormsIcon,
+      profile: ProfileIcon,
     };
-    return iconMap[iconName] || "•";
+    const IconComponent = iconMap[iconName];
+    return IconComponent ? (
+      <IconComponent isActive={isActive} />
+    ) : (
+      <span>•</span>
+    );
   };
 
   return (
@@ -85,19 +117,15 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="sidebar__header">
           <div className="sidebar__user">
             <div className="sidebar__avatar">
-              <img
-                src="/api/placeholder/40/40"
-                alt="Glow Beauty Avatar"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src =
-                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNBODU4RjAiLz4KPHRleHQgeD0iNTAlIiB5PSI1NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkc8L3RleHQ+Cjwvc3ZnPg==";
-                }}
+              <Avatar
+                src={user?.info?.avatar_url ?? ""}
+                alt={user?.name ?? user?.info?.client_name ?? ""}
+                sx={{ width: 40, height: 40 }}
               />
             </div>
             {!isCollapsed && (
               <div className="sidebar__user-info">
-                <h3 className="sidebar__user-name">Glow Beauty</h3>
+                <h3 className="sidebar__user-name">{user?.name || ""}</h3>
               </div>
             )}
           </div>
@@ -106,29 +134,59 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Navigation Menu */}
         <nav className="sidebar__nav">
           <ul className="sidebar__menu">
-            {Menu.map((item) => (
-              <li key={item.TSKey} className="sidebar__menu-item">
-                <button
-                  className={`sidebar__menu-link ${
-                    activeItem === item.TSKey
-                      ? "sidebar__menu-link--active"
-                      : ""
-                  }`}
-                  onClick={() => handleItemClick(item)}
-                  aria-current={activeItem === item.TSKey ? "page" : undefined}
-                  title={isCollapsed ? item.name : undefined}
-                >
-                  <span className="sidebar__menu-icon">
-                    {item.icon && renderIcon(item.icon)}
-                  </span>
-                  {!isCollapsed && (
-                    <span className="sidebar__menu-text">{item.name}</span>
-                  )}
-                </button>
-              </li>
-            ))}
+            {Menu.map((item) => {
+              const isActive = currentActiveItem === item.TSKey;
+              return (
+                <li key={item.TSKey} className="sidebar__menu-item">
+                  <button
+                    className={`sidebar__menu-link ${
+                      isActive ? "sidebar__menu-link--active" : ""
+                    }`}
+                    onClick={() => handleItemClick(item)}
+                    aria-current={isActive ? "page" : undefined}
+                    title={isCollapsed ? item.name : undefined}
+                  >
+                    <span className="sidebar__menu-icon">
+                      {item.icon && renderIcon(item.icon, isActive)}
+                    </span>
+                    {!isCollapsed && (
+                      <span className="sidebar__menu-text">{item.name}</span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </nav>
+        {/* Logout Button */}
+        <div className="sidebar__footer">
+          <button
+            className="sidebar__logout-button"
+            onClick={logout}
+            title="Logout"
+          >
+            <span className="sidebar__logout-icon">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 19H4C2.9 19 2 18.1 2 17V7C2 5.9 2.9 5 4 5H10M14 19L22 12M22 12L14 5M22 12H10"
+                  stroke="#292D32"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+            {!isCollapsed && (
+              <span className="sidebar__logout-text">Logout</span>
+            )}
+          </button>
+        </div>
       </aside>
     </>
   );

@@ -45,7 +45,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #a855f7;
+    background: var(--pmu-primary);
     color: white;
     border: none;
     padding: 12px 20px;
@@ -55,7 +55,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      background: #9333ea;
+      background: var(pmu-primary-light);
     }
   }
 
@@ -72,8 +72,8 @@
     transition: all 0.2s ease;
 
     &:hover {
-      border-color: #a855f7;
-      color: #a855f7;
+      border-color: var(--pmu-primary);
+      color: var(--pmu-primary);
     }
   }
 
@@ -131,7 +131,7 @@
     transition: color 0.2s ease;
 
     &:hover {
-      color: #a855f7;
+      color: var(--pmu-primary);
     }
   }
 }

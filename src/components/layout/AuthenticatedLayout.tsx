@@ -4,17 +4,29 @@ import type React from "react";
 import { type ReactNode, useEffect, useState } from "react";
 import "./authenticatedLayout.scss";
 import Sidebar from "./sidebar/Sidebar";
+import AuthenticatedNavbar from "./navbar/AuthenticatedNavbar";
+
+interface BreadcrumbItem {
+  label: string;
+  path?: string;
+}
 
 interface AuthenticatedLayoutProps {
   children: ReactNode;
-  breadcrumb?: ReactNode;
+  breadcrumbs?: BreadcrumbItem[];
   showAds?: boolean;
+  onSearch?: (query: string) => void;
+  onNotificationClick?: () => void;
+  onAvatarClick?: () => void;
 }
 
 const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
   children,
-  breadcrumb,
+  breadcrumbs,
   showAds,
+  onSearch,
+  onNotificationClick,
+  onAvatarClick,
 }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
@@ -52,9 +64,12 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
     >
       <Sidebar />
       <div className="authenticated-layout__content">
-        {breadcrumb && (
-          <div className="authenticated-layout__breadcrumb">{breadcrumb}</div>
-        )}
+        <AuthenticatedNavbar
+          breadcrumbs={breadcrumbs}
+          onSearch={onSearch}
+          onNotificationClick={onNotificationClick}
+          onAvatarClick={onAvatarClick}
+        />
         <main className="authenticated-layout__main">{children}</main>
       </div>
     </div>

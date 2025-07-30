@@ -5,6 +5,11 @@ export interface User {
   name?: string;
   email?: string;
   accessToken?: string;
+  info?: {
+    avatar_url?: string;
+    client_name?: string;
+  };
+  notifications?: number;
 }
 
 interface UserState {
