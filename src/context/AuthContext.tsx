@@ -9,7 +9,7 @@ import axiosInstance, {
 import { RootState } from "../redux/store";
 
 // Testing flag - set to false when you want real authentication
-const TESTING_MODE = true;
+const TESTING_MODE = false;
 
 export const setAuthHeader = (token?: string) => {
   if (token) {
@@ -123,7 +123,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       navigate("/");
     }
   };
-
   const value = {
     method: "JWT",
     logout,

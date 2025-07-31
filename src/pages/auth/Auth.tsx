@@ -14,9 +14,9 @@ import Navbar from "../../components/layout/navbar/Navbar";
 import ImageSlider from "../../components/slider/ImageSlider";
 import useAuth from "../../context/useAuth";
 import { googleProvider } from "../../firebase/firebase";
-import { HandleSocialLogin } from "../authsubs/authUtils";
-import LoginPage from "../authsubs/login/Login";
-import SignupPage from "../authsubs/sigup/SignUp";
+import { HandleSocialLogin } from "./authUtils";
+import LoginPage from "../../components/authComp/login/Login";
+import SignupPage from "../../components/authComp/sigup/SignUp";
 import "./auth.scss";
 
 type AuthPage = "login" | "signup";
@@ -33,7 +33,7 @@ const Auth: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [signupStep, setSignupStep] = useState<SignupStep>("email");
   const [signupEmail, setSignupEmail] = useState<string>("");
-  const { handleAuthSuccess, isAuthenticated } = useAuth();
+  const { handleAuthSuccess } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {

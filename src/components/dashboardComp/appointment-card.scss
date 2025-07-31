@@ -1,16 +1,24 @@
 .appointment-card {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 24px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
+  min-width: 280px;
+  max-width: 320px;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     transform: translateY(-2px);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
   &__avatar {
@@ -27,20 +35,80 @@
     }
   }
 
-  &__info {
-    flex: 1;
+  &__name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.2;
   }
 
-  &__name {
+  &__service {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 8px 0;
+  }
+
+  &__service-icon {
     font-size: 16px;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 0 0 4px 0;
+    opacity: 0.7;
+  }
+
+  &__service-text {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
   }
 
   &__time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 8px 0;
+  }
+
+  &__time-icon {
+    font-size: 16px;
+    opacity: 0.7;
+  }
+
+  &__time-text {
     font-size: 14px;
     color: #64748b;
-    margin: 0;
+    font-weight: 500;
   }
+
+  &__schedule-button {
+    background: transparent;
+    border: none;
+    color: var(--pmu-primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--pmu-primary-dark);
+      text-decoration: underline;
+    }
+
+    &:focus {
+      outline: 2px solid var(--pmu-primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+}
+
+// Container for multiple appointment cards
+.appointments-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 20px 0;
 }

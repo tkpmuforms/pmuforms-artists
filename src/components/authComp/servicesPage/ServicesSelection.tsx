@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./servicesSelection.scss";
-
-interface Service {
-  id: string;
-  name: string;
-  category?: string;
-}
+import { Service } from "../../../redux/auth";
+import {
+  getAuthMe,
+  getServices,
+  updateServices,
+} from "../../../services/artistServices";
+import toast from "react-hot-toast";
 
 interface ServicesSelectionStepProps {
   onServicesSubmit: (selectedServices: string[]) => void;
@@ -17,32 +18,25 @@ const ServicesSelectionStep: React.FC<ServicesSelectionStepProps> = ({
   onServicesSubmit,
   initialSelectedServices = [],
 }) => {
-  // PMU Services based on the image provided
-  const services: Service[] = [
-    { id: "microblading", name: "Microblading" },
-    { id: "lip-shading", name: "Lips Shading" },
-    { id: "beauty-marks", name: "Beauty Marks" },
-    { id: "tattoo-removal", name: "Tattoo Removal" },
-    { id: "lashes", name: "Lashes" },
-    { id: "bb-glow", name: "BB Glow" },
-    { id: "dry-needling", name: "Dry Needling" },
-    { id: "nano-brows", name: "Nano Brows" },
-    { id: "lash-lift", name: "Lash Lift" },
-    { id: "brow-lamination", name: "Brow Lamination" },
-    { id: "areola-reconstruction", name: "Areola Reconstruction" },
-    { id: "touch-ups", name: "Touch Ups" },
-    { id: "beauty-marks", name: "Beauty Marks" },
-    { id: "coverup-work", name: "Coverup Work" },
-    { id: "tooth-gems", name: "Tooth Gems" },
-    { id: "teeth-whitening", name: "Teeth Whitening" },
-    { id: "brows", name: "Brows" },
-    { id: "chemical-peel", name: "Chemical Peel" },
-    { id: "combo-brows", name: "Combo Brows" },
-    { id: "plasma-skin-tightening", name: "Plasma Skin Tightening" },
-    { id: "micro-needling", name: "Micro Needling" },
-    { id: "henna-brows", name: "Henna Brows" },
-    { id: "scalp-micropigmentation", name: "Scalp Micropigmentation" },
-  ];
+  const [services, setServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    getServices()
+      .then((response) => {
+        console.log("Fetched services:", response.data.services);
+        const services: Service[] = response.data.services.map(
+          (service: Service) => ({
+            _id: service._id,
+            id: service.id,
+            service: service.service,
+          })
+        );
+        setServices(services);
+      })
+      .catch((error) => {
+        console.error("Error fetching services:", error);
+      });
+  }, []);
 
   const [selectedServices, setSelectedServices] = useState<string[]>(
     initialSelectedServices
@@ -61,29 +55,33 @@ const ServicesSelectionStep: React.FC<ServicesSelectionStepProps> = ({
     if (error) setError("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     if (selectedServices.length === 0) {
       setError("Please select at least one service");
       return;
     }
-
-    setIsLoading(true);
-    setError("");
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      onServicesSubmit(selectedServices);
-    } catch (err) {
-      console.error("Error submitting services:", err);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    const serviceIds = selectedServices.map((s) => s.id);
+    updateServices({ services: serviceIds })
+      .then(() => {
+        getAuthUser();
+        console.log("Services updated successfully");
+        toast.success("Services updated successfully!");
+      })
+      .catch((error) => {
+        console.error("Error updating services:", error);
+        toast.error("Failed to update services. Please try again.");
+      });
   };
 
+  const getAuthUser = () => {
+    getAuthMe()
+      .then((response) => {
+        // dispatch(setUser(response?.data?.user));
+      })
+      .catch((error) => {
+        console.error("Error fetching auth user:", error);
+      });
+  };
   return (
     <div className="services-selection-step">
       <div className="services-container">
@@ -100,12 +98,14 @@ const ServicesSelectionStep: React.FC<ServicesSelectionStepProps> = ({
                 <button
                   key={service.id}
                   type="button"
-                  onClick={() => handleServiceToggle(service.id)}
+                  onClick={() => handleServiceToggle(String(service.id))}
                   className={`service-button ${
-                    selectedServices.includes(service.id) ? "selected" : ""
+                    selectedServices.includes(String(service.id))
+                      ? "selected"
+                      : ""
                   }`}
                 >
-                  {service.name}
+                  {service?.service}
                 </button>
               ))}
             </div>

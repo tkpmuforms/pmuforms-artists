@@ -1,17 +1,16 @@
 // Variables
-$sidebar-width: 256px;
+$sidebar-width: 266px;
 $sidebar-collapsed-width: 72px;
 $sidebar-bg: #ffffff;
 $sidebar-border: #f1f5f9;
 $text-primary: #1e293b;
 $text-secondary: #64748b;
-$accent-color: #a855f7;
+$accent-color: var(--pmu-primary);
 $accent-light: #f3e8ff;
 $hover-bg: #f8fafc;
 $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 $shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 
-// Breakpoints
 $mobile: 768px;
 $tablet: 1024px;
 
@@ -86,6 +85,7 @@ $tablet: 1024px;
     padding: 24px 20px 20px;
     border-bottom: 1px solid $sidebar-border;
     position: relative;
+    transition: $transition;
   }
 
   &__user {
@@ -100,6 +100,7 @@ $tablet: 1024px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
+    transition: $transition;
 
     img {
       width: 100%;
@@ -116,7 +117,7 @@ $tablet: 1024px;
   }
 
   &__user-name {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: $text-primary;
     margin: 0;
@@ -130,6 +131,7 @@ $tablet: 1024px;
     padding: 16px 0;
     overflow-y: auto;
     height: calc(100vh - 120px);
+    transition: $transition;
 
     &::-webkit-scrollbar {
       width: 4px;
@@ -180,10 +182,20 @@ $tablet: 1024px;
     &:hover {
       background: $hover-bg;
       color: $text-primary;
+
+      .sidebar__menu-icon {
+        color: $text-primary;
+
+        svg,
+        svg * {
+          fill: $text-primary !important;
+          stroke: $text-primary !important;
+        }
+      }
     }
 
     &:focus {
-      outline: 2px solid $accent-color;
+      // outline: 1px solid $accent-color;
       outline-offset: -2px;
     }
 
@@ -191,17 +203,41 @@ $tablet: 1024px;
       background: $accent-light;
       color: $accent-color;
       font-weight: 600;
+
+      .sidebar__menu-icon {
+        color: $accent-color;
+
+        svg,
+        svg * {
+          fill: $accent-color !important;
+          stroke: $accent-color !important;
+        }
+      }
     }
   }
 
   &__menu-icon {
-    font-size: 18px;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    color: $text-secondary;
+    transition: $transition;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      transition: $transition;
+    }
+
+    svg,
+    svg * {
+      fill: currentColor;
+      stroke: currentColor;
+      transition: $transition;
+    }
   }
 
   &__menu-text {
@@ -213,9 +249,90 @@ $tablet: 1024px;
     transition: $transition;
   }
 
+  // Footer section
+  &__footer {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    padding: 0 12px;
+  }
+
+  &__logout-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 500;
+    color: $text-secondary;
+    text-decoration: none;
+    transition: $transition;
+    cursor: pointer;
+    border-radius: 12px;
+
+    &:hover {
+      background: $hover-bg;
+      color: $text-primary;
+
+      .sidebar__logout-icon {
+        color: $text-primary;
+
+        svg,
+        svg * {
+          stroke: $text-primary !important;
+        }
+      }
+    }
+
+    &:focus {
+      outline: 2px solid $accent-color;
+      outline-offset: 2px;
+    }
+  }
+
+  &__logout-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-secondary;
+    transition: $transition;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      transition: $transition;
+    }
+  }
+
+  &__logout-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 1;
+    transition: $transition;
+  }
+
   // Collapsed state styles
   &--collapsed {
+    .sidebar__header {
+      padding: 24px 12px 20px;
+    }
+
     .sidebar__user-info {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sidebar__avatar {
       opacity: 0;
       pointer-events: none;
     }
@@ -225,9 +342,23 @@ $tablet: 1024px;
       pointer-events: none;
     }
 
+    .sidebar__logout-text {
+      opacity: 0;
+      pointer-events: none;
+    }
+
     .sidebar__menu-link {
       justify-content: center;
       padding: 12px;
+    }
+
+    .sidebar__logout-button {
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .sidebar__nav {
+      height: calc(100vh - 80px);
     }
   }
 
