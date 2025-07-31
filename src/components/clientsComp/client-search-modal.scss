@@ -54,7 +54,7 @@
 
       &:focus {
         outline: none;
-        border-color: #a855f7;
+        border-color: var(--pmu-primary);
         box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
         background: white;
       }
@@ -103,7 +103,7 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: #a855f7;
+      background: var(--pmu-primary);
       display: flex;
       align-items: center;
       justify-content: center;

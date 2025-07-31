@@ -95,8 +95,8 @@
     transition: all 0.2s ease;
 
     &:hover {
-      border-color: #a855f7;
-      color: #a855f7;
+      border-color: var(--pmu-primary);
+      color: var(--pmu-primary);
     }
   }
 

@@ -35,28 +35,28 @@ const ClientsPage: React.FC = () => {
       name: "Mark Zuri",
       email: "MarkZuri@gmail.com",
       initials: "MZ",
-      color: "#a855f7",
+      color: "var(--pmu-primary)",
     },
     {
       id: "3",
       name: "Alice Johnson",
       email: "AliceJohnson@gmail.com",
       initials: "MZ",
-      color: "#a855f7",
+      color: "var(--pmu-primary)",
     },
     {
       id: "4",
       name: "Max Zander",
       email: "MaxZander@email.com",
       initials: "MA",
-      color: "#a855f7",
+      color: "var(--pmu-primary)",
     },
     {
       id: "5",
       name: "Lila Lovelace",
       email: "lila@samplemail.com",
       initials: "LI",
-      color: "#a855f7",
+      color: "var(--pmu-primary)",
     },
   ];
 

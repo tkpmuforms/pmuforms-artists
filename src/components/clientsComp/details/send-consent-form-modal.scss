@@ -99,7 +99,7 @@
 
       &:focus {
         outline: none;
-        border-color: #a855f7;
+        border-color: var(--pmu-primary);
         box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
         background: white;
       }
@@ -135,14 +135,14 @@
     transition: all 0.2s ease;
 
     &:hover {
-      border-color: #a855f7;
-      color: #a855f7;
+      border-color: var(--pmu-primary);
+      color: var(--pmu-primary);
     }
 
     &--selected {
-      background: #a855f7;
+      background: var(--pmu-primary);
       color: white;
-      border-color: #a855f7;
+      border-color: var(--pmu-primary);
     }
   }
 
@@ -158,12 +158,12 @@
     transition: all 0.2s ease;
 
     &:not(&--disabled) {
-      background: #a855f7;
+      background: var(--pmu-primary);
       color: white;
       cursor: pointer;
 
       &:hover {
-        background: #9333ea;
+        filter: brightness(0.9);
       }
     }
 

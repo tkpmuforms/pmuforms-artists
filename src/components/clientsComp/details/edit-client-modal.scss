@@ -102,7 +102,7 @@
 
     &:focus {
       outline: none;
-      border-color: #a855f7;
+      border-color: var(--pmu-primary);
       box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
       background: white;
     }
@@ -110,7 +110,7 @@
 
   &__save {
     width: 100%;
-    background: #a855f7;
+    background: var(--pmu-primary);
     color: white;
     border: none;
     padding: 16px;
@@ -120,7 +120,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      background: #9333ea;
+      filter: brightness(0.9);
     }
   }
 }

@@ -99,7 +99,7 @@
           width: 32px;
           height: 32px;
           border-radius: 50%;
-          background: #a855f7;
+          background: var(--pmu-primary);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -157,7 +157,7 @@
       color: #1e293b;
 
       .service-bullet {
-        color: #a855f7;
+        color: var(--pmu-primary);
         font-weight: bold;
       }
 
@@ -170,7 +170,7 @@
   &__continue {
     margin: 24px 32px 32px;
     width: calc(100% - 64px);
-    background: #a855f7;
+    background: var(--pmu-primary);
     color: white;
     border: none;
     padding: 16px;
@@ -180,7 +180,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      background: #9333ea;
+      filter: brightness(0.9);
     }
   }
 }
