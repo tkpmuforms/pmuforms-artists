@@ -5,6 +5,9 @@ const Dashboard = lazy(() => import("../pages/dashboard/Dashboard"));
 const Client = lazy(() => import("../pages/client/Client"));
 const Forms = lazy(() => import("../pages/forms/forms"));
 const Profile = lazy(() => import("../pages/profile/Profile"));
+const ClientDetails = lazy(
+  () => import("../pages/client/details/ClientDetails")
+);
 
 interface RouteProps {
   path: string;
@@ -23,6 +26,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/clients",
     element: <Client />,
     breadcrumbs: ["Clients"],
+  },
+  {
+    path: "/clients/:id",
+    element: <ClientDetails />,
+    breadcrumbs: ["Clients", "Client Details"],
   },
   {
     path: "/forms",

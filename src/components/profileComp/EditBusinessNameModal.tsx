@@ -5,6 +5,10 @@ import { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import "./edit-business-name-modal.scss";
 import useAuth from "../../context/useAuth";
+import toast from "react-hot-toast";
+import { getAuthMe, updateBusinessName } from "../../services/artistServices";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/auth";
 
 interface EditBusinessNameModalProps {
   onClose: () => void;
@@ -16,12 +20,35 @@ const EditBusinessNameModal: React.FC<EditBusinessNameModalProps> = ({
   onSave,
 }) => {
   const { user } = useAuth();
+  const dispatch = useDispatch();
   const [businessName, setBusinessName] = useState(user?.businessName || "");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSave = () => {
-    onSave();
-    console.log("Business name saved:", businessName);
+    if (!businessName.trim()) {
+      toast.error("Business name cannot be empty");
+      return;
+    }
+    updateBusinessName({ businessName })
+      .then(() => {
+        getAuthUser();
+        onSave();
+        toast.success("Business name updated successfully!");
+        console.log("Business name saved:", businessName);
+      })
+      .catch((error) => {
+        console.error("Error saving business name:", error);
+        toast.error("Failed to save business name");
+      });
+  };
+  const getAuthUser = () => {
+    getAuthMe()
+      .then((response) => {
+        dispatch(setUser(response?.data?.user));
+      })
+      .catch((error) => {
+        console.error("Error fetching auth user:", error);
+      });
   };
 
   return (

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./servicesSelection.scss";
 import { Service } from "../../../redux/auth";
-import { getServices } from "../../../services/artistServices";
+import {
+  getAuthMe,
+  getServices,
+  updateServices,
+} from "../../../services/artistServices";
+import toast from "react-hot-toast";
 
 interface ServicesSelectionStepProps {
   onServicesSubmit: (selectedServices: string[]) => void;
@@ -50,29 +55,33 @@ const ServicesSelectionStep: React.FC<ServicesSelectionStepProps> = ({
     if (error) setError("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     if (selectedServices.length === 0) {
       setError("Please select at least one service");
       return;
     }
-
-    setIsLoading(true);
-    setError("");
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      onServicesSubmit(selectedServices);
-    } catch (err) {
-      console.error("Error submitting services:", err);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    const serviceIds = selectedServices.map((s) => s.id);
+    updateServices({ services: serviceIds })
+      .then(() => {
+        getAuthUser();
+        console.log("Services updated successfully");
+        toast.success("Services updated successfully!");
+      })
+      .catch((error) => {
+        console.error("Error updating services:", error);
+        toast.error("Failed to update services. Please try again.");
+      });
   };
 
+  const getAuthUser = () => {
+    getAuthMe()
+      .then((response) => {
+        // dispatch(setUser(response?.data?.user));
+      })
+      .catch((error) => {
+        console.error("Error fetching auth user:", error);
+      });
+  };
   return (
     <div className="services-selection-step">
       <div className="services-container">

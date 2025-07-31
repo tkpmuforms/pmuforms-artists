@@ -151,11 +151,12 @@
     background: #f8f8f8;
     border: none;
     border-radius: 24px;
-    padding: 36px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     text-align: left;
+    border-radius: 20px;
     width: 100%;
 
     &:hover {

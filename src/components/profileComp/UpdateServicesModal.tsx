@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import useAuth from "../../context/useAuth";
-import { Service, setUser } from "../../redux/auth";
+import { setUser } from "../../redux/auth";
 import {
   getAuthMe,
   getServices,
@@ -13,6 +13,7 @@ import {
 } from "../../services/artistServices";
 import { LoadingSmall } from "../loading/Loading";
 import "./update-services-modal.scss";
+import { Service } from "../../redux/types";
 
 interface UpdateServicesModalProps {
   onClose: () => void;

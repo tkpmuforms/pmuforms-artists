@@ -13,6 +13,9 @@ export const getServiceById = async (serviceId: number | string) =>
 
 export const getAuthMe = async () => axiosInstance.get("/api/auth/me");
 
+export const updateBusinessName = async (data: { businessName: string }) =>
+  axiosInstance.patch("/api/artists/update-business-name", data);
+
 export const sendEmailVerification = async (uid: string) =>
   axiosInstance.get(`/api/auth/send-email-verification/${uid}`);
 

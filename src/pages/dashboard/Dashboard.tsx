@@ -2,8 +2,7 @@
 
 import { ChevronDown, Plus } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
 import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
 import MetricsCard from "../../components/dashboardComp/MetricsCard";
@@ -11,15 +10,27 @@ import PricingModal from "../../components/dashboardComp/PricingModal";
 import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
 import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
 import useAuth from "../../context/useAuth";
-import "./dashboard.scss";
 import { appointments, metricsData, quickActions } from "../../jsons/TestData";
+import { getArtistAppointments } from "../../services/artistServices";
+import "./dashboard.scss";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
 
+  useEffect(() => {
+    getArtistAppointments()
+      .then((response) => {
+        console.log("Fetched appointments:", response.data);
+        // Handle appointments data
+      })
+      .catch((error) => {
+        console.error("Error fetching appointments:", error);
+      });
+  }, []);
   return (
     <div className="dashboard">
       <div className="dashboard__header">
