@@ -88,8 +88,11 @@ const Auth: React.FC = () => {
     return ["email", "password"].includes(signupStep);
   };
 
-  const showAlert = () => {
-    toast.success("exe");
+  const showAlert = (
+    type: "error" | "success" | "warning" | "info",
+    message: string
+  ) => {
+    toast[type](message);
   };
 
   if (isMobile) {

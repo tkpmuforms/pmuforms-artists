@@ -5,6 +5,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ForgotPasswordForm from "../forgot-password/ForgotPasswordForm";
 import "./login.scss";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { SignInSuccessWithAuthResult } from "../../../pages/auth/authUtils";
+import useAuth from "../../../context/useAuth";
+import { toast } from "react-hot-toast";
+import { auth } from "../../../firebase/firebase";
 
 interface LoginFormValues {
   email: string;
@@ -14,27 +19,37 @@ interface LoginFormValues {
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const { handleAuthSuccess } = useAuth();
+  const { handleAuthSuccess } = useAuth();
   const [forgetpassword, setForgotPassword] = useState(false);
 
   const navigate = useNavigate();
-
-  const handleLogin = async (e) => {
-    // e.preventDefault();
-    // try {
-    //   const result = await signInWithEmailAndPassword(auth, email, password);
-    //   SignInSuccessWithAuthResult(
-    //     result,
-    //     navigate,
-    //     handleAuthSuccess,
-    //     showAlert
-    //   );
-    // } catch (error) {
-    //   console.error("Failed to log in:", error);
-    //   showAlert("error", `Login failed! Invalid email or password.`);
-    // }
+  const showAlert = (
+    type: "error" | "success" | "warning" | "info",
+    message: string
+  ) => {
+    toast[type](message);
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      SignInSuccessWithAuthResult(
+        result,
+        navigate,
+        handleAuthSuccess,
+        showAlert
+      );
+    } catch (error: any) {
+      console.error("LoginFailed:", error);
+      showAlert(
+        "error",
+        error.message.includes("user-not-found")
+          ? "Account not found, Please signup and try again."
+          : error?.message || "Login failed! Try again later."
+      );
+    }
+  };
   return (
     <>
       {forgetpassword ? (

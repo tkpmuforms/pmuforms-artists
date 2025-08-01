@@ -7,6 +7,10 @@ import BusinessNameStep from "../business-name/BusinessName";
 import EmailVerificationStep from "../verifyEmail/EmailVerification";
 import ServicesSelectionStep from "../servicesPage/ServicesSelection";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../firebase/firebase";
+import toast from "react-hot-toast";
+import { sendEmailVerification } from "../../../services/artistServices";
 
 type SignupStep =
   | "email"
@@ -71,9 +75,25 @@ const SignupPage: React.FC<SignupPageProps> = ({
     try {
       setSignupData((prev) => ({ ...prev, email, password }));
 
-      console.log("Sending verification email to:", email);
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
 
-      changeStep("verification");
+        await sendEmailVerification(user?.uid).then((res) => {
+          console.log("Verification email sent:", res.data);
+          toast.success("Verification link sent to your email!");
+        });
+        changeStep("verification");
+      } catch (error: any) {
+        console.error("Error creating user:", error);
+        toast.error(
+          error?.message ?? "Failed to create account. Please try again."
+        );
+      }
     } catch (error) {
       console.error("Error during password submission:", error);
     }
