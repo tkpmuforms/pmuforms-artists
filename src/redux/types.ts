@@ -15,7 +15,6 @@ export interface User {
   __v?: number;
   services?: Service[];
   lastLoggedIn?: Date | null;
-  // Optional fields for compatibility with other parts of the app
   info?: {
     avatar_url?: string;
   };

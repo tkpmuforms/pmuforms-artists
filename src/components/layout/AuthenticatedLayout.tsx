@@ -25,7 +25,6 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
 }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // Listen for sidebar collapse state changes
   useEffect(() => {
     const handleSidebarToggle = () => {
       const sidebar = document.querySelector(".sidebar");
@@ -34,10 +33,8 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
       }
     };
 
-    // Check initial state
     handleSidebarToggle();
 
-    // Listen for changes
     const observer = new MutationObserver(handleSidebarToggle);
     const sidebar = document.querySelector(".sidebar");
 

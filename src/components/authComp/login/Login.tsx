@@ -62,7 +62,6 @@ const LoginPage: React.FC = () => {
               Enter your login details to access your account
             </p>
 
-            {/* Email and Password Login Form */}
             <form onSubmit={handleLogin} className="login-form">
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>

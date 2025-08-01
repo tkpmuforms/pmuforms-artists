@@ -29,14 +29,12 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
     onSearch?.(searchQuery);
   };
 
-  // Get only the last breadcrumb
   const lastBreadcrumb =
     breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : null;
 
   return (
     <nav className="authenticated-navbar">
       <div className="navbar-container">
-        {/* Breadcrumbs Section - Show only the last one */}
         <div className="navbar-breadcrumbs">
           {lastBreadcrumb && (
             <div className="breadcrumb-item">
@@ -45,7 +43,6 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
           )}
         </div>
 
-        {/* Search Section */}
         <div className="navbar-search">
           <form onSubmit={handleSearchSubmit} className="search-form">
             <div className="search-input-container">
@@ -75,9 +72,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
           </form>
         </div>
 
-        {/* User Actions Section */}
         <div className="navbar-actions">
-          {/* Notifications */}
           <button
             className="notification-button"
             onClick={onNotificationClick}
@@ -104,7 +99,6 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
             )}
           </button>
 
-          {/* User Avatar */}
           <button
             className="avatar-button"
             onClick={onAvatarClick}

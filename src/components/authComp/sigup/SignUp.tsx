@@ -155,7 +155,6 @@ const SignupPage: React.FC<SignupPageProps> = ({
       case "password":
         changeStep("email");
         break;
-      // Remove the ability to go back from verification to password
       case "business":
         changeStep("verification");
         break;
@@ -170,7 +169,6 @@ const SignupPage: React.FC<SignupPageProps> = ({
   const activeStep = propCurrentStep || currentStep;
   const activeEmail = propEmail || signupData.email || "";
 
-  // Function to get progress percentage based on current step
   const getProgressPercentage = (step: SignupStep): number => {
     switch (step) {
       case "email":
@@ -188,12 +186,10 @@ const SignupPage: React.FC<SignupPageProps> = ({
     }
   };
 
-  // Function to determine if back button should be shown
   const shouldShowBackButton = (step: SignupStep): boolean => {
     return step !== "email";
   };
 
-  // Function to determine if progress bar should be shown
   const shouldShowProgressBar = (step: SignupStep): boolean => {
     return step !== "email";
   };

@@ -13,7 +13,7 @@ const PricingModal: React.FC<PricingModalProps> = ({
   onClose,
   onSubscribe,
 }) => {
-  const [selectedPlan, setSelectedPlan] = useState(2); // Default to 12 months
+  const [selectedPlan, setSelectedPlan] = useState(2);
 
   const pricingPlans = [
     {

@@ -3,8 +3,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 450px; // Set consistent max-width
-  margin: 0 auto; // Center the page
+  max-width: 450px;
+  margin: 0 auto;
 
   .signup-container {
     text-align: center;
@@ -174,7 +174,6 @@
   }
 }
 
-// Global input styles
 input[type="email"],
 input[type="password"],
 input[type="text"] {

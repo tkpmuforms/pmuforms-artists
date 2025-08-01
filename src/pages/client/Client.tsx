@@ -54,12 +54,10 @@ const ClientsPage: React.FC = () => {
     }
   };
 
-  // Load customers on component mount
   useEffect(() => {
     fetchCustomers();
   }, []);
 
-  // Handle search with debouncing
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery.trim()) {
@@ -77,7 +75,6 @@ const ClientsPage: React.FC = () => {
   };
 
   const handleClientClick = (clientId: string) => {
-    // Navigate to client detail page
     navigate(`/clients/${clientId}`);
   };
 

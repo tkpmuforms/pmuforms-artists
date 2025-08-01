@@ -21,7 +21,6 @@ const RouteGuard = () => {
     loading
   );
 
-  // Show loading while auth status is being determined
   if (loading) {
     return (
       <div
@@ -63,13 +62,11 @@ const RouteGuard = () => {
   };
 
   if (!isAuthenticated) {
-    // When not authenticated, only show non-auth routes
     return (
       <Routes>
         {nonAuthRoutes.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
-        {/* Redirect any other path to login */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     );
@@ -77,12 +74,10 @@ const RouteGuard = () => {
 
   return (
     <Routes>
-      {/* Non-auth routes (like login) still accessible */}
       {nonAuthRoutes.map((route) => (
         <Route key={route.path} path={route.path} element={route.element} />
       ))}
 
-      {/* Authenticated routes with layout */}
       {authorizedRoutes.map((route) => (
         <Route
           key={route.path}
@@ -95,7 +90,6 @@ const RouteGuard = () => {
         />
       ))}
 
-      {/* 404 page for authenticated users */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

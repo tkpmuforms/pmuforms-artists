@@ -34,7 +34,6 @@
   }
 }
 
-// Mobile Slider View
 .mobile-slider-view {
   display: flex;
   flex-direction: column;
@@ -69,7 +68,6 @@
   }
 }
 
-// Mobile Auth Form View
 .mobile-auth-view {
   display: flex;
   flex-direction: column;
@@ -90,9 +88,9 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 450px; // Reduced from 500px to better fit
+  max-width: 450px;
   position: relative;
-  margin: 0 auto; // Center the container
+  margin: 0 auto;
 
   .auth-logo {
     margin-bottom: 20px;
@@ -158,12 +156,11 @@
     display: flex;
     gap: 10px;
     width: 100%;
-    max-width: 400px; // Reduced to fit better
+    max-width: 400px;
     justify-content: center;
   }
 }
 
-// Password step - when slider is hidden
 .auth-main-container.desktop.password-step {
   .auth-form-section {
     flex: none;
@@ -173,7 +170,6 @@
   }
 }
 
-// Mobile password step styling
 .mobile-auth-view.password-step {
   .auth-slider-section {
     display: none;
@@ -184,14 +180,12 @@
   }
 }
 
-// Large screen adjustments
 @media screen and (min-width: 1400px) {
   .auth-main-container.desktop {
     max-width: 1200px;
   }
 }
 
-// Tablet adjustments
 @media screen and (max-width: 1024px) and (min-width: 769px) {
   .auth-main-container.desktop {
     .auth-slider-section,
@@ -201,7 +195,6 @@
   }
 }
 
-// Mobile-specific adjustments
 @media screen and (max-width: 768px) {
   .auth-container {
     padding: 20px;
@@ -209,7 +202,7 @@
     .social-signin {
       gap: 10px;
       width: 100%;
-      max-width: none; // Remove max-width for better responsiveness
+      max-width: none;
       justify-content: center;
       display: flex;
       flex-direction: column;

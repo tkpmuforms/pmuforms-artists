@@ -5,13 +5,13 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 450px; // Set consistent max-width
-  margin: 0 auto; // Center the page
+  max-width: 450px;
+  margin: 0 auto;
 
   .login-container {
     text-align: center;
     width: 100%;
-    max-width: 400px; // Contain the form
+    max-width: 400px;
 
     h2 {
       font-size: 24px;
@@ -41,13 +41,13 @@
         }
 
         input {
-          width: 100%; // Full width of container
+          width: 100%;
           padding: 12px;
           border: 1px solid #ddd;
           background-color: #bcbbc133;
           border-radius: 10px;
           font-size: 14px;
-          box-sizing: border-box; // Include padding in width
+          box-sizing: border-box;
         }
       }
 

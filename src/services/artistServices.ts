@@ -123,7 +123,6 @@ export const signAppointment = async (
   data: { signatureUrl: string }
 ) => axiosInstance.post(`/api/appointments/${appointmentId}/sign`, data);
 
-// Customer services
 export const getMyCustomers = async (page?: number) => {
   const params = page ? `?page=${page}` : "";
   return axiosInstance.get(`/api/customers/my-customers${params}`);

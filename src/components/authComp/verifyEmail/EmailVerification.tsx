@@ -33,19 +33,17 @@ const EmailVerificationStep: React.FC<EmailVerificationStepProps> = ({
   }, [resendTimer]);
 
   const handleCodeChange = (index: number, value: string) => {
-    if (value.length > 1) return; // Only allow single digit
+    if (value.length > 1) return;
 
     const newCode = [...verificationCode];
     newCode[index] = value;
     setVerificationCode(newCode);
 
-    // Auto-focus next input
     if (value && index < 5) {
       const nextInput = document.getElementById(`code-${index + 1}`);
       nextInput?.focus();
     }
 
-    // Clear error when user starts typing
     if (error) setError("");
   };
 
@@ -69,7 +67,6 @@ const EmailVerificationStep: React.FC<EmailVerificationStepProps> = ({
     setError("");
 
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       onVerificationComplete(code);
     } catch (err) {
@@ -84,11 +81,10 @@ const EmailVerificationStep: React.FC<EmailVerificationStepProps> = ({
     if (resendTimer > 0) return;
 
     onResendCode();
-    setResendTimer(60); // 60 seconds cooldown
+    setResendTimer(60);
     setVerificationCode(["", "", "", "", "", ""]);
     setError("");
 
-    // Focus first input
     const firstInput = document.getElementById("code-0");
     firstInput?.focus();
   };

@@ -32,7 +32,6 @@ const BusinessNameStep: React.FC<BusinessNameStepProps> = ({
     setError("");
 
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 500));
       onBusinessNameSubmit(businessName.trim());
     } catch (err) {

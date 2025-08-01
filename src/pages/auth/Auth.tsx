@@ -118,7 +118,6 @@ const Auth: React.FC = () => {
             >
               <div className="auth-form-section">
                 <div className="auth-container">
-                  {/* {signupStep === "email" && <LogoSvg />} */}
                   {page === "login" ? (
                     <LoginPage />
                   ) : (

@@ -78,7 +78,6 @@ const ImageSlider: React.FC = () => {
           ))}
         </Swiper>
 
-        {/* Custom Pagination */}
         <div className="swiper-pagination custom-pagination"></div>
       </div>
     </div>

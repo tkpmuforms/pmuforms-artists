@@ -34,7 +34,6 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({ onClose }) => {
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Load recent searches from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("recentClientSearches");
     if (stored) {
@@ -85,7 +84,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({ onClose }) => {
     };
 
     const filtered = recentSearches.filter((item) => item.id !== client.id);
-    const updated = [newRecentSearch, ...filtered].slice(0, 5); // Keep only 5 recent searches
+    const updated = [newRecentSearch, ...filtered].slice(0, 5);
 
     setRecentSearches(updated);
     localStorage.setItem("recentClientSearches", JSON.stringify(updated));

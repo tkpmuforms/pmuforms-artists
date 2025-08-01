@@ -50,11 +50,7 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    // Fetch appointments and customers
-    Promise.all([
-      getArtistAppointments(),
-      searchCustomers(undefined, 1, 30), // Increased limit to 20
-    ])
+    Promise.all([getArtistAppointments(), searchCustomers(undefined, 1, 30)])
       .then(([appointmentsResponse, customersResponse]) => {
         console.log("Fetched appointments:", appointmentsResponse.data);
         console.log("Fetched customers:", customersResponse.data);

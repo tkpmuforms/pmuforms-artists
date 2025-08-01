@@ -8,7 +8,6 @@ import axiosInstance, {
 } from "../utils/axios/axiosSetup";
 import { RootState } from "../redux/store";
 
-// Testing flag - set to false when you want real authentication
 const TESTING_MODE = false;
 
 export const setAuthHeader = (token?: string) => {
@@ -25,7 +24,7 @@ const AuthContext = createContext({
   handleAuthSuccess: (_user: User, _token: string) => {},
   handleAuthFail: () => {},
   user: {} as User,
-  isAuthenticated: true, // Default to true for testing
+  isAuthenticated: false,
   loading: false,
 });
 
@@ -56,7 +55,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     if (TESTING_MODE) {
-      // For testing: always set authenticated to true
       console.log("TESTING MODE: Setting authenticated to true");
       dispatch(setLoading(false));
       dispatch(setAuthenticated(true));
@@ -70,7 +68,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return;
     }
 
-    // Real authentication logic (will run when TESTING_MODE is false)
     const initializeAuth = async () => {
       dispatch(setLoading(true));
 

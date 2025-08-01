@@ -60,7 +60,6 @@ const ClientDetailPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Search for the specific client - you might want to create a dedicated getClient API endpoint
         const response = await getCustomerById(id);
         console.log("Client data fetched:", response.data);
         if (response.status !== 200) {
@@ -75,8 +74,8 @@ const ClientDetailPage: React.FC = () => {
             email: customer.email || "No email provided",
             phone: customer?.info?.cell_phone || undefined,
 
-            pendingForms: Math.floor(Math.random() * 10), // Mock data
-            totalAppointments: Math.floor(Math.random() * 50), // Mock data
+            pendingForms: Math.floor(Math.random() * 10),
+            totalAppointments: Math.floor(Math.random() * 50),
           });
         } else {
           setError("Client not found");
@@ -95,7 +94,6 @@ const ClientDetailPage: React.FC = () => {
   const handleCopyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      // You could add a toast notification here
     } catch (err) {
       console.error("Failed to copy to clipboard:", err);
     }

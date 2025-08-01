@@ -1,16 +1,15 @@
 export const generateColor = (name: string): string => {
   const colors = [
-    "#e879f9", // purple
-    "#3b82f6", // blue
-    "#10b981", // green
-    "#f59e0b", // yellow
-    "#ef4444", // red
-    "#8b5cf6", // violet
-    "#06b6d4", // cyan
-    "#f97316", // orange
+    "#e879f9",
+    "#3b82f6",
+    "#10b981",
+    "#f59e0b",
+    "#ef4444",
+    "#8b5cf6",
+    "#06b6d4",
+    "#f97316",
   ];
 
-  // Use name length and first character to determine color
   const index = (name.length + name.charCodeAt(0)) % colors.length;
   return colors[index];
 };

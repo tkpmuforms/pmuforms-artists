@@ -17,7 +17,6 @@
     margin: 0 auto;
   }
 
-  // Breadcrumbs Section
   .navbar-breadcrumbs {
     display: flex;
     align-items: center;
@@ -53,7 +52,6 @@
     }
   }
 
-  // Search Section
   .navbar-search {
     flex: 1;
     max-width: 480px;
@@ -101,7 +99,6 @@
     }
   }
 
-  // User Actions Section
   .navbar-actions {
     display: flex;
     align-items: center;
@@ -200,7 +197,6 @@
     }
   }
 
-  // Responsive Design
   @media (max-width: 768px) {
     padding: 0 16px;
 
@@ -209,7 +205,7 @@
       max-width: 300px;
 
       .search-input {
-        font-size: 16px; // Prevents zoom on iOS
+        font-size: 16px;
       }
     }
 

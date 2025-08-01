@@ -15,7 +15,7 @@ const ForgotPasswordForm = ({ onCancel }) => {
     try {
       await sendPasswordResetEmail(auth, email);
       alert(`Reset link sent to: ${email}`);
-      onCancel(); // Call the callback to switch back to the login form
+      onCancel();
     } catch (error) {
       console.error("Error sending password reset email:", error.message);
       alert("Failed to send reset link. Please try again.");

@@ -39,11 +39,9 @@ const auth: Auth = getAuth(app);
 const firestore: Firestore = getFirestore(app);
 const storage: FirebaseStorage = getStorage(app);
 
-// Providers
 const googleProvider: GoogleAuthProvider = new GoogleAuthProvider();
 const facebookProvider: FacebookAuthProvider = new FacebookAuthProvider();
 
-// Export types for better type checking
 export type {
   UserCredential,
   Auth,
@@ -53,7 +51,6 @@ export type {
   FacebookAuthProvider,
 };
 
-// Export initialized services and providers
 export {
   app,
   auth,
