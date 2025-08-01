@@ -3,6 +3,7 @@
 import { ChevronDown, Plus } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
 import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
 import MetricsCard from "../../components/dashboardComp/MetricsCard";
@@ -10,27 +11,82 @@ import PricingModal from "../../components/dashboardComp/PricingModal";
 import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
 import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
 import useAuth from "../../context/useAuth";
-import { appointments, metricsData, quickActions } from "../../jsons/TestData";
-import { getArtistAppointments } from "../../services/artistServices";
+import { metricsData, quickActions } from "../../jsons/TestData";
+import { Appointment } from "../../redux/types";
+import {
+  getArtistAppointments,
+  searchCustomers,
+} from "../../services/artistServices";
+import { formatAppointmentTime } from "../../utils/utils";
 import "./dashboard.scss";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-
+  const navigate = useNavigate();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [customers, setCustomers] = useState<
+    Record<string, { name: string; avatar?: string }>
+  >({});
+
+  const getCustomerName = (customerId: string) => {
+    return (
+      customers[customerId]?.name || `Client ${customerId.substring(0, 8)}`
+    );
+  };
+
+  const getCustomerAvatar = (customerId: string) => {
+    const customerAvatar = customers[customerId]?.avatar;
+    if (customerAvatar) {
+      return customerAvatar;
+    }
+    const customerName = customers[customerId]?.name || "Client";
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      customerName
+    )}&background=A858F0&color=fff&size=40`;
+  };
 
   useEffect(() => {
-    getArtistAppointments()
-      .then((response) => {
-        console.log("Fetched appointments:", response.data);
-        // Handle appointments data
+    // Fetch appointments and customers
+    Promise.all([
+      getArtistAppointments(),
+      searchCustomers(undefined, 1, 30), // Increased limit to 20
+    ])
+      .then(([appointmentsResponse, customersResponse]) => {
+        console.log("Fetched appointments:", appointmentsResponse.data);
+        console.log("Fetched customers:", customersResponse.data);
+
+        setAppointments(appointmentsResponse.data.appointments);
+
+        const customerMap = customersResponse.data.customers.reduce(
+          (
+            acc: Record<string, { name: string; avatar?: string }>,
+            customer: {
+              id: string;
+              name: string;
+              info?: { avatar_url?: string };
+            }
+          ) => {
+            acc[customer.id] = {
+              name: customer.name,
+              avatar: customer.info?.avatar_url,
+            };
+            return acc;
+          },
+          {}
+        );
+        setCustomers(customerMap);
+        setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching appointments:", error);
+        console.error("Error fetching data:", error);
+        setLoading(false);
       });
   }, []);
+
   return (
     <div className="dashboard">
       <div className="dashboard__header">
@@ -74,7 +130,11 @@ const Dashboard: React.FC = () => {
           <h2 className="dashboard__section-title">QUICK ACTIONS</h2>
           <div className="dashboard__actions-grid">
             {quickActions.map((action, index) => (
-              <QuickActionCard key={index} {...action} />
+              <QuickActionCard
+                key={index}
+                {...action}
+                onClick={() => action.onClick(navigate)}
+              />
             ))}
           </div>
         </section>
@@ -88,9 +148,24 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
           <div className="dashboard__appointments-grid">
-            {appointments.map((appointment, index) => (
-              <AppointmentCard key={index} {...appointment} />
-            ))}
+            {loading ? (
+              <div>Loading appointments...</div>
+            ) : appointments.length > 0 ? (
+              appointments.map((appointment) => (
+                <AppointmentCard
+                  key={appointment.id}
+                  name={getCustomerName(appointment.customerId)}
+                  avatar={getCustomerAvatar(appointment.customerId)}
+                  time={formatAppointmentTime(appointment.date)}
+                  service={
+                    appointment.serviceDetails[0]?.service ||
+                    "Service not specified"
+                  }
+                />
+              ))
+            ) : (
+              <div>No appointments found</div>
+            )}
           </div>
         </section>
       </div>

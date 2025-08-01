@@ -1,9 +1,33 @@
+import { Calendar, Clock, Send, User } from "lucide-react";
 import {
   FormsSavedIcon,
   PendingSubmissionsIcon,
   PeopleIcon,
   TodaysScheduleIcon,
 } from "../assets/svgs/DashboardSvg";
+
+// export const quickActionsCLientDetails = [
+//   {
+//     icon: <Calendar size={20} />,
+//     title: "View Appointment",
+//     onClick: () => setShowPreviewAppointment(true),
+//   },
+//   {
+//     icon: <Send size={20} />,
+//     title: "Send Consent Form",
+//     onClick: () => setShowSendConsentForm(true),
+//   },
+//   {
+//     icon: <Clock size={20} />,
+//     title: "Set Reminders",
+//     onClick: () => console.log("Set Reminders"),
+//   },
+//   {
+//     icon: <User size={20} />,
+//     title: "View Notes",
+//     onClick: () => console.log("View Notes"),
+//   },
+// ];
 
 export const metricsData = [
   {
@@ -37,13 +61,13 @@ export const quickActions = [
     title: "Add New Client",
     icon: "👤",
     color: "var(--pmu-primary)",
-    onClick: () => console.log("Add client"),
+    onClick: (navigate) => navigate("/clients"),
   },
   {
     title: "Create Form",
     icon: "📋",
     color: "#f59e0b",
-    onClick: () => console.log("Create form"),
+    onClick: (navigate) => navigate("/forms"),
   },
   {
     title: "Send Form",

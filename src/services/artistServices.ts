@@ -20,7 +20,7 @@ export const sendEmailVerification = async (uid: string) =>
   axiosInstance.get(`/api/auth/send-email-verification/${uid}`);
 
 export const getAppointmentsForCustomer = async (customerId: number | string) =>
-  axiosInstance.get(`/api/api/appointments/artist/one-customer/${customerId}`);
+  axiosInstance.get(`/api/appointments/artist/one-customer/${customerId}`);
 
 export const getArtistAppointments = async () =>
   axiosInstance.get("/api/appointments/artist");
@@ -47,7 +47,7 @@ export const getFilledFormByAppointmentAndTemplate = async (
   formTemplateId: string | number
 ) =>
   axiosInstance.get(
-    `/filled-forms/appointment/${appointmentId}/form/${formTemplateId}`
+    `/api/filled-forms/appointment/${appointmentId}/form/${formTemplateId}`
   );
 
 export const getRootFormTemplates = async () =>
@@ -107,17 +107,86 @@ export const addFormSectionData = async (
 ) => axiosInstance.post(`/forms/${formTemplateId}/sections/${sectionId}`, data);
 
 export const updateArtistFcmToken = async (data: { fcmToken: string }) =>
-  axiosInstance.patch("/artists/update-fcm-token", data);
+  axiosInstance.patch("/api/artists/update-fcm-token", data);
 
 export const getArtistById = async (artistId: string | number) =>
-  axiosInstance.get(`/artists/${artistId}`);
+  axiosInstance.get(`/api/artists/${artistId}`);
 
 export const getArtistUrl = async (artistId: string | number) =>
-  axiosInstance.get(`/artists/${artistId}/url`);
+  axiosInstance.get(`/api/artists/${artistId}/url`);
 
-export const deleteMe = async () => axiosInstance.delete("/artists/delete-me");
+export const deleteMe = async () =>
+  axiosInstance.delete("/api/artists/delete-me");
 
 export const signAppointment = async (
   appointmentId: string | number,
   data: { signatureUrl: string }
-) => axiosInstance.post(`/appointments/${appointmentId}/sign`, data);
+) => axiosInstance.post(`/api/appointments/${appointmentId}/sign`, data);
+
+// Customer services
+export const getMyCustomers = async (page?: number) => {
+  const params = page ? `?page=${page}` : "";
+  return axiosInstance.get(`/api/customers/my-customers${params}`);
+};
+
+export const getCustomerById = async (customerId: string | number) =>
+  axiosInstance.get(`/api/customers/my-customers/${customerId}`);
+
+export const deleteCustomer = async (customerId: string | number) =>
+  axiosInstance.delete(`/api/customers/my-customers/${customerId}`);
+
+export const addCustomerNote = async (
+  customerId: string | number,
+  data: { note: string }
+) =>
+  axiosInstance.post(`/api/customers/my-customers/${customerId}/notes`, data);
+
+export const getCustomerNotes = async (customerId: string | number) =>
+  axiosInstance.get(`/api/customers/my-customers/${customerId}/notes`);
+
+export const updateCustomerNote = async (
+  customerId: string | number,
+  noteId: string | number,
+  data: { note: string }
+) =>
+  axiosInstance.put(
+    `/api/customers/my-customers/${customerId}/notes/${noteId}`,
+    data
+  );
+
+export const deleteCustomerNote = async (
+  customerId: string | number,
+  noteId: string | number
+) =>
+  axiosInstance.delete(
+    `/api/customers/my-customers/${customerId}/notes/${noteId}`
+  );
+
+export const searchCustomers = async (
+  name?: string,
+  page?: number,
+  limit?: number
+) => {
+  const params = new URLSearchParams();
+  if (name) params.append("name", name);
+  if (page !== null && page !== undefined)
+    params.append("page", page.toString());
+  if (limit !== null && limit !== undefined)
+    params.append("limit", limit.toString());
+
+  const queryString = params.toString() ? `?${params.toString()}` : "";
+  return axiosInstance.get(`/api/customers/my-customers/search${queryString}`);
+};
+
+export const updateCustomerPersonalDetails = async (
+  customerId: string | number,
+  data: {
+    name: string;
+    primaryPhone?: string;
+    email?: string;
+  }
+) =>
+  axiosInstance.patch(
+    `/api/customers/my-customers/${customerId}/personal-details`,
+    data
+  );

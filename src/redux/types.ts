@@ -39,3 +39,70 @@ export interface Client {
   initials: string;
   color: string;
 }
+
+export interface Appointment {
+  _id: string;
+  id: string;
+  allFormsCompleted: boolean;
+  customerId: string;
+  artistId: string;
+  date: string;
+  services: number[];
+  signed: boolean;
+  deleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  formsToFillCount: number;
+  filledForms: Array<{
+    _id: string;
+    appointmentId: string;
+    status: string;
+    id: string;
+  }>;
+  serviceDetails: Array<{
+    _id: string;
+    id: number;
+    service: string;
+  }>;
+}
+
+export interface AppointmentApiResponse {
+  metadata: {
+    total: number;
+    currentPage: number;
+    perPage: number;
+    lastPage: number;
+    firstPage: number;
+  };
+  appointments: Appointment[];
+}
+
+export interface CustomerResponse {
+  metadata: {
+    total: number;
+    currentPage: number;
+    perPage: number;
+    lastPage: number;
+    firstPage: number;
+  };
+  customers: Array<{
+    _id: string;
+    id: string;
+    name: string;
+    email?: string;
+    lastLoggedIn: string | null;
+    info: {
+      client_name: string;
+      avatar_url?: string;
+      cell_phone?: string;
+      date_of_birth?: string;
+      emergency_contact_name?: string;
+      emergency_contact_phone?: string;
+      home_address?: string;
+      referred?: string;
+    };
+    notes: Array<any>;
+    createdAt: string;
+    updatedAt: string;
+  }>;
+}
