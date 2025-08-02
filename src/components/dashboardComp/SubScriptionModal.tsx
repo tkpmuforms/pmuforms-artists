@@ -7,13 +7,13 @@ import "./subscription-modal.scss";
 interface SubscriptionModalProps {
   onClose: () => void;
   onShowFeatures: () => void;
-  onShowPricing: () => void;
+  onSubscribe: () => void;
 }
 
 const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   onClose,
   onShowFeatures,
-  onShowPricing,
+  onSubscribe,
 }) => {
   const pricingPlans = [
     {
@@ -108,7 +108,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           </button>
           <button
             className="subscription-modal__subscribe"
-            onClick={onShowPricing}
+            onClick={onSubscribe}
           >
             Subscribe Now
           </button>

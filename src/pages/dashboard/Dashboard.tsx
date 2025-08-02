@@ -7,11 +7,13 @@ import { useNavigate } from "react-router-dom";
 import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
 import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
 import MetricsCard from "../../components/dashboardComp/MetricsCard";
-import PricingModal from "../../components/dashboardComp/PricingModal";
 import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
 import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
+
+import AddClientModal from "../../components/clientsComp/AddClientModal";
+import FormLinkModal from "../../components/dashboardComp/FormLinkModal";
 import useAuth from "../../context/useAuth";
-import { metricsData, quickActions } from "../../jsons/TestData";
+import { metricsData } from "../../jsons/TestData";
 import { Appointment } from "../../redux/types";
 import {
   getArtistAppointments,
@@ -22,15 +24,46 @@ import "./dashboard.scss";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  console.log("User in Dashboard:", user);
   const navigate = useNavigate();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
-  const [showPricingModal, setShowPricingModal] = useState(false);
+  const [showFormLinkModal, setShowFormLinkModal] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAddClient, setShowAddClient] = useState(false);
   const [customers, setCustomers] = useState<
     Record<string, { name: string; avatar?: string }>
   >({});
+
+  // Updated quick actions with the new logic
+  const quickActions = [
+    {
+      title: "Add New Client",
+      icon: "👤",
+      color: "var(--pmu-primary)",
+      onClick: () => setShowAddClient(true), // Open client modal
+    },
+    {
+      title: "Create Form",
+      icon: "📋",
+      color: "#f59e0b",
+      onClick: () => navigate("/forms"),
+    },
+    {
+      title: "Send Form",
+      icon: "📤",
+      color: "#10b981",
+      onClick: () => {
+        // Check if user is active (subscribed)
+        if (user?.isActive === false) {
+          setShowSubscriptionModal(true);
+        } else {
+          setShowFormLinkModal(true);
+        }
+      },
+    },
+  ];
 
   const getCustomerName = (customerId: string) => {
     return (
@@ -97,7 +130,7 @@ const Dashboard: React.FC = () => {
         <div className="dashboard__actions">
           <button
             className="dashboard__add-client-btn"
-            onClick={() => setShowSubscriptionModal(true)}
+            onClick={() => setShowAddClient(true)}
           >
             <Plus size={16} />
             Add New Client
@@ -129,7 +162,7 @@ const Dashboard: React.FC = () => {
               <QuickActionCard
                 key={index}
                 {...action}
-                onClick={() => action.onClick(navigate)}
+                onClick={action.onClick}
               />
             ))}
           </div>
@@ -166,6 +199,17 @@ const Dashboard: React.FC = () => {
         </section>
       </div>
 
+      {showAddClient && (
+        <AddClientModal onClose={() => setShowAddClient(false)} />
+      )}
+
+      {showFormLinkModal && (
+        <FormLinkModal
+          onClose={() => setShowFormLinkModal(false)}
+          businessUri={user?.businessUri || ""}
+        />
+      )}
+
       {showSubscriptionModal && (
         <SubscriptionModal
           onClose={() => setShowSubscriptionModal(false)}
@@ -173,9 +217,9 @@ const Dashboard: React.FC = () => {
             setShowSubscriptionModal(false);
             setShowFeaturesModal(true);
           }}
-          onShowPricing={() => {
+          //TODO UPDATE: Pass onSubscribe prop to handle subscription logic
+          onSubscribe={() => {
             setShowSubscriptionModal(false);
-            setShowPricingModal(true);
           }}
         />
       )}
@@ -185,15 +229,8 @@ const Dashboard: React.FC = () => {
           onClose={() => setShowFeaturesModal(false)}
           onSubscribe={() => {
             setShowFeaturesModal(false);
-            setShowPricingModal(true);
+            setShowSubscriptionModal(true);
           }}
-        />
-      )}
-
-      {showPricingModal && (
-        <PricingModal
-          onClose={() => setShowPricingModal(false)}
-          onSubscribe={() => setShowPricingModal(false)}
         />
       )}
     </div>

@@ -30,27 +30,27 @@ const ProfilePage: React.FC = () => {
 
   const profileMenuItems = [
     {
-      icon: <Building2 size={28} />,
+      icon: <Building2 size={10} />,
       title: "Business Information",
       onClick: () => setShowBusinessInfo(true),
     },
     {
-      icon: <Key size={28} />,
+      icon: <Key size={10} />,
       title: "Change Password",
       onClick: () => setShowChangePassword(true),
     },
     {
-      icon: <HelpCircle size={28} />,
+      icon: <HelpCircle size={10} />,
       title: "Help & Support",
       onClick: () => console.log("Help & Support"),
     },
     {
-      icon: <FileText size={28} />,
+      icon: <FileText size={10} />,
       title: "Privacy Policy",
       onClick: () => console.log("Privacy Policy"),
     },
     {
-      icon: <LogOut size={28} />,
+      icon: <LogOut size={10} />,
       title: "Log Out",
       onClick: () => console.log("Log Out"),
       variant: "danger" as const,
