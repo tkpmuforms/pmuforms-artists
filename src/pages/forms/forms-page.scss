@@ -77,8 +77,7 @@
     transition: all 0.2s ease;
 
     &--active {
-      background: var(--pmu-primary);
-      color: white;
+      color: black;
       border-color: var(--pmu-primary);
     }
 

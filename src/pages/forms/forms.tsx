@@ -11,6 +11,7 @@ import "./forms-page.scss";
 import { Form } from "../../redux/types";
 import { formatLastUpdated, formatUsedFor } from "../../utils/utils";
 import { FormsIconSvg } from "../../assets/svgs/formsSvg";
+import { Loading } from "../../components/loading/Loading";
 
 const FormsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"consent" | "care">("consent");
@@ -66,13 +67,7 @@ const FormsPage: React.FC = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="forms-page">
-        <div className="forms-page__content">
-          <div className="forms-page__loading">Loading forms...</div>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {
