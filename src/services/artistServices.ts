@@ -189,3 +189,6 @@ export const updateCustomerPersonalDetails = async (
     `/api/customers/my-customers/${customerId}/personal-details`,
     data
   );
+
+export const getArtistForms = async () =>
+  axiosInstance.get("/api/forms/my-forms");

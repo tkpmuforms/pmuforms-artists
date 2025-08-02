@@ -1,0 +1,77 @@
+.form-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  &__icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  &__meta {
+    margin-bottom: 20px;
+
+    p {
+      font-size: 14px;
+      color: #64748b;
+      margin: 4px 0;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &--preview {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+
+      &:hover {
+        background: #e2e8f0;
+        color: #1e293b;
+      }
+    }
+
+    &--edit {
+      background: var(--pmu-primary);
+      color: white;
+
+      &:hover {
+        filter: brightness(0.9);
+      }
+    }
+  }
+}

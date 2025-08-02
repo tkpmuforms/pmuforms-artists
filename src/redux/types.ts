@@ -105,3 +105,14 @@ export interface CustomerResponse {
     updatedAt: string;
   }>;
 }
+
+export interface Form {
+  id: string;
+  title: string;
+  lastUpdated: string;
+  usedFor: string;
+  type: "consent" | "care";
+  services: number[];
+  createdAt: string;
+  updatedAt: string;
+}
