@@ -67,15 +67,6 @@
     }
   }
 
-  &__crown {
-    margin-bottom: 16px;
-
-    .crown-icon {
-      font-size: 48px;
-      filter: hue-rotate(280deg);
-    }
-  }
-
   &__features {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -92,8 +83,9 @@
     align-items: flex-start;
     gap: 12px;
     padding: 16px;
-    border-radius: 12px;
+    border-radius: 18px;
     transition: all 0.2s ease;
+    background: #f5f5f5;
 
     &:hover {
       background: #f8fafc;

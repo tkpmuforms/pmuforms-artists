@@ -1,5 +1,5 @@
 .dashboard {
-  padding: 24px;
+  padding: 24px 40px;
 
   &__header {
     display: flex;
@@ -83,11 +83,12 @@
 
   &__section-title {
     font-size: 12px;
-    font-weight: 600;
-    color: #64748b;
+    font-weight: 400;
+    color: #4a4a4b;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 10%;
     margin: 0 0 16px 0;
+    line-height: 100%;
   }
 
   &__metrics-grid {
@@ -98,7 +99,7 @@
 
   &__actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, minmax(20px, 1fr));
     gap: 16px;
   }
 

@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import "./features-modal.scss";
+import { CrownSvg } from "../../assets/svgs/DashboardSvg";
 
 interface FeaturesModalProps {
   onClose: () => void;
@@ -78,8 +79,8 @@ const FeaturesModal: React.FC<FeaturesModalProps> = ({
         </button>
 
         <div className="features-modal__header">
-          <div className="features-modal__crown">
-            <div className="crown-icon">👑</div>
+          <div>
+            <CrownSvg />
           </div>
           <h2>Your First 7 days is on us</h2>
           <p>

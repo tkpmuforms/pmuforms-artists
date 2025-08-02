@@ -9,7 +9,6 @@ import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
 import MetricsCard from "../../components/dashboardComp/MetricsCard";
 import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
 import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
-
 import AddClientModal from "../../components/clientsComp/AddClientModal";
 import FormLinkModal from "../../components/dashboardComp/FormLinkModal";
 import useAuth from "../../context/useAuth";
@@ -21,6 +20,12 @@ import {
 } from "../../services/artistServices";
 import { formatAppointmentTime } from "../../utils/utils";
 import "./dashboard.scss";
+import { LoadingSmall } from "../../components/loading/Loading";
+import {
+  CreateNewClientIcon,
+  CreateNewFormIcon,
+  SendFormIcon,
+} from "../../assets/svgs/DashboardSvg";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -36,24 +41,22 @@ const Dashboard: React.FC = () => {
     Record<string, { name: string; avatar?: string }>
   >({});
 
-  // Updated quick actions with the new logic
   const quickActions = [
     {
       title: "Add New Client",
-      icon: "👤",
-      color: "var(--pmu-primary)",
-      onClick: () => setShowAddClient(true), // Open client modal
+      icon: CreateNewClientIcon,
+
+      onClick: () => setShowAddClient(true),
     },
     {
       title: "Create Form",
-      icon: "📋",
-      color: "#f59e0b",
+      icon: CreateNewFormIcon,
+
       onClick: () => navigate("/forms"),
     },
     {
       title: "Send Form",
-      icon: "📤",
-      color: "#10b981",
+      icon: SendFormIcon,
       onClick: () => {
         // Check if user is active (subscribed)
         if (user?.isActive === false) {
@@ -178,7 +181,9 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="dashboard__appointments-grid">
             {loading ? (
-              <div>Loading appointments...</div>
+              <div>
+                <LoadingSmall />
+              </div>
             ) : appointments.length > 0 ? (
               appointments.map((appointment) => (
                 <AppointmentCard
