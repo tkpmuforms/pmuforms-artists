@@ -1,3 +1,5 @@
+import { Form } from "../redux/types";
+
 export const generateColor = (name: string): string => {
   const colors = [
     "#e879f9",
@@ -58,4 +60,17 @@ export const formatLastUpdated = (dateString: string): string => {
 export const formatUsedFor = (services: number[]): string => {
   const count = services.length;
   return count === 1 ? "Used for 1 Service" : `Used for ${count} Services`;
+};
+
+export const transformFormData = (apiForm: any): Form => {
+  return {
+    id: apiForm.id || apiForm._id,
+    title: apiForm.title,
+    lastUpdated: formatLastUpdated(apiForm.updatedAt),
+    usedFor: formatUsedFor(apiForm.services || []),
+    type: apiForm.type as "consent" | "care",
+    services: apiForm.services || [],
+    createdAt: apiForm.createdAt,
+    updatedAt: apiForm.updatedAt,
+  };
 };

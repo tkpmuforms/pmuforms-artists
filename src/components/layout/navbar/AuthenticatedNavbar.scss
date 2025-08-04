@@ -13,6 +13,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    padding: 0 32px;
     max-width: 1440px;
     margin: 0 auto;
   }
@@ -223,4 +224,30 @@
       margin: 0 8px;
     }
   }
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .back-arrow {
+    color: currentColor;
+  }
+}
+
+.navbar-breadcrumbs {
+  display: flex;
+  align-items: center;
 }

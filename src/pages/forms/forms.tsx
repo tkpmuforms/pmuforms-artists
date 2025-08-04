@@ -3,61 +3,39 @@
 import { Plus } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AddFieldModal from "../../components/formsComp/AddFieldModal";
-import DeleteConfirmModal from "../../components/formsComp/DeleteConfirmModal";
 import FormCard from "../../components/formsComp/FormCard";
-import { getArtistForms } from "../../services/artistServices";
-import "./forms-page.scss";
-import { Form } from "../../redux/types";
-import { formatLastUpdated, formatUsedFor } from "../../utils/utils";
-import { FormsIconSvg } from "../../assets/svgs/formsSvg";
 import { Loading } from "../../components/loading/Loading";
+import { Form } from "../../redux/types";
+import { getArtistForms } from "../../services/artistServices";
+import { transformFormData } from "../../utils/utils";
+import "./forms-page.scss";
+import toast from "react-hot-toast";
 
 const FormsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"consent" | "care">("consent");
   const [showAddFieldModal, setShowAddFieldModal] = useState(false);
-  const [showEditParagraphModal, setShowEditParagraphModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditServicesModal, setShowEditServicesModal] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState<
-    "save" | "discard" | null
-  >(null);
   const [forms, setForms] = useState<Form[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const transformFormData = (apiForm: any): Form => {
-    return {
-      id: apiForm.id || apiForm._id,
-      title: apiForm.title,
-      lastUpdated: formatLastUpdated(apiForm.updatedAt),
-      usedFor: formatUsedFor(apiForm.services || []),
-      type: apiForm.type as "consent" | "care",
-      services: apiForm.services || [],
-      createdAt: apiForm.createdAt,
-      updatedAt: apiForm.updatedAt,
-    };
-  };
-
-  // Filter forms based on active tab
   const filteredForms = forms.filter((form) => form.type === activeTab);
 
   useEffect(() => {
     const fetchForms = async () => {
       try {
         setLoading(true);
-        setError(null);
         const response = await getArtistForms();
-
         if (response && response.data && response.data.forms) {
           const transformedForms = response.data.forms.map(transformFormData);
           setForms(transformedForms);
         } else {
-          setError("No forms data received");
+          toast.error("No forms data received");
         }
       } catch (err) {
         console.error("Error fetching forms:", err);
-        setError("Failed to load forms");
+        toast.error("Failed to fetch forms. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -66,21 +44,15 @@ const FormsPage: React.FC = () => {
     fetchForms();
   }, []);
 
+  const handlePreview = (formId: string) => {
+    navigate(`/forms/preview/${formId}`);
+  };
+  const handleEdit = (formId: string) => {
+    navigate(`/forms/edit/${formId}`);
+  };
+
   if (loading) {
     return <Loading />;
-  }
-
-  if (error) {
-    return (
-      <div className="forms-page">
-        <div className="forms-page__content">
-          <div className="forms-page__error">
-            Error: {error}
-            <button onClick={() => window.location.reload()}>Retry</button>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -125,8 +97,8 @@ const FormsPage: React.FC = () => {
               <FormCard
                 key={form.id}
                 {...form}
-                onPreview={() => console.log("Preview", form.id)}
-                onEdit={() => setShowEditParagraphModal(true)}
+                onPreview={() => handlePreview(form.id)}
+                onEdit={() => handleEdit(form.id)}
               />
             ))
           ) : (
@@ -148,41 +120,6 @@ const FormsPage: React.FC = () => {
       {showAddFieldModal && (
         <AddFieldModal onClose={() => setShowAddFieldModal(false)} />
       )}
-
-      {/* {showEditParagraphModal && (
-        <EditParagraphModal
-          onClose={() => setShowEditParagraphModal(false)}
-          onSave={() => setShowConfirmationModal("save")}
-          onDelete={() => setShowDeleteModal(true)}
-        />
-      )} */}
-
-      {showDeleteModal && (
-        <DeleteConfirmModal
-          onClose={() => setShowDeleteModal(false)}
-          onConfirm={() => {
-            setShowDeleteModal(false);
-            console.log("Deleted");
-          }}
-        />
-      )}
-
-      {/* {showEditServicesModal && (
-        <EditServicesModal onClose={() => setShowEditServicesModal(false)} />
-      )} */}
-
-      {/* {showConfirmationModal && (
-        <ConfirmationModal
-          type={showConfirmationModal}
-          onClose={() => setShowConfirmationModal(null)}
-          onConfirm={() => {
-            setShowConfirmationModal(null);
-            if (showConfirmationModal === "save") {
-              setShowEditParagraphModal(false);
-            }
-          }}
-        />
-      )} */}
     </div>
   );
 };

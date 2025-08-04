@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./AuthenticatedNavbar.scss";
 import useAuth from "../../../context/useAuth";
 import { Avatar } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface AuthenticatedNavbarProps {
   breadcrumbs?: string[];
@@ -18,6 +19,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -29,13 +31,42 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
     onSearch?.(searchQuery);
   };
 
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
+  console.log("breadcrumbs:", breadcrumbs);
   const lastBreadcrumb =
     breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : null;
+  const showBackButton = breadcrumbs.length > 1;
 
   return (
     <nav className="authenticated-navbar">
       <div className="navbar-container">
         <div className="navbar-breadcrumbs">
+          {showBackButton && (
+            <button
+              className="back-button"
+              onClick={handleBackClick}
+              aria-label="Go back"
+            >
+              <svg
+                className="back-arrow"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+              >
+                <path
+                  d="M12.5 15l-5-5 5-5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          )}
           {lastBreadcrumb && (
             <div className="breadcrumb-item">
               <span className="breadcrumb-text">{lastBreadcrumb}</span>

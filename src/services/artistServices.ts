@@ -51,24 +51,24 @@ export const getFilledFormByAppointmentAndTemplate = async (
   );
 
 export const getRootFormTemplates = async () =>
-  axiosInstance.get("/forms/root-templates");
+  axiosInstance.get("/api/forms/root-templates");
 
 export const getFormsByAppointment = async (appointmentId: string | number) =>
-  axiosInstance.get(`/forms/appointment/${appointmentId}`);
+  axiosInstance.get(`/api/forms/appointment/${appointmentId}`);
 
 export const createFormNewVersion = async (data: {
   formTemplateId: string;
   title: string;
   sections: Record<string, unknown>[];
-}) => axiosInstance.post("/forms/new-version", data);
+}) => axiosInstance.post("/api/forms/new-version", data);
 
 export const getFormById = async (formTemplateId: string | number) =>
-  axiosInstance.get(`/forms/${formTemplateId}`);
+  axiosInstance.get(`/api/forms/${formTemplateId}`);
 
 export const updateFormServices = async (
   formTemplateId: string | number,
   data: { services: number[] }
-) => axiosInstance.put(`/forms/${formTemplateId}/update-services`, data);
+) => axiosInstance.put(`/api/forms/${formTemplateId}/update-services`, data);
 
 export const updateFormSections = async (
   formTemplateId: string | number,
@@ -192,3 +192,9 @@ export const updateCustomerPersonalDetails = async (
 
 export const getArtistForms = async () =>
   axiosInstance.get("/api/forms/my-forms");
+
+export const createClient = async (data: {
+  name: string;
+  primaryPhone?: string;
+  email?: string;
+}) => axiosInstance.post("/api/customers/my-customers/create-customer", data);

@@ -4,12 +4,18 @@ import type React from "react";
 import { useState } from "react";
 import { X } from "lucide-react";
 import "./add-client-modal.scss";
+import { createClient } from "../../services/artistServices";
+import toast from "react-hot-toast";
 
 interface AddClientModalProps {
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-const AddClientModal: React.FC<AddClientModalProps> = ({ onClose }) => {
+const AddClientModal: React.FC<AddClientModalProps> = ({
+  onClose,
+  onSuccess,
+}) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -22,8 +28,26 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ onClose }) => {
   };
 
   const handleSubmit = () => {
-    console.log("Adding client:", formData);
-    onClose();
+    createClient({
+      name: `${formData.firstName} ${formData.lastName}`,
+      primaryPhone: formData.phone,
+      email: formData.email,
+    })
+      .then(() => {
+        toast.success("Client added successfully!");
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+        });
+        onSuccess?.();
+      })
+
+      .catch((error) => {
+        console.error("Error adding client:", error);
+        toast.error("Failed to add client. Please try again.");
+      });
   };
 
   return (

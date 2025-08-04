@@ -116,3 +116,25 @@ export interface Form {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface SingleForm {
+  id: string;
+  title: string;
+  sections: Section[];
+}
+
+export interface Section {
+  _id?: string;
+  id?: string;
+  title: string;
+  data: Field[];
+  skip?: boolean;
+}
+
+export interface Field {
+  id: string;
+  title: string;
+  type?: string;
+  required?: boolean;
+  line?: string;
+}
