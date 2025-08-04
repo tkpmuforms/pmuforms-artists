@@ -10,15 +10,12 @@ import { SignInSuccessWithAuthResult } from "../../../pages/auth/authUtils";
 import useAuth from "../../../context/useAuth";
 import { toast } from "react-hot-toast";
 import { auth } from "../../../firebase/firebase";
-
-interface LoginFormValues {
-  email: string;
-  password: string;
-}
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { handleAuthSuccess } = useAuth();
   const [forgetpassword, setForgotPassword] = useState(false);
 
@@ -27,10 +24,12 @@ const LoginPage: React.FC = () => {
     type: "error" | "success" | "warning" | "info",
     message: string
   ) => {
-    toast[type](message);
+    if (type === "error" || type === "success") {
+      toast[type](message);
+    }
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
@@ -40,13 +39,17 @@ const LoginPage: React.FC = () => {
         handleAuthSuccess,
         showAlert
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("LoginFailed:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Login failed! Try again later.";
       showAlert(
         "error",
-        error.message.includes("user-not-found")
+        errorMessage.includes("user-not-found")
           ? "Account not found, Please signup and try again."
-          : error?.message || "Login failed! Try again later."
+          : errorMessage
       );
     }
   };
@@ -77,14 +80,24 @@ const LoginPage: React.FC = () => {
 
               <div className="form-group">
                 <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter Password"
-                  required
-                />
+                <div className="input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter Password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="input-icon"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
 
               <div className="forgot-password">

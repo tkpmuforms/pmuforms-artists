@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { LoadingSmall } from "../../../components/loading/Loading";
-// import ServicesModal from "../../../components/modals/ServicesModal";
+
+import EditFormServices from "../../../components/formsComp/EditFormsServices";
+import RenderEditFormsFields from "../../../components/formsComp/RenderEditForms";
+import ServicesSection from "../../../components/formsComp/ServiceSection";
 import useAuth from "../../../context/useAuth";
 import { Section, Service, SingleForm } from "../../../redux/types";
 import { getFormById, getServices } from "../../../services/artistServices";
 import "./edit-forms.scss";
-import RenderEditFormsFields from "../../../components/formsComp/RenderEditForms";
-import ServicesSection from "../../../components/formsComp/ServiceSection";
 
 interface EditFormsProps {
   onClose?: () => void;
@@ -169,7 +170,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
 
   if (!form) {
     return (
-      <div className="dynamic-forms">
+      <div className="edit-dynamic-forms">
         <div className="no-forms">
           <p>No form found</p>
           {onClose && <button onClick={onClose}>Close</button>}
@@ -179,7 +180,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   }
 
   return (
-    <div className="dynamic-forms">
+    <div className="edit-dynamic-forms">
       {onClose && (
         <div className="modal-header">
           <button onClick={onClose} className="close-button">
@@ -231,15 +232,14 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
         )}
       </div>
 
-      {/* Services Modal */}
-      {/* <ServicesModal
+      <EditFormServices
         isOpen={showServicesModal}
         onClose={() => setShowServicesModal(false)}
         allServices={allServices}
         selectedServices={form.services || []}
         onUpdateServices={handleUpdateServices}
         loading={servicesLoading}
-      /> */}
+      />
     </div>
   );
 };

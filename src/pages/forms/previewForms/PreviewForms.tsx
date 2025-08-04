@@ -105,7 +105,7 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
 
   if (!form) {
     return (
-      <div className="dynamic-forms">
+      <div className="preview-dynamic-forms">
         <div className="no-forms">
           <p>No form found</p>
           {onClose && <button onClick={onClose}>Close</button>}
@@ -115,7 +115,7 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
   }
 
   return (
-    <div className="dynamic-forms">
+    <div className="preview-dynamic-forms">
       {onClose && (
         <div className="modal-header">
           <button onClick={onClose} className="close-button">
