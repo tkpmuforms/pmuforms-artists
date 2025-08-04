@@ -77,8 +77,8 @@ export const updateFormSections = async (
 
 export const getMyForms = async () => axiosInstance.get("/forms/my-forms");
 
-export const deleteForm = async (formTemplateId: string | number) =>
-  axiosInstance.delete(`/forms/${formTemplateId}/delete`);
+export const deleteFormTemplate = async (formTemplateId: string | number) =>
+  axiosInstance.delete(`/api/forms/${formTemplateId}/delete`);
 
 export const updateFormSectionData = async (
   formTemplateId: string | number,

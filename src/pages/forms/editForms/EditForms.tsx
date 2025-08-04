@@ -2,32 +2,24 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { renderPreviewFormFields } from "../../../components/formsComp/RenderPreviewFormFields";
-import useAuth from "../../../context/useAuth";
-import {
-  deleteFormTemplate,
-  getFormById,
-} from "../../../services/artistServices";
-import "./preview-forms.scss";
-import { Section, SingleForm } from "../../../redux/types";
 import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
+import { renderEditFormsFields } from "../../../components/formsComp/RenderEditForms";
 import { LoadingSmall } from "../../../components/loading/Loading";
-import {
-  DeleteFormSvg,
-  EditFormsSvg,
-  PreviewAlertSvg,
-} from "../../../assets/svgs/formsSvg";
+import useAuth from "../../../context/useAuth";
+import { Section, SingleForm } from "../../../redux/types";
+import { getFormById } from "../../../services/artistServices";
+import "./edit-forms.scss";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-interface PreviewFormsProps {
+interface EditFormsProps {
   onClose?: () => void;
   formId?: string;
 }
 
-const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
+const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const { formId: paramFormId } = useParams<{ formId?: string }>();
   const formTemplateId = formId || paramFormId;
   const navigate = useNavigate();
@@ -84,22 +76,6 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
     }
   }, [formTemplateId, user?.businessName]);
 
-  const handleDelete = () => {
-    deleteFormTemplate(formTemplateId || "")
-      .then(() => {
-        toast.success("Form deleted successfully");
-        navigate("/forms");
-      })
-      .catch((error) => {
-        console.error("Error deleting form:", error);
-        toast.error("Failed to delete form");
-      });
-  };
-
-  const handleEdit = () => {
-    navigate(`/forms/edit/${formTemplateId}`);
-  };
-
   if (!formTemplateId) {
     navigate("/forms");
     return null;
@@ -134,29 +110,20 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
         <div className="title-actions-row">
           <h2>{form.title}</h2>
           <div className="action-buttons">
-            <DeleteFormSvg onClick={handleDelete} />
-            <EditFormsSvg onClick={handleEdit} />
+            //TOdo add save
+            {/* <DeleteFormSvg onClick={() => console.log("Delete form")} />
+            <EditFormsSvg onClick={() => console.log("Edit form")} /> */}
           </div>
         </div>
-        <div className="preview-header">
-          <div className="preview-info">
-            <PreviewAlertSvg />
-            <div className="preview-text">
-              <h5>Preview Mode</h5>
-              <p>
-                This is a preview of what your customer will see online. Form
-                completion happens online.
-              </p>
-            </div>
-          </div>
-        </div>
+
+        {}
 
         {form.sections && form.sections.length > 0 ? (
           form.sections.map((section) => (
             <div key={section._id || section.id}>
               <h3>{section.title}</h3>
               {section.data && section.data.length > 0 ? (
-                renderPreviewFormFields(section.data, form.id, {})
+                renderEditFormsFields(section.data, form.id, {})
               ) : (
                 <p>No fields in this section</p>
               )}
@@ -170,4 +137,4 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
   );
 };
 
-export default PreviewForms;
+export default EditForms;
