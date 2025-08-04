@@ -115,12 +115,22 @@ export interface Form {
   services: number[];
   createdAt: string;
   updatedAt: string;
+  sections?: Section[];
+  versionNumber?: number;
+  isDeleted?: boolean;
 }
 
 export interface SingleForm {
   id: string;
   title: string;
   sections: Section[];
+  services?: number[];
+  type: "consent" | "care";
+  order?: number;
+  versionNumber?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  isDeleted?: boolean;
 }
 
 export interface Section {

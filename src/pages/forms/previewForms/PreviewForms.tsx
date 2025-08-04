@@ -1,26 +1,20 @@
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { renderPreviewFormFields } from "../../../components/formsComp/RenderPreviewFormFields";
-import useAuth from "../../../context/useAuth";
-import {
-  deleteFormTemplate,
-  getFormById,
-} from "../../../services/artistServices";
-import "./preview-forms.scss";
-import { Section, SingleForm } from "../../../redux/types";
 import toast from "react-hot-toast";
-import { LoadingSmall } from "../../../components/loading/Loading";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   DeleteFormSvg,
   EditFormsSvg,
   PreviewAlertSvg,
 } from "../../../assets/svgs/formsSvg";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import { renderPreviewFormFields } from "../../../components/formsComp/RenderPreviewFormFields";
+import { LoadingSmall } from "../../../components/loading/Loading";
+import useAuth from "../../../context/useAuth";
+import { Section, SingleForm } from "../../../redux/types";
+import {
+  deleteFormTemplate,
+  getFormById,
+} from "../../../services/artistServices";
+import "./preview-forms.scss";
 
 interface PreviewFormsProps {
   onClose?: () => void;

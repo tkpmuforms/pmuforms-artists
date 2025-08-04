@@ -1,6 +1,7 @@
 interface IconProps {
   isActive?: boolean;
   onClick?: React.MouseEventHandler<SVGSVGElement>;
+  className?: string;
 }
 export const FormsIconSvg: React.FC<IconProps> = () => {
   return (
@@ -163,10 +164,12 @@ export const PreviewAlertSvg: React.FC<IconProps> = ({}) => {
 export const SmallEditIConSvg: React.FC<IconProps> = ({
   isActive,
   onClick,
+  className,
 }) => {
   return (
     <svg
       onClick={onClick}
+      className={className}
       width="44"
       height="44"
       viewBox="0 0 44 44"
@@ -187,10 +190,14 @@ export const SmallEditIConSvg: React.FC<IconProps> = ({
   );
 };
 
-export const SmallDeleteIconSvg: React.FC<IconProps> = ({ onClick }) => {
+export const SmallDeleteIconSvg: React.FC<IconProps> = ({
+  onClick,
+  className,
+}) => {
   return (
     <svg
       onClick={onClick}
+      className={className}
       width="44"
       height="44"
       viewBox="0 0 44 44"
