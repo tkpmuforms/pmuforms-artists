@@ -97,7 +97,7 @@ export const deleteFormSectionData = async (
   dataId: string | number
 ) =>
   axiosInstance.delete(
-    `/forms/${formTemplateId}/sections/${sectionId}/data/${dataId}`
+    `/api/forms/${formTemplateId}/sections/${sectionId}/data/${dataId}`
   );
 
 export const addFormSectionData = async (

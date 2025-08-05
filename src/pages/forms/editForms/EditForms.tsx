@@ -9,6 +9,7 @@ import ServicesSection from "../../../components/formsComp/ServiceSection";
 import useAuth from "../../../context/useAuth";
 import { Section, Service, SingleForm } from "../../../redux/types";
 import {
+  deleteFormSectionData,
   getFormById,
   getServices,
   updateFormSectionData,
@@ -116,20 +117,39 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
     fetchForm();
   }, [formTemplateId, user?.businessName]);
 
-  // Field handlers
   const handleEditField = (field: any) => {
     setShowEditParagraphModal(true);
     setEditingField(field);
-    console.log("Edit field:", field);
-    // TODO: Implement field editing modal or inline editor
   };
 
-  const handleDeleteField = (fieldId: string) => {
-    if (window.confirm("Are you sure you want to delete this field?")) {
-      console.log("Delete field:", fieldId);
-      // TODO: Implement field deletion logic
-      toast.success("Field deleted successfully");
-    }
+  const handleDeleteField = (field: any) => {
+    if (!form || !field) return;
+
+    deleteFormSectionData(form.id, field.sectionId, field.id)
+      .then(() => {
+        // Update the form state locally
+        const updatedForm = { ...form };
+        updatedForm.sections = updatedForm.sections.map((section) => {
+          if (
+            section.id === field.sectionId ||
+            section._id === field.sectionId
+          ) {
+            return {
+              ...section,
+              data: section.data.filter((f) => f.id !== field.id),
+            };
+          }
+          return section;
+        });
+
+        setForm(updatedForm);
+        setShowConfirmDeleteModal(false);
+        toast.success("Field deleted successfully");
+      })
+      .catch((error) => {
+        console.error("Error deleting field:", error);
+        toast.error("Failed to delete field");
+      });
   };
 
   const handleSectionDataUpdate = (
@@ -292,7 +312,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
       {showConfirmDeleteModal && (
         <DeleteConfirmModal
           onClose={() => setShowConfirmDeleteModal(false)}
-          onConfirm={() => handleDeleteField(editingField?.id || "")}
+          onConfirm={() => handleDeleteField(editingField)}
           type="section"
         />
       )}
