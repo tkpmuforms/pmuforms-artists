@@ -1,17 +1,20 @@
 "use client";
 
+import { X } from "lucide-react";
 import type React from "react";
-import { X, Trash2 } from "lucide-react";
+import { GarbageIconSvg } from "../../assets/svgs/formsSvg";
 import "./delete-confirm-modal.scss";
 
 interface DeleteConfirmModalProps {
   onClose: () => void;
   onConfirm: () => void;
+  type?: "section" | "form";
 }
 
 const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   onClose,
   onConfirm,
+  type,
 }) => {
   return (
     <div className="delete-confirm-modal">
@@ -22,7 +25,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
         </button>
 
         <div className="delete-confirm-modal__icon">
-          <Trash2 size={48} />
+          <GarbageIconSvg />
         </div>
 
         <h2>Are you sure you want to delete?</h2>
@@ -36,7 +39,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             Cancel
           </button>
           <button className="delete-confirm-modal__confirm" onClick={onConfirm}>
-            Delete this Section
+            Delete this {type === "section" ? "Section" : "Form"}
           </button>
         </div>
       </div>

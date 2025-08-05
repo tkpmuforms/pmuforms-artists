@@ -8,8 +8,13 @@ import RenderEditFormsFields from "../../../components/formsComp/RenderEditForms
 import ServicesSection from "../../../components/formsComp/ServiceSection";
 import useAuth from "../../../context/useAuth";
 import { Section, Service, SingleForm } from "../../../redux/types";
-import { getFormById, getServices } from "../../../services/artistServices";
+import {
+  getFormById,
+  getServices,
+  updateFormServices,
+} from "../../../services/artistServices";
 import "./edit-forms.scss";
+import DeleteConfirmModal from "../../../components/formsComp/DeleteConfirmModal";
 
 interface EditFormsProps {
   onClose?: () => void;
@@ -21,20 +26,13 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const formTemplateId = formId || paramFormId;
   const navigate = useNavigate();
   const { user } = useAuth();
-
-  // Form state
   const [form, setForm] = useState<SingleForm | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // Services state
   const [allServices, setAllServices] = useState<Service[]>([]);
   const [servicesLoading, setServicesLoading] = useState(false);
-
-  // Modal state
   const [showServicesModal, setShowServicesModal] = useState(false);
-
-  // Field editing state
   const [editingField, setEditingField] = useState(null);
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
 
   // Fetch services
   useEffect(() => {
@@ -130,26 +128,34 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
     }
   };
 
+  const handleShowConfirmDeleteModal = (field: any) => {
+    setEditingField(field);
+    setShowConfirmDeleteModal(true);
+    console.log("Show confirm delete modal for field:", field);
+  };
+
   const handleAddParagraph = (fieldId: string) => {
     console.log("Add paragraph to field:", fieldId);
     // TODO: Implement add paragraph functionality
   };
 
   // Services handlers
-  const handleUpdateServices = (selectedServiceIds: (string | number)[]) => {
+  const handleUpdateServices = (selectedServiceIds: number[]) => {
     if (!form) return;
-
-    // Update form services
     const updatedForm = {
       ...form,
       services: selectedServiceIds,
     };
-
+    updateFormServices(form.id, { services: selectedServiceIds })
+      .then(() => {
+        toast.success("Services updated successfully");
+      })
+      .catch((error) => {
+        console.error("Error updating services:", error);
+        toast.error("Failed to update services");
+      });
+    setShowServicesModal(false);
     setForm(updatedForm);
-
-    // TODO: Make API call to update services
-    console.log("Update services:", selectedServiceIds);
-    toast.success("Services updated successfully");
   };
 
   const handleSaveForm = () => {
@@ -216,10 +222,8 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
               {section.data && section.data.length > 0 ? (
                 <RenderEditFormsFields
                   fields={section.data}
-                  formTemplateId={form.id}
-                  formResponse={{}}
                   onEditField={handleEditField}
-                  onDeleteField={handleDeleteField}
+                  onDeleteField={handleShowConfirmDeleteModal}
                   onAddParagraph={handleAddParagraph}
                 />
               ) : (
@@ -231,6 +235,14 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
           <p>No sections found in this form</p>
         )}
       </div>
+
+      {showConfirmDeleteModal && (
+        <DeleteConfirmModal
+          onClose={() => setShowConfirmDeleteModal(false)}
+          onConfirm={() => handleDeleteField(editingField?.id || "")}
+          type="section"
+        />
+      )}
 
       <EditFormServices
         isOpen={showServicesModal}

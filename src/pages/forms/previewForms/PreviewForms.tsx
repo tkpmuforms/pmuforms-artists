@@ -15,6 +15,7 @@ import {
   getFormById,
 } from "../../../services/artistServices";
 import "./preview-forms.scss";
+import DeleteConfirmModal from "../../../components/formsComp/DeleteConfirmModal";
 
 interface PreviewFormsProps {
   onClose?: () => void;
@@ -28,6 +29,7 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
   const { user } = useAuth();
   const [form, setForm] = useState<SingleForm | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchForm = async () => {
@@ -128,7 +130,7 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
         <div className="title-actions-row">
           <h2>{form.title}</h2>
           <div className="action-buttons">
-            <DeleteFormSvg onClick={handleDelete} />
+            <DeleteFormSvg onClick={() => setShowConfirmDeleteModal(true)} />
             <EditFormsSvg onClick={handleEdit} />
           </div>
         </div>
@@ -150,7 +152,7 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
             <div key={section._id || section.id}>
               <h3>{section.title}</h3>
               {section.data && section.data.length > 0 ? (
-                renderPreviewFormFields(section.data, form.id, {})
+                renderPreviewFormFields(section.data)
               ) : (
                 <p>No fields in this section</p>
               )}
@@ -160,6 +162,14 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
           <p>No sections found in this form</p>
         )}
       </div>
+
+      {showConfirmDeleteModal && (
+        <DeleteConfirmModal
+          onClose={() => setShowConfirmDeleteModal(false)}
+          onConfirm={handleDelete}
+          type="form"
+        />
+      )}
     </div>
   );
 };

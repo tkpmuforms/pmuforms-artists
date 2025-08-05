@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import type React from "react";
 import {
   SmallDeleteIconSvg,
   SmallEditIConSvg,
@@ -15,8 +17,6 @@ const FormInputTypes = {
 
 interface RenderEditFormsFieldsProps {
   fields: any[];
-  formTemplateId: string;
-  formResponse: any;
   onEditField: (field: any) => void;
   onDeleteField: (fieldId: string) => void;
   onAddParagraph: (fieldId: string) => void;
@@ -24,13 +24,10 @@ interface RenderEditFormsFieldsProps {
 
 const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
   fields,
-  formTemplateId,
-  formResponse,
   onEditField,
   onDeleteField,
   onAddParagraph,
 }) => {
-  // Common styles for preview mode - disabled appearance
   const previewInputStyle = {
     backgroundColor: "#f9f9f9",
     border: "1px solid #ddd",
@@ -43,16 +40,19 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
       <SmallEditIConSvg
         onClick={() => onEditField(field)}
         className="field-action-icon edit-icon"
+        style={{ cursor: "pointer", width: "16px", height: "16px" }}
       />
       <SmallDeleteIconSvg
         onClick={() => onDeleteField(field.id)}
         className="field-action-icon delete-icon"
+        style={{ cursor: "pointer", width: "16px", height: "16px" }}
       />
     </div>
   );
 
   const renderField = (field: any) => {
     if (!field || !field.id) return null;
+
     const isRequired = field?.required;
 
     if (!field.type) {
@@ -99,8 +99,10 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
                   disabled
                   style={{ cursor: "not-allowed" }}
                 />
-                {field.title}
-                {isRequired && <span className="required-star">*</span>}
+                <span>
+                  {field.title}
+                  {isRequired && <span className="required-star">*</span>}
+                </span>
               </label>
               <FieldActions field={field} />
             </div>

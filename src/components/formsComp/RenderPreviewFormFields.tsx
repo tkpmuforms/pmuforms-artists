@@ -7,7 +7,7 @@ const FormInputTypes = {
   NUMBER: "numberOfField",
 };
 
-export const renderPreviewFormFields = (fields, formTemplateId, formResponse) =>
+export const renderPreviewFormFields = (fields) =>
   fields.map((field) => {
     if (!field || !field.id) return null;
     const isRequired = field?.required;

@@ -6,8 +6,8 @@ interface EditFormServicesProps {
   isOpen: boolean;
   onClose: () => void;
   allServices: Service[];
-  selectedServices: (string | number)[];
-  onUpdateServices: (selectedIds: (string | number)[]) => void;
+  selectedServices: number[];
+  onUpdateServices: (selectedIds: number[]) => void;
   loading?: boolean;
 }
 
@@ -48,46 +48,52 @@ const EditFormServices: React.FC<EditFormServicesProps> = ({
     <div className="modal-overlay">
       <div className="services-modal">
         <div className="modal-header">
-          <h3>Update Form Services</h3>
+          <h2>Edit Form Services</h2>
           <button className="close-button" onClick={handleCancel}>
             ×
           </button>
         </div>
 
-        <div className="modal-content">
-          {loading ? (
-            <div className="loading-container">
-              <p>Loading services...</p>
-            </div>
-          ) : (
-            <div className="services-grid">
-              {allServices.map((service) => {
-                const serviceId = service.id || service._id;
-                const isSelected = tempSelectedServices.includes(serviceId);
+        <div className="modal-subtitle">
+          Please select the Permanent make up services you offer
+        </div>
 
-                return (
-                  <div key={serviceId} className="service-checkbox">
-                    <label className={isSelected ? "selected" : ""}>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleServiceToggle(serviceId)}
-                      />
+        <div className="modal-content">
+          <div className="services-section">
+            <h3>Select Services</h3>
+
+            {loading ? (
+              <div className="loading-container">
+                <p>Loading services...</p>
+              </div>
+            ) : (
+              <div className="services-grid">
+                {allServices.map((service) => {
+                  const serviceId = service.id || service._id;
+                  const isSelected = tempSelectedServices.includes(serviceId);
+
+                  return (
+                    <button
+                      key={serviceId}
+                      className={`service-tag ${isSelected ? "selected" : ""}`}
+                      onClick={() => handleServiceToggle(serviceId)}
+                    >
                       {service.service}
-                    </label>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="modal-footer">
-          <button className="cancel-btn" onClick={handleCancel}>
-            Cancel
-          </button>
-          <button className="save-btn" onClick={handleSave} disabled={loading}>
-            Update Services
+          <button
+            className="continue-btn"
+            onClick={handleSave}
+            disabled={loading}
+          >
+            Continue
           </button>
         </div>
       </div>

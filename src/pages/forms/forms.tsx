@@ -3,6 +3,7 @@
 import { Plus } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import AddFieldModal from "../../components/formsComp/AddFieldModal";
 import FormCard from "../../components/formsComp/FormCard";
@@ -11,7 +12,6 @@ import { Form } from "../../redux/types";
 import { getArtistForms } from "../../services/artistServices";
 import { transformFormData } from "../../utils/utils";
 import "./forms-page.scss";
-import toast from "react-hot-toast";
 
 const FormsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"consent" | "care">("consent");
