@@ -135,7 +135,7 @@ export interface SingleForm {
 
 export interface Section {
   _id?: string;
-  id?: string;
+  id: string;
   title: string;
   data: Field[];
   skip?: boolean;

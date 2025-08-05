@@ -20,11 +20,11 @@ const EditFormServices: React.FC<EditFormServicesProps> = ({
   loading = false,
 }) => {
   const [tempSelectedServices, setTempSelectedServices] =
-    useState<(string | number)[]>(selectedServices);
+    useState<number[]>(selectedServices);
 
   if (!isOpen) return null;
 
-  const handleServiceToggle = (serviceId: string | number) => {
+  const handleServiceToggle = (serviceId: number) => {
     setTempSelectedServices((prev) => {
       if (prev.includes(serviceId)) {
         return prev.filter((id) => id !== serviceId);
@@ -69,7 +69,7 @@ const EditFormServices: React.FC<EditFormServicesProps> = ({
             ) : (
               <div className="services-grid">
                 {allServices.map((service) => {
-                  const serviceId = service.id || service._id;
+                  const serviceId = Number(service.id || service._id);
                   const isSelected = tempSelectedServices.includes(serviceId);
 
                   return (

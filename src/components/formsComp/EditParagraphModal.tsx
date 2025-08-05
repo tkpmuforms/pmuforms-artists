@@ -7,18 +7,26 @@ import "./edit-paragraph-modal.scss";
 
 interface EditParagraphModalProps {
   onClose: () => void;
-  onSave: () => void;
-  onDelete: () => void;
-  initialContent?: string; // Optional prop for initial content
+  onSave: (updatedContent: string, isRequired?: boolean) => void;
+  initialContent?: string;
+  initialRequired?: boolean;
+  fieldType?: string;
 }
 
 const EditParagraphModal: React.FC<EditParagraphModalProps> = ({
   onClose,
   onSave,
-  onDelete,
   initialContent,
+  initialRequired = false,
+  fieldType,
 }) => {
   const [content, setContent] = useState(initialContent || "");
+  const [isRequired, setIsRequired] = useState(initialRequired);
+
+  const handleSave = () => {
+    onSave(content, isRequired);
+    onClose();
+  };
 
   return (
     <div className="edit-paragraph-modal">
@@ -47,7 +55,7 @@ const EditParagraphModal: React.FC<EditParagraphModalProps> = ({
           <button className="edit-paragraph-modal__cancel" onClick={onClose}>
             Cancel
           </button>
-          <button className="edit-paragraph-modal__save" onClick={onSave}>
+          <button className="edit-paragraph-modal__save" onClick={handleSave}>
             Save
           </button>
         </div>

@@ -17,6 +17,7 @@ const FormInputTypes = {
 
 interface RenderEditFormsFieldsProps {
   fields: any[];
+  sectionId: string; // Add sectionId prop
   onEditField: (field: any) => void;
   onDeleteField: (fieldId: string) => void;
   onAddParagraph: (fieldId: string) => void;
@@ -24,6 +25,7 @@ interface RenderEditFormsFieldsProps {
 
 const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
   fields,
+  sectionId, // Receive sectionId
   onEditField,
   onDeleteField,
   onAddParagraph,
@@ -38,14 +40,12 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
   const FieldActions = ({ field }: { field: any }) => (
     <div className="field-actions">
       <SmallEditIConSvg
-        onClick={() => onEditField(field)}
+        onClick={() => onEditField({ ...field, sectionId })} // Include sectionId
         className="field-action-icon edit-icon"
-        style={{ cursor: "pointer", width: "16px", height: "16px" }}
       />
       <SmallDeleteIconSvg
-        onClick={() => onDeleteField(field.id)}
+        onClick={() => onDeleteField({ ...field, sectionId })} // Include sectionId
         className="field-action-icon delete-icon"
-        style={{ cursor: "pointer", width: "16px", height: "16px" }}
       />
     </div>
   );

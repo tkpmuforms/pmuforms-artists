@@ -87,7 +87,7 @@ export const updateFormSectionData = async (
   data: Record<string, unknown>
 ) =>
   axiosInstance.patch(
-    `/forms/${formTemplateId}/sections/${sectionId}/data/${dataId}/update`,
+    `/api/forms/${formTemplateId}/sections/${sectionId}/data/${dataId}/update`,
     data
   );
 

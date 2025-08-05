@@ -3,7 +3,7 @@ import { Service } from "../../redux/types";
 import "./services-section.scss";
 
 interface ServicesSectionProps {
-  services: (string | number)[];
+  services: number[];
   allServices: Service[];
   onChangeServices: () => void;
   loading?: boolean;
@@ -15,10 +15,12 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({
   onChangeServices,
   loading = false,
 }) => {
-  const getServicesByIds = (serviceIds: (string | number)[]) => {
+  const getServicesByIds = (serviceIds: number[]) => {
+    const serviceIdStrings = serviceIds.map(String);
     return allServices.filter(
       (service) =>
-        serviceIds.includes(service.id) || serviceIds.includes(service._id)
+        serviceIdStrings.includes(String(service.id)) ||
+        serviceIdStrings.includes(String(service._id))
     );
   };
 

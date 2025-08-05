@@ -11,10 +11,12 @@ import { Section, Service, SingleForm } from "../../../redux/types";
 import {
   getFormById,
   getServices,
+  updateFormSectionData,
   updateFormServices,
 } from "../../../services/artistServices";
 import "./edit-forms.scss";
 import DeleteConfirmModal from "../../../components/formsComp/DeleteConfirmModal";
+import EditParagraphModal from "../../../components/formsComp/EditParagraphModal";
 
 interface EditFormsProps {
   onClose?: () => void;
@@ -33,6 +35,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const [showServicesModal, setShowServicesModal] = useState(false);
   const [editingField, setEditingField] = useState(null);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [showEditParagraphModal, setShowEditParagraphModal] = useState(false);
 
   // Fetch services
   useEffect(() => {
@@ -115,6 +118,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
 
   // Field handlers
   const handleEditField = (field: any) => {
+    setShowEditParagraphModal(true);
     setEditingField(field);
     console.log("Edit field:", field);
     // TODO: Implement field editing modal or inline editor
@@ -126,6 +130,54 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
       // TODO: Implement field deletion logic
       toast.success("Field deleted successfully");
     }
+  };
+
+  const handleSectionDataUpdate = (
+    updatedContent: string,
+    isRequired?: boolean
+  ) => {
+    if (!form || !editingField) return;
+
+    const updatedField = {
+      ...editingField,
+      title: updatedContent,
+      required: isRequired !== undefined ? isRequired : editingField.required,
+    };
+
+    console.log("Updating field data:", updatedField);
+
+    updateFormSectionData(
+      form.id,
+      editingField.sectionId, // Now this should be available
+      editingField.id,
+      updatedField
+    )
+      .then(() => {
+        // Update the form state locally
+        const updatedForm = { ...form };
+        updatedForm.sections = updatedForm.sections.map((section) => {
+          if (
+            section.id === editingField?.sectionId ||
+            section._id === editingField?.sectionId
+          ) {
+            return {
+              ...section,
+              data: section.data.map((field) =>
+                field.id === editingField?.id ? updatedField : field
+              ),
+            };
+          }
+          return section;
+        });
+
+        setForm(updatedForm);
+        setEditingField(null);
+        toast.success("Field updated successfully");
+      })
+      .catch((error) => {
+        console.error("Error updating field:", error);
+        toast.error("Failed to update field");
+      });
   };
 
   const handleShowConfirmDeleteModal = (field: any) => {
@@ -222,6 +274,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
               {section.data && section.data.length > 0 ? (
                 <RenderEditFormsFields
                   fields={section.data}
+                  sectionId={section._id || section.id}
                   onEditField={handleEditField}
                   onDeleteField={handleShowConfirmDeleteModal}
                   onAddParagraph={handleAddParagraph}
@@ -241,6 +294,18 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
           onClose={() => setShowConfirmDeleteModal(false)}
           onConfirm={() => handleDeleteField(editingField?.id || "")}
           type="section"
+        />
+      )}
+      {showEditParagraphModal && (
+        <EditParagraphModal
+          onClose={() => {
+            setShowEditParagraphModal(false);
+            setEditingField(null);
+          }}
+          onSave={handleSectionDataUpdate} // Now passes updated content
+          initialContent={editingField?.title || ""}
+          initialRequired={editingField?.required || false}
+          fieldType={editingField?.type}
         />
       )}
 
