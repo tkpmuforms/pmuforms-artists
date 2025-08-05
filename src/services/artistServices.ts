@@ -50,17 +50,8 @@ export const getFilledFormByAppointmentAndTemplate = async (
     `/api/filled-forms/appointment/${appointmentId}/form/${formTemplateId}`
   );
 
-export const getRootFormTemplates = async () =>
-  axiosInstance.get("/api/forms/root-templates");
-
 export const getFormsByAppointment = async (appointmentId: string | number) =>
   axiosInstance.get(`/api/forms/appointment/${appointmentId}`);
-
-export const createFormNewVersion = async (data: {
-  formTemplateId: string;
-  title: string;
-  sections: Record<string, unknown>[];
-}) => axiosInstance.post("/api/forms/new-version", data);
 
 export const getFormById = async (formTemplateId: string | number) =>
   axiosInstance.get(`/api/forms/${formTemplateId}`);
@@ -69,11 +60,6 @@ export const updateFormServices = async (
   formTemplateId: string | number,
   data: { services: number[] }
 ) => axiosInstance.put(`/api/forms/${formTemplateId}/update-services`, data);
-
-export const updateFormSections = async (
-  formTemplateId: string | number,
-  data: { sections: Record<string, unknown>[] }
-) => axiosInstance.patch(`/forms/${formTemplateId}/update-sections`, data);
 
 export const getMyForms = async () => axiosInstance.get("/forms/my-forms");
 
@@ -100,11 +86,16 @@ export const deleteFormSectionData = async (
     `/api/forms/${formTemplateId}/sections/${sectionId}/data/${dataId}`
   );
 
+//add and after for the data so the new one is after the old one
 export const addFormSectionData = async (
   formTemplateId: string | number,
   sectionId: string | number,
   data: Record<string, unknown>
-) => axiosInstance.post(`/forms/${formTemplateId}/sections/${sectionId}`, data);
+) =>
+  axiosInstance.post(
+    `/api/forms/${formTemplateId}/sections/${sectionId}`,
+    data
+  );
 
 export const updateArtistFcmToken = async (data: { fcmToken: string }) =>
   axiosInstance.patch("/api/artists/update-fcm-token", data);
