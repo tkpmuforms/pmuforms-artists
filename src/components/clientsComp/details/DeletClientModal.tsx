@@ -3,27 +3,37 @@
 import type React from "react";
 import { X } from "lucide-react";
 import "./delete-client-modal.scss";
+import { deleteCustomer } from "../../../services/artistServices";
+import { GarbageIconSvg } from "../../../assets/svgs/formsSvg";
 
 interface DeleteClientModalProps {
   onClose: () => void;
+  id: string;
 }
 
-const DeleteClientModal: React.FC<DeleteClientModalProps> = ({ onClose }) => {
+const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
+  onClose,
+  id,
+}) => {
   const handleDelete = () => {
-    console.log("Deleting client");
-    onClose();
+    deleteCustomer(id).then(() => {
+      onClose();
+    });
   };
 
   return (
-    <div className="delete-client-modal">
-      <div className="delete-client-modal__overlay" onClick={onClose} />
-      <div className="delete-client-modal__content">
-        <button className="delete-client-modal__close" onClick={onClose}>
+    <div className="delete-client-confirm-modal">
+      <div className="delete-client-confirm-modal__overlay" onClick={onClose} />
+      <div className="delete-client-confirm-modal__content">
+        <button
+          className="delete-client-confirm-modal__close"
+          onClick={onClose}
+        >
           <X size={20} />
         </button>
 
-        <div className="delete-client-modal__icon">
-          <div className="delete-icon">🗑️</div>
+        <div className="delete-client-confirm-modal__icon">
+          <GarbageIconSvg />
         </div>
 
         <h2>Delete this Client?</h2>
@@ -32,15 +42,18 @@ const DeleteClientModal: React.FC<DeleteClientModalProps> = ({ onClose }) => {
           associated data?
         </p>
 
-        <div className="delete-client-modal__actions">
-          <button className="delete-client-modal__cancel" onClick={onClose}>
+        <div className="delete-client-confirm-modal__actions">
+          <button
+            className="delete-client-confirm-modal__cancel"
+            onClick={onClose}
+          >
             Cancel
           </button>
           <button
-            className="delete-client-modal__confirm"
+            className="delete-client-confirm-modal__confirm"
             onClick={handleDelete}
           >
-            Delete Client
+            Delete
           </button>
         </div>
       </div>

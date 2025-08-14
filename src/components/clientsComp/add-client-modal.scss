@@ -113,7 +113,12 @@
   }
 
   &__submit {
-    width: 100%;
+    margin-top: 24px;
+    justify-content: center;
+    width: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
     background: var(--pmu-primary);
     color: white;
     border: none;

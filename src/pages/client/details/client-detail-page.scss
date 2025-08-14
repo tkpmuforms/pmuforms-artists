@@ -41,7 +41,7 @@
       h1 {
         font-size: 32px;
         font-weight: 600;
-        color: #1e293b;
+        color: #000000;
         margin: 0 0 8px 0;
       }
 
@@ -92,10 +92,10 @@
     .overview-card {
       display: flex;
       align-items: center;
-      gap: 16px;
-      background: white;
+      gap: 26px;
+      background: #f8f8f8;
       border-radius: 16px;
-      padding: 24px;
+      padding: 44px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
       &__icon {
@@ -133,16 +133,11 @@
         color: #1e293b;
       }
     }
-  }
-
-  &__contact {
-    margin-bottom: 48px;
-
     .contact-item {
       display: flex;
       align-items: center;
       gap: 16px;
-      background: white;
+      background: #f8f8f8;
       border-radius: 16px;
       padding: 20px;
       margin-bottom: 12px;
@@ -156,7 +151,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #64748b;
+        color: #000000;
         flex-shrink: 0;
       }
 
@@ -167,7 +162,7 @@
 
       &__label {
         font-size: 14px;
-        color: #64748b;
+        color: #000000;
         margin-bottom: 4px;
       }
 
@@ -180,7 +175,7 @@
       &__action {
         background: none;
         border: none;
-        color: #64748b;
+        color: #000000;
         cursor: pointer;
         padding: 8px;
         border-radius: 8px;
@@ -200,7 +195,7 @@
     h2 {
       font-size: 12px;
       font-weight: 600;
-      color: #64748b;
+      color: #000000;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin: 0 0 16px 0;
@@ -214,10 +209,9 @@
 
     .action-card {
       display: flex;
-      flex-direction: column;
       align-items: center;
       gap: 12px;
-      background: white;
+      background: #f8f8f8;
       border: none;
       border-radius: 16px;
       padding: 24px;
@@ -238,7 +232,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #64748b;
       }
 
       &__title {
@@ -269,5 +262,40 @@
         border-color: #fca5a5;
       }
     }
+  }
+}
+
+.form-sent-success {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #dcfce7;
+    color: #16a34a;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+
+    p {
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

@@ -2,6 +2,7 @@
 
 import {
   Calendar,
+  Check,
   ChevronLeft,
   Clock,
   Copy,
@@ -13,15 +14,18 @@ import {
   User,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import {
+  PendingFormsSvg,
+  TotalAppointmentsSvg,
+} from "../../../assets/svgs/formsSvg";
 import DeleteClientModal from "../../../components/clientsComp/details/DeletClientModal";
 import EditClientModal from "../../../components/clientsComp/details/EditClientModal";
 import PreviewAppointmentModal from "../../../components/clientsComp/details/PreviewAppointMent";
 import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
 import { LoadingSmall } from "../../../components/loading/Loading";
-import { CustomerResponse } from "../../../redux/types";
 import { getCustomerById } from "../../../services/artistServices";
 import "./client-detail-page.scss";
 
@@ -29,7 +33,7 @@ interface ClientDetail {
   id: string;
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
   pendingForms: number;
   totalAppointments: number;
 }
@@ -45,51 +49,52 @@ const ClientDetailPage: React.FC = () => {
   const [showEditClient, setShowEditClient] = useState(false);
   const [showPreviewAppointment, setShowPreviewAppointment] = useState(false);
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
+  // State for form sent success message (to be implemented)
   const [showFormSentSuccess, setShowFormSentSuccess] = useState(false);
   const [showDeleteClient, setShowDeleteClient] = useState(false);
 
-  useEffect(() => {
-    const fetchClientDetail = async () => {
-      if (!id) {
-        setError("Client ID is required");
-        setLoading(false);
-        return;
+  const fetchClientDetails = useCallback(async () => {
+    if (!id) {
+      setError("Client ID is required");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await getCustomerById(id);
+      console.log("Client data fetched:", response.data);
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch client details");
       }
+      const customer = response?.data.customer;
 
-      try {
-        setLoading(true);
-        setError(null);
+      if (customer) {
+        setClient({
+          id: customer.id,
+          name: customer.name,
+          email: customer.email || "No email provided",
+          phone: customer?.info?.cell_phone || undefined,
 
-        const response = await getCustomerById(id);
-        console.log("Client data fetched:", response.data);
-        if (response.status !== 200) {
-          throw new Error("Failed to fetch client details");
-        }
-        const customer = response?.data.customer;
-
-        if (customer) {
-          setClient({
-            id: customer.id,
-            name: customer.name,
-            email: customer.email || "No email provided",
-            phone: customer?.info?.cell_phone || undefined,
-
-            pendingForms: Math.floor(Math.random() * 10),
-            totalAppointments: Math.floor(Math.random() * 50),
-          });
-        } else {
-          setError("Client not found");
-        }
-      } catch (err) {
-        console.error("Error fetching client details:", err);
-        setError("Failed to load client details. Please try again.");
-      } finally {
-        setLoading(false);
+          pendingForms: Math.floor(Math.random() * 10),
+          totalAppointments: Math.floor(Math.random() * 50),
+        });
+      } else {
+        setError("Client not found");
       }
-    };
-
-    fetchClientDetail();
+    } catch (err) {
+      console.error("Error fetching client details:", err);
+      setError("Failed to load client details. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    fetchClientDetails();
+  }, [id, fetchClientDetails]);
 
   const handleCopyToClipboard = async (text: string) => {
     try {
@@ -179,7 +184,7 @@ const ClientDetailPage: React.FC = () => {
           <div className="overview-grid">
             <div className="overview-card">
               <div className="overview-card__icon pending">
-                <span>⚠️</span>
+                <PendingFormsSvg />
               </div>
               <div className="overview-card__content">
                 <div className="overview-card__label">Pending Forms</div>
@@ -191,7 +196,7 @@ const ClientDetailPage: React.FC = () => {
 
             <div className="overview-card">
               <div className="overview-card__icon appointments">
-                <span>📅</span>
+                <TotalAppointmentsSvg />
               </div>
               <div className="overview-card__content">
                 <div className="overview-card__label">Total Appointments</div>
@@ -200,43 +205,39 @@ const ClientDetailPage: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="client-detail-page__contact">
-          <div className="contact-item">
-            <div className="contact-item__icon">
-              <Mail size={20} />
-            </div>
-            <div className="contact-item__content">
-              <div className="contact-item__label">Email Address</div>
-              <div className="contact-item__value">{client.email}</div>
-            </div>
-            <button
-              className="contact-item__action"
-              onClick={() => handleCopyToClipboard(client.email)}
-            >
-              <Copy size={16} />
-            </button>
-          </div>
-
-          {client.phone && (
             <div className="contact-item">
               <div className="contact-item__icon">
-                <Phone size={20} />
+                <Mail size={20} />
               </div>
               <div className="contact-item__content">
-                <div className="contact-item__label">Phone Number</div>
-                <div className="contact-item__value">{client.phone}</div>
+                <div className="contact-item__label">Email Address</div>
+                <div className="contact-item__value">{client.email}</div>
               </div>
               <button
                 className="contact-item__action"
-                onClick={() => handleCopyToClipboard(client.phone!)}
+                onClick={() => handleCopyToClipboard(client.email)}
               >
                 <Copy size={16} />
               </button>
             </div>
-          )}
+            {client.phone && (
+              <div className="contact-item">
+                <div className="contact-item__icon">
+                  <Phone size={20} />
+                </div>
+                <div className="contact-item__content">
+                  <div className="contact-item__label">Phone Number</div>
+                  <div className="contact-item__value">{client.phone}</div>
+                </div>
+                <button
+                  className="contact-item__action"
+                  onClick={() => handleCopyToClipboard(client.phone!)}
+                >
+                  <Copy size={16} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="client-detail-page__actions">
@@ -267,7 +268,19 @@ const ClientDetailPage: React.FC = () => {
       </div>
 
       {showEditClient && (
-        <EditClientModal onClose={() => setShowEditClient(false)} />
+        <EditClientModal
+          onClose={() => {
+            setShowEditClient(false);
+            fetchClientDetails();
+          }}
+          id={client.id}
+          initialFormData={{
+            firstName: client.name.split(" ")[0],
+            lastName: client.name.split(" ")[1] || "",
+            email: client.email,
+            phone: client.phone?.toString(),
+          }}
+        />
       )}
 
       {showPreviewAppointment && (
@@ -282,12 +295,26 @@ const ClientDetailPage: React.FC = () => {
           onSuccess={() => {
             setShowSendConsentForm(false);
             setShowFormSentSuccess(true);
+            // Auto-hide success message after 3 seconds
+            setTimeout(() => setShowFormSentSuccess(false), 3000);
           }}
         />
       )}
 
+      {showFormSentSuccess && (
+        <div className="form-sent-success">
+          <div className="form-sent-success__content">
+            <Check size={20} />
+            <p>Form sent successfully!</p>
+          </div>
+        </div>
+      )}
+
       {showDeleteClient && (
-        <DeleteClientModal onClose={() => setShowDeleteClient(false)} />
+        <DeleteClientModal
+          id={client.id}
+          onClose={() => setShowDeleteClient(false)}
+        />
       )}
     </div>
   );

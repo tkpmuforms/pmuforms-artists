@@ -2,28 +2,60 @@
 
 import type React from "react";
 import { useState } from "react";
-import { X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import "./edit-client-modal.scss";
+import { updateCustomerPersonalDetails } from "../../../services/artistServices";
 
 interface EditClientModalProps {
   onClose: () => void;
+  id: string;
+  initialFormData?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
 }
 
-const EditClientModal: React.FC<EditClientModalProps> = ({ onClose }) => {
+const EditClientModal: React.FC<EditClientModalProps> = ({
+  onClose,
+  id,
+  initialFormData,
+}) => {
   const [formData, setFormData] = useState({
-    firstName: "Johnson",
-    lastName: "Smith",
-    email: "jordan.smith@example.com",
-    phone: "555-0123-4567",
+    firstName: initialFormData?.firstName || "",
+    lastName: initialFormData?.lastName || "",
+    email: initialFormData?.email || "",
+    phone: initialFormData?.phone || "",
   });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = () => {
-    console.log("Saving client:", formData);
-    onClose();
+    setLoading(true);
+    const updatedData = {
+      name: formData.firstName + " " + formData.lastName,
+      primaryPhone: formData.phone,
+      email: formData.email,
+    };
+
+    updateCustomerPersonalDetails(id, updatedData)
+      .then(() => {
+        setSuccess(true);
+        setTimeout(() => {
+          onClose();
+        }, 1000); // Close after showing success state for 1 second
+      })
+      .catch((error) => {
+        console.error("Error updating client:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -87,8 +119,21 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ onClose }) => {
           </div>
         </div>
 
-        <button className="edit-client-modal__save" onClick={handleSave}>
-          Save Changes
+        <button
+          className="edit-client-modal__save"
+          onClick={handleSave}
+          disabled={loading}
+        >
+          {loading ? (
+            "Saving..."
+          ) : success ? (
+            <span className="success-state">
+              <Check size={16} />
+              Saved
+            </span>
+          ) : (
+            "Save Changes"
+          )}
         </button>
       </div>
     </div>
