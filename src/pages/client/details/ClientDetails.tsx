@@ -23,10 +23,12 @@ import {
 } from "../../../assets/svgs/formsSvg";
 import DeleteClientModal from "../../../components/clientsComp/details/DeletClientModal";
 import EditClientModal from "../../../components/clientsComp/details/EditClientModal";
-import PreviewAppointmentModal from "../../../components/clientsComp/details/PreviewAppointMent";
 import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
 import { LoadingSmall } from "../../../components/loading/Loading";
-import { getCustomerById } from "../../../services/artistServices";
+import {
+  getAppointmentsForCustomer,
+  getCustomerById,
+} from "../../../services/artistServices";
 import "./client-detail-page.scss";
 
 interface ClientDetail {
@@ -34,24 +36,21 @@ interface ClientDetail {
   name: string;
   email: string;
   phone: string;
-  pendingForms: number;
-  totalAppointments: number;
 }
 
 const ClientDetailPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [client, setClient] = useState<ClientDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [showEditClient, setShowEditClient] = useState(false);
-  const [showPreviewAppointment, setShowPreviewAppointment] = useState(false);
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
-  // State for form sent success message (to be implemented)
   const [showFormSentSuccess, setShowFormSentSuccess] = useState(false);
   const [showDeleteClient, setShowDeleteClient] = useState(false);
+  const [clientAppointmentsMetadata, setClientAppointmentsMetadata] = useState(
+    []
+  );
 
   const fetchClientDetails = useCallback(async () => {
     if (!id) {
@@ -65,6 +64,7 @@ const ClientDetailPage: React.FC = () => {
       setError(null);
 
       const response = await getCustomerById(id);
+      const appointmentsResponse = await getAppointmentsForCustomer(id);
       console.log("Client data fetched:", response.data);
       if (response.status !== 200) {
         throw new Error("Failed to fetch client details");
@@ -77,10 +77,10 @@ const ClientDetailPage: React.FC = () => {
           name: customer.name,
           email: customer.email || "No email provided",
           phone: customer?.info?.cell_phone || undefined,
-
-          pendingForms: Math.floor(Math.random() * 10),
-          totalAppointments: Math.floor(Math.random() * 50),
         });
+        setClientAppointmentsMetadata(
+          appointmentsResponse?.data?.metadata || []
+        );
       } else {
         setError("Client not found");
       }
@@ -112,7 +112,7 @@ const ClientDetailPage: React.FC = () => {
     {
       icon: <Calendar size={20} />,
       title: "View Appointment",
-      onClick: () => setShowPreviewAppointment(true),
+      onClick: () => navigate(`/clients/${client?.id}/appointments`),
     },
     {
       icon: <Send size={20} />,
@@ -188,9 +188,7 @@ const ClientDetailPage: React.FC = () => {
               </div>
               <div className="overview-card__content">
                 <div className="overview-card__label">Pending Forms</div>
-                <div className="overview-card__value">
-                  {client.pendingForms.toString().padStart(2, "0")}
-                </div>
+                <div className="overview-card__value">{0}</div>
               </div>
             </div>
 
@@ -201,42 +199,52 @@ const ClientDetailPage: React.FC = () => {
               <div className="overview-card__content">
                 <div className="overview-card__label">Total Appointments</div>
                 <div className="overview-card__value">
-                  {client.totalAppointments}
+                  {clientAppointmentsMetadata?.total}
                 </div>
               </div>
             </div>
-            <div className="contact-item">
-              <div className="contact-item__icon">
-                <Mail size={20} />
+            <div className="overview-card contact-info-card">
+              <div className="contact-info">
+                <div className="contact-info__item">
+                  <div className="contact-info__icon">
+                    <Mail size={20} />
+                  </div>
+                  <div className="contact-info__content">
+                    <div className="contact-info__label">Email Address</div>
+                    <div className="contact-info__value">{client.email}</div>
+                  </div>
+                  <button
+                    className="contact-info__action"
+                    onClick={() => handleCopyToClipboard(client.email)}
+                  >
+                    <Copy size={16} />
+                  </button>
+                </div>
+
+                {client.phone && (
+                  <>
+                    <div className="contact-info__divider"></div>
+                    <div className="contact-info__item">
+                      <div className="contact-info__icon">
+                        <Phone size={20} />
+                      </div>
+                      <div className="contact-info__content">
+                        <div className="contact-info__label">Phone Number</div>
+                        <div className="contact-info__value">
+                          {client.phone}
+                        </div>
+                      </div>
+                      <button
+                        className="contact-info__action"
+                        onClick={() => handleCopyToClipboard(client.phone!)}
+                      >
+                        <Copy size={16} />
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
-              <div className="contact-item__content">
-                <div className="contact-item__label">Email Address</div>
-                <div className="contact-item__value">{client.email}</div>
-              </div>
-              <button
-                className="contact-item__action"
-                onClick={() => handleCopyToClipboard(client.email)}
-              >
-                <Copy size={16} />
-              </button>
             </div>
-            {client.phone && (
-              <div className="contact-item">
-                <div className="contact-item__icon">
-                  <Phone size={20} />
-                </div>
-                <div className="contact-item__content">
-                  <div className="contact-item__label">Phone Number</div>
-                  <div className="contact-item__value">{client.phone}</div>
-                </div>
-                <button
-                  className="contact-item__action"
-                  onClick={() => handleCopyToClipboard(client.phone!)}
-                >
-                  <Copy size={16} />
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
@@ -280,12 +288,6 @@ const ClientDetailPage: React.FC = () => {
             email: client.email,
             phone: client.phone?.toString(),
           }}
-        />
-      )}
-
-      {showPreviewAppointment && (
-        <PreviewAppointmentModal
-          onClose={() => setShowPreviewAppointment(false)}
         />
       )}
 

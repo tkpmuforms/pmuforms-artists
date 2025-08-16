@@ -29,33 +29,6 @@ import {
 //   },
 // ];
 
-export const metricsData = [
-  {
-    title: "Total Clients",
-    value: "32",
-    icon: PeopleIcon,
-    color: "var(--pmu-primary)",
-  },
-  {
-    title: "Forms Shared",
-    value: "12",
-    icon: FormsSavedIcon,
-    color: "#560056",
-  },
-  {
-    title: "Pending Submissions",
-    value: "04",
-    icon: PendingSubmissionsIcon,
-    color: "#f59e0b",
-  },
-  {
-    title: "Today's Schedule",
-    value: "07",
-    icon: TodaysScheduleIcon,
-    color: "#ef4444",
-  },
-];
-
 export const quickActions = [
   {
     title: "Add New Client",

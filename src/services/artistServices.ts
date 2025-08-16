@@ -19,7 +19,7 @@ export const updateBusinessName = async (data: { businessName: string }) =>
 export const sendEmailVerification = async (uid: string) =>
   axiosInstance.get(`/api/auth/send-email-verification/${uid}`);
 
-export const getAppointmentsForCustomer = async (customerId: number | string) =>
+export const getAppointmentsForCustomer = async (customerId: string) =>
   axiosInstance.get(`/api/appointments/artist/one-customer/${customerId}`);
 
 export const getArtistAppointments = async () =>
@@ -189,3 +189,6 @@ export const createClient = async (data: {
   primaryPhone?: string;
   email?: string;
 }) => axiosInstance.post("/api/customers/my-customers/create-customer", data);
+
+export const getMyMetrics = async () =>
+  axiosInstance.get("/api/artists/my-metrics");

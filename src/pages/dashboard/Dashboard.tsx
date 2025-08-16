@@ -4,28 +4,39 @@ import { ChevronDown, Plus } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  CreateNewClientIcon,
+  CreateNewFormIcon,
+  FormsSavedIcon,
+  PendingSubmissionsIcon,
+  PeopleIcon,
+  SendFormIcon,
+  TodaysScheduleIcon,
+} from "../../assets/svgs/DashboardSvg";
+import AddClientModal from "../../components/clientsComp/AddClientModal";
 import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
 import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
+import FormLinkModal from "../../components/dashboardComp/FormLinkModal";
 import MetricsCard from "../../components/dashboardComp/MetricsCard";
 import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
 import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
-import AddClientModal from "../../components/clientsComp/AddClientModal";
-import FormLinkModal from "../../components/dashboardComp/FormLinkModal";
+import { LoadingSmall } from "../../components/loading/Loading";
 import useAuth from "../../context/useAuth";
-import { metricsData } from "../../jsons/TestData";
 import { Appointment } from "../../redux/types";
 import {
   getArtistAppointments,
+  getMyMetrics,
   searchCustomers,
 } from "../../services/artistServices";
 import { formatAppointmentTime } from "../../utils/utils";
 import "./dashboard.scss";
-import { LoadingSmall } from "../../components/loading/Loading";
-import {
-  CreateNewClientIcon,
-  CreateNewFormIcon,
-  SendFormIcon,
-} from "../../assets/svgs/DashboardSvg";
+
+interface Metrics {
+  totalClients: number;
+  formsShared: number;
+  pendingSubmissions: number;
+  todaysSchedule: number;
+}
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -35,6 +46,7 @@ const Dashboard: React.FC = () => {
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
   const [showFormLinkModal, setShowFormLinkModal] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAddClient, setShowAddClient] = useState(false);
   const [customers, setCustomers] = useState<
@@ -45,13 +57,11 @@ const Dashboard: React.FC = () => {
     {
       title: "Add New Client",
       icon: CreateNewClientIcon,
-
       onClick: () => setShowAddClient(true),
     },
     {
       title: "Create Form",
       icon: CreateNewFormIcon,
-
       onClick: () => navigate("/forms"),
     },
     {
@@ -86,12 +96,18 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    Promise.all([getArtistAppointments(), searchCustomers(undefined, 1, 30)])
-      .then(([appointmentsResponse, customersResponse]) => {
+    Promise.all([
+      getArtistAppointments(),
+      searchCustomers(undefined, 1, 30),
+      getMyMetrics(),
+    ])
+      .then(([appointmentsResponse, customersResponse, metricsResponse]) => {
         console.log("Fetched appointments:", appointmentsResponse.data);
         console.log("Fetched customers:", customersResponse.data);
+        console.log("Fetched metrics:", metricsResponse.data);
 
-        setAppointments(appointmentsResponse.data.appointments);
+        setAppointments(appointmentsResponse.data?.appointments);
+        setMetrics(metricsResponse.data?.metrics);
 
         const customerMap = customersResponse.data.customers.reduce(
           (
@@ -119,6 +135,75 @@ const Dashboard: React.FC = () => {
       });
   }, []);
 
+  // Show loading state for entire dashboard
+  if (loading) {
+    return (
+      <div className="dashboard">
+        <div className="dashboard__header">
+          <div className="dashboard__welcome">
+            <h1>
+              {user?.businessName
+                ? `Hey, ${user.businessName} 👋`
+                : "Hey there 👋"}
+            </h1>
+            <p>Here's your activity for today</p>
+          </div>
+          <div className="dashboard__actions">
+            <button
+              className="dashboard__add-client-btn"
+              onClick={() => setShowAddClient(true)}
+            >
+              <Plus size={16} />
+              Add New Client
+            </button>
+            <div className="dashboard__date-filter">
+              <button className="dashboard__filter-btn">
+                Last 7 days
+                <ChevronDown size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="dashboard__content">
+          <section className="dashboard__metrics">
+            <h2 className="dashboard__section-title">KEY METRICS</h2>
+            <div className="dashboard__metrics-grid">
+              <LoadingSmall />
+            </div>
+          </section>
+
+          <section className="dashboard__quick-actions">
+            <h2 className="dashboard__section-title">QUICK ACTIONS</h2>
+            <div className="dashboard__actions-grid">
+              {quickActions.map((action, index) => (
+                <QuickActionCard
+                  key={index}
+                  {...action}
+                  onClick={action.onClick}
+                />
+              ))}
+            </div>
+          </section>
+
+          <section className="dashboard__appointments">
+            <div className="dashboard__appointments-header">
+              <h2 className="dashboard__section-title">NEXT APPOINTMENT</h2>
+              <button className="dashboard__view-all-btn">
+                View all
+                <ChevronDown size={16} />
+              </button>
+            </div>
+            <div className="dashboard__appointments-grid">
+              <LoadingSmall />
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  // Render dashboard content when not loading
   return (
     <div className="dashboard">
       <div className="dashboard__header">
@@ -152,9 +237,36 @@ const Dashboard: React.FC = () => {
           <h2 className="dashboard__section-title">KEY METRICS</h2>
 
           <div className="dashboard__metrics-grid">
-            {metricsData.map((metric, index) => (
-              <MetricsCard key={index} {...metric} />
-            ))}
+            {metrics ? (
+              [
+                {
+                  title: "Total Clients",
+                  value: metrics.totalClients?.toString() || "0",
+                  icon: PeopleIcon,
+                  color: "var(--pmu-primary)",
+                },
+                {
+                  title: "Forms Shared",
+                  value: metrics.formsShared?.toString() || "0",
+                  icon: FormsSavedIcon,
+                  color: "#560056",
+                },
+                {
+                  title: "Pending Submissions",
+                  value: metrics.pendingSubmissions?.toString() || "0",
+                  icon: PendingSubmissionsIcon,
+                  color: "#f59e0b",
+                },
+                {
+                  title: "Today's Schedule",
+                  value: metrics.todaysSchedule?.toString() || "0",
+                  icon: TodaysScheduleIcon,
+                  color: "#ef4444",
+                },
+              ].map((metric, index) => <MetricsCard key={index} {...metric} />)
+            ) : (
+              <div>No metrics available</div>
+            )}
           </div>
         </section>
 
@@ -180,11 +292,7 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
           <div className="dashboard__appointments-grid">
-            {loading ? (
-              <div>
-                <LoadingSmall />
-              </div>
-            ) : appointments.length > 0 ? (
+            {appointments.length > 0 ? (
               appointments.map((appointment) => (
                 <AppointmentCard
                   key={appointment.id}
@@ -222,7 +330,6 @@ const Dashboard: React.FC = () => {
             setShowSubscriptionModal(false);
             setShowFeaturesModal(true);
           }}
-          //TODO UPDATE: Pass onSubscribe prop to handle subscription logic
           onSubscribe={() => {
             setShowSubscriptionModal(false);
           }}

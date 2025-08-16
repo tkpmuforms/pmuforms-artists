@@ -4,6 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import { X, Calendar } from "lucide-react";
 import "./send-consent-form-modal.scss";
+import PreviewAppointmentModal from "./PreviewAppointMent";
 
 interface SendConsentFormModalProps {
   onClose: () => void;
@@ -16,6 +17,7 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
 }) => {
   const [appointmentDate, setAppointmentDate] = useState("");
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [showPreviewAppointment, setShowPreviewAppointment] = useState(false);
 
   const services = [
     "Microblading",
@@ -122,6 +124,12 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
           Continue
         </button>
       </div>
+      \
+      {showPreviewAppointment && (
+        <PreviewAppointmentModal
+          onClose={() => setShowPreviewAppointment(false)}
+        />
+      )}
     </div>
   );
 };
