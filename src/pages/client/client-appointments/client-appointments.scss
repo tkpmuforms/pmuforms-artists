@@ -38,7 +38,7 @@
     }
 
     .send-consent-btn {
-      background-color: #7c3aed;
+      background: linear-gradient(to right, #8e2d8e, #a654cd);
       color: white;
       border: none;
       padding: 12px 24px;
@@ -50,9 +50,8 @@
       font-size: 14px;
       font-weight: 500;
       transition: background-color 0.2s;
-
       &:hover {
-        background-color: #6d28d9;
+        background: linear-gradient(to right, #8e2d8e, #a654cd);
       }
     }
   }

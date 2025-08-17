@@ -148,3 +148,25 @@ export interface Field {
   required?: boolean;
   line?: string;
 }
+
+export interface ClientAppointmentData {
+  _id: string;
+  id: string;
+  allFormsCompleted: boolean;
+  customerId: string;
+  artistId: string;
+  date: string;
+  services: number[];
+  signed: boolean;
+  deleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  formsToFillCount: number;
+  serviceDetails: ServiceDetail[];
+}
+
+interface ServiceDetail {
+  _id: string;
+  id: number;
+  service: string;
+}

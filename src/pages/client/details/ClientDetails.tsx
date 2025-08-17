@@ -112,7 +112,14 @@ const ClientDetailPage: React.FC = () => {
     {
       icon: <Calendar size={20} />,
       title: "View Appointment",
-      onClick: () => navigate(`/clients/${client?.id}/appointments`),
+      onClick: () =>
+        navigate(`/clients/${client?.id}/appointments`, {
+          state: {
+            clientName: client?.name,
+            clientEmail: client?.email,
+            clientPhone: client?.phone,
+          },
+        }),
     },
     {
       icon: <Send size={20} />,

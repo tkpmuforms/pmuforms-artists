@@ -1,43 +1,25 @@
 "use client";
+import { Calendar, Clock, FileText, MoreVertical, Trash2 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { Calendar, Clock, FileText, MoreVertical, Trash2 } from "lucide-react";
-import "./client-appointments.scss";
-import { useParams } from "react-router-dom";
-import { getAppointmentsForCustomer } from "../../../services/artistServices";
+import { useLocation, useParams } from "react-router-dom";
 import {
   AppointmentSvg,
   FormNotCompletedSvg,
   FormsCompletedSvg,
+  SendConsentFormSvg,
 } from "../../../assets/svgs/ClientsSvg";
-
-interface ServiceDetail {
-  _id: string;
-  id: number;
-  service: string;
-}
-
-interface AppointmentData {
-  _id: string;
-  id: string;
-  allFormsCompleted: boolean;
-  customerId: string;
-  artistId: string;
-  date: string;
-  services: number[];
-  signed: boolean;
-  deleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  formsToFillCount: number;
-  serviceDetails: ServiceDetail[];
-}
+import { ClientAppointmentData } from "../../../redux/types";
+import { getAppointmentsForCustomer } from "../../../services/artistServices";
+import { formatAppointmentTime } from "../../../utils/utils";
+import "./client-appointments.scss";
 
 const ClientAppointmentPage: React.FC = () => {
   const { id } = useParams();
-  const [appointments, setAppointments] = useState<AppointmentData[]>([]);
+  const location = useLocation();
+  const [appointments, setAppointments] = useState<ClientAppointmentData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [clientName] = useState("Linda Lovely");
+  const { clientName, clientEmail, clientPhone } = location.state || {};
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
 
   const onSendConsentForm = () => {
@@ -52,26 +34,6 @@ const ClientAppointmentPage: React.FC = () => {
   const onDeleteAppointment = (appointmentId: string) => {
     // Handle delete appointment logic
     console.log("Delete appointment:", appointmentId);
-  };
-
-  // Helper function to format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  // Helper function to format time
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
   };
 
   // Helper function to get status
@@ -117,12 +79,11 @@ const ClientAppointmentPage: React.FC = () => {
             <h1>{clientName}'s Appointment</h1>
             <p>
               Check out all your appointments and forms with{" "}
-              {clientName.split(" ")[0]} right here!
+              {clientName?.split(" ")[0]} right here!
             </p>
           </div>
           <button onClick={onSendConsentForm} className="send-consent-btn">
-            <FileText size={16} />
-            Send Consent Form
+            <SendConsentFormSvg /> Send Consent Form
           </button>
         </div>
 
@@ -137,10 +98,9 @@ const ClientAppointmentPage: React.FC = () => {
               const primaryService = appointment.serviceDetails?.[0];
               const serviceName = primaryService?.service || "Unknown Service";
               const status = getAppointmentStatus(appointment);
-              const appointmentDate = formatDate(appointment.date);
-              const appointmentTime = formatTime(appointment.date);
+              const appointmentDate = formatAppointmentTime(appointment.date);
               const formFilledDate = appointment.allFormsCompleted
-                ? `${appointmentDate} | ${appointmentTime}`
+                ? `${appointmentDate}`
                 : "Not completed yet";
 
               return (
