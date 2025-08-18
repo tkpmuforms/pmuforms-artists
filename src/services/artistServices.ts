@@ -192,3 +192,6 @@ export const createClient = async (data: {
 
 export const getMyMetrics = async () =>
   axiosInstance.get("/api/artists/my-metrics");
+
+export const DeleteAppointment = async (appointmentId: string | number) =>
+  axiosInstance.delete(`/api/appointments/${appointmentId}`);

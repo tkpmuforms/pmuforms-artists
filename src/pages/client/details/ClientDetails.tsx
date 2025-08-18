@@ -21,11 +21,12 @@ import {
   PendingFormsSvg,
   TotalAppointmentsSvg,
 } from "../../../assets/svgs/formsSvg";
-import DeleteClientModal from "../../../components/clientsComp/details/DeletClientModal";
+import DeleteModal from "../../../components/clientsComp/details/DeletClientModal";
 import EditClientModal from "../../../components/clientsComp/details/EditClientModal";
 import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import {
+  deleteCustomer,
   getAppointmentsForCustomer,
   getCustomerById,
 } from "../../../services/artistServices";
@@ -134,7 +135,14 @@ const ClientDetailPage: React.FC = () => {
     {
       icon: <User size={20} />,
       title: "View Notes",
-      onClick: () => console.log("View Notes"),
+      onClick: () =>
+        navigate(`/clients/${client?.id}/notes`, {
+          state: {
+            clientName: client?.name,
+            clientEmail: client?.email,
+            clientPhone: client?.phone,
+          },
+        }),
     },
   ];
 
@@ -320,9 +328,15 @@ const ClientDetailPage: React.FC = () => {
       )}
 
       {showDeleteClient && (
-        <DeleteClientModal
-          id={client.id}
+        <DeleteModal
           onClose={() => setShowDeleteClient(false)}
+          headerText="Delete Client"
+          shorterText="Are you sure you want to delete this client?"
+          handleDelete={() => {
+            deleteCustomer(client.id).then(() => {
+              setShowDeleteClient(false);
+            });
+          }}
         />
       )}
     </div>

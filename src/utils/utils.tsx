@@ -74,3 +74,12 @@ export const transformFormData = (apiForm: any): Form => {
     updatedAt: apiForm.updatedAt,
   };
 };
+
+export const formatDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};

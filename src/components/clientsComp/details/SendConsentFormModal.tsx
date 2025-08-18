@@ -1,10 +1,12 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Calendar } from "lucide-react";
 import "./send-consent-form-modal.scss";
 import PreviewAppointmentModal from "./PreviewAppointMent";
+import { Service } from "../../../redux/types";
+import { getServices } from "../../../services/artistServices";
 
 interface SendConsentFormModalProps {
   onClose: () => void;
@@ -18,32 +20,25 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
   const [appointmentDate, setAppointmentDate] = useState("");
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [showPreviewAppointment, setShowPreviewAppointment] = useState(false);
+  const [services, setServices] = useState<Service[]>([]);
 
-  const services = [
-    "Microblading",
-    "Lips Shading",
-    "Beauty Marks",
-    "Tattoo Removal",
-    "Lashes",
-    "BB Glow",
-    "Dry Needling",
-    "Nano Brows",
-    "Lash Lift",
-    "Brow Lamination",
-    "Areola Reconstruction",
-    "Touch Ups",
-    "Beauty Marks",
-    "Coverup Work",
-    "Tooth Gums",
-    "Teeth Whitening",
-    "Brows",
-    "Chemical Peel",
-    "Combo Brows",
-    "Plasma Skin Tightening",
-    "Micro Needling",
-    "Henna Brows",
-    "Scalp Micropigmentation",
-  ];
+  useEffect(() => {
+    getServices()
+      .then((response) => {
+        console.log("Fetched services:", response.data.services);
+        const services: Service[] = response.data.services.map(
+          (service: Service) => ({
+            _id: service._id,
+            id: service.id,
+            service: service.service,
+          })
+        );
+        setServices(services);
+      })
+      .catch((error) => {
+        console.error("Error fetching services:", error);
+      });
+  }, []);
 
   const toggleService = (service: string) => {
     setSelectedServices((prev) =>
@@ -54,7 +49,9 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
   };
 
   const handleContinue = () => {
-    onSuccess();
+    if (appointmentDate && selectedServices.length > 0) {
+      setShowPreviewAppointment(true);
+    }
   };
 
   return (
@@ -97,15 +94,15 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
             <div className="services-grid">
               {services.map((service) => (
                 <button
-                  key={service}
+                  key={service?._id}
                   className={`service-tag ${
-                    selectedServices.includes(service)
+                    selectedServices.includes(service._id)
                       ? "service-tag--selected"
                       : ""
                   }`}
-                  onClick={() => toggleService(service)}
+                  onClick={() => toggleService(service?.id)}
                 >
-                  {service}
+                  {service?.service}
                 </button>
               ))}
             </div>

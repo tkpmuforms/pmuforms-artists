@@ -170,3 +170,34 @@ interface ServiceDetail {
   id: number;
   service: string;
 }
+
+export interface FilledForm {
+  _id: string;
+  appointmentId: string;
+  title: string;
+  status: string;
+  clientId: string;
+  formTemplateId: string;
+  isSkipped: boolean;
+  createdAt: string;
+  updatedAt: string;
+  data: Record<string, any>;
+  formTemplate: {
+    title: string;
+    type: string;
+    sections: any[];
+    // ... other template properties
+  };
+  id: string;
+}
+
+export interface ApiResponse {
+  metadata: {
+    total: number;
+    currentPage: number;
+    perPage: number;
+    lastPage: number;
+    firstPage: number;
+  };
+  filledForms: FilledForm[];
+}

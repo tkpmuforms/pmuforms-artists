@@ -2,7 +2,7 @@
 import { Calendar, Clock, FileText, MoreVertical, Trash2 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   AppointmentSvg,
   FormNotCompletedSvg,
@@ -10,39 +10,37 @@ import {
   SendConsentFormSvg,
 } from "../../../assets/svgs/ClientsSvg";
 import { ClientAppointmentData } from "../../../redux/types";
-import { getAppointmentsForCustomer } from "../../../services/artistServices";
+import {
+  DeleteAppointment,
+  getAppointmentsForCustomer,
+} from "../../../services/artistServices";
 import { formatAppointmentTime } from "../../../utils/utils";
 import "./client-appointments.scss";
+import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
+import DeleteModal from "../../../components/clientsComp/details/DeletClientModal";
 
 const ClientAppointmentPage: React.FC = () => {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState<ClientAppointmentData[]>([]);
   const [loading, setLoading] = useState(false);
   const { clientName, clientEmail, clientPhone } = location.state || {};
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
+  const [showDeleteAppointment, setShowDeleteAppointment] = useState(false);
 
   const onSendConsentForm = () => {
     setShowSendConsentForm(true);
   };
 
   const onViewForms = (appointmentId: string) => {
-    // Handle view forms logic
-    console.log("View forms for appointment:", appointmentId);
+    navigate(`/clients/${id}/appointments/${appointmentId}/forms`);
   };
 
   const onDeleteAppointment = (appointmentId: string) => {
-    // Handle delete appointment logic
-    console.log("Delete appointment:", appointmentId);
-  };
-
-  // Helper function to get status
-  const getAppointmentStatus = (appointment: AppointmentData) => {
-    if (appointment.allFormsCompleted) {
-      return "Forms Completed";
-    } else {
-      return "Forms Not Completed";
-    }
+    DeleteAppointment(appointmentId).then(() => {
+      setShowDeleteAppointment(false);
+    });
   };
 
   useEffect(() => {
@@ -87,7 +85,6 @@ const ClientAppointmentPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Appointments Grid */}
         {appointments.length === 0 ? (
           <div className="no-appointments">
             <p>No appointments found for this client.</p>
@@ -97,7 +94,7 @@ const ClientAppointmentPage: React.FC = () => {
             {appointments.map((appointment) => {
               const primaryService = appointment.serviceDetails?.[0];
               const serviceName = primaryService?.service || "Unknown Service";
-              const status = getAppointmentStatus(appointment);
+
               const appointmentDate = formatAppointmentTime(appointment.date);
               const formFilledDate = appointment.allFormsCompleted
                 ? `${appointmentDate}`
@@ -157,6 +154,22 @@ const ClientAppointmentPage: React.FC = () => {
               );
             })}
           </div>
+        )}
+        {showDeleteAppointment && (
+          <DeleteModal
+            onClose={() => setShowDeleteAppointment(false)}
+            headerText="Delete Appointment"
+            shorterText="Are you sure you want to delete this appointment?"
+            handleDelete={() => onDeleteAppointment(appointments[0].id)}
+          />
+        )}
+        {showSendConsentForm && (
+          <SendConsentFormModal
+            onClose={() => setShowSendConsentForm(false)}
+            onSuccess={() => {
+              setShowSendConsentForm(false);
+            }}
+          />
         )}
       </div>
     </div>

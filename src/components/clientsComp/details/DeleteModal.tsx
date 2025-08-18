@@ -1,26 +1,23 @@
 "use client";
 
-import type React from "react";
 import { X } from "lucide-react";
-import "./delete-client-modal.scss";
-import { deleteCustomer } from "../../../services/artistServices";
+import type React from "react";
 import { GarbageIconSvg } from "../../../assets/svgs/formsSvg";
+import "./delete-modal.scss";
 
-interface DeleteClientModalProps {
+interface DeleteModalProps {
   onClose: () => void;
-  id: string;
+  headerText: string;
+  shorterText: string;
+  handleDelete?: () => void;
 }
 
-const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
+const DeleteModal: React.FC<DeleteModalProps> = ({
   onClose,
-  id,
+  headerText,
+  shorterText,
+  handleDelete,
 }) => {
-  const handleDelete = () => {
-    deleteCustomer(id).then(() => {
-      onClose();
-    });
-  };
-
   return (
     <div className="delete-client-confirm-modal">
       <div className="delete-client-confirm-modal__overlay" onClick={onClose} />
@@ -36,12 +33,8 @@ const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
           <GarbageIconSvg />
         </div>
 
-        <h2>Delete this Client?</h2>
-        <p>
-          Are you sure you want to permanently delete this client and all
-          associated data?
-        </p>
-
+        <h2>{headerText}</h2>
+        <p>{shorterText}</p>
         <div className="delete-client-confirm-modal__actions">
           <button
             className="delete-client-confirm-modal__cancel"
@@ -61,4 +54,4 @@ const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
   );
 };
 
-export default DeleteClientModal;
+export default DeleteModal;

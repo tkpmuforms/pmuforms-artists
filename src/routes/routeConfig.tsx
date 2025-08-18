@@ -15,6 +15,15 @@ const EditForms = lazy(() => import("../pages/forms/editForms/EditForms.tsx"));
 const ClientsAppointment = lazy(
   () => import("../pages/client/client-appointments/ClientsAppointment.tsx")
 );
+const ClientsFormsForAppointments = lazy(
+  () =>
+    import(
+      "../pages/client/clients-appointment-forms/ClientsFormsForAppointments.tsx"
+    )
+);
+const ClientNotesPage = lazy(
+  () => import("../pages/client/clients-note/ClientNotes.tsx")
+);
 
 interface RouteProps {
   path: string;
@@ -43,6 +52,16 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/clients/:id/appointments",
     element: <ClientsAppointment />,
     breadcrumbs: ["Clients", "Client Details", "Appointments"],
+  },
+  {
+    path: "/clients/:id/appointments/:appointmentId/forms",
+    element: <ClientsFormsForAppointments />,
+    breadcrumbs: ["Clients", "Client Details", "Appointments", "Forms"],
+  },
+  {
+    path: "/clients/:clientId/notes",
+    element: <ClientNotesPage />,
+    breadcrumbs: ["Clients", "Client Details", "Notes"],
   },
   {
     path: "/forms",
