@@ -11,11 +11,11 @@ import { formatAppointmentTime } from "../../../utils/utils";
 import { AppointmentSvg } from "../../../assets/svgs/ClientsSvg";
 
 const ClientsFormsForAppointments: React.FC = () => {
-  const { appointmentId } = useParams();
+  const { id, appointmentId } = useParams();
   const location = useLocation();
   const [forms, setForms] = useState<FilledForm[]>([]);
   const [loading, setLoading] = useState(false);
-  const { clientName, clientEmail, clientPhone } = location.state || {};
+  const { clientName, appointments } = location.state || {};
   const navigate = useNavigate();
 
   const onBack = () => {
@@ -28,8 +28,9 @@ const ClientsFormsForAppointments: React.FC = () => {
   };
 
   const onSignForms = () => {
-    // Handle form signing logic
-    console.log("Signing forms");
+    navigate(`/clients/${id}/appointments/${appointmentId}/signature`, {
+      state: { clientName, forms, appointments },
+    });
   };
 
   useEffect(() => {
@@ -64,9 +65,6 @@ const ClientsFormsForAppointments: React.FC = () => {
       <div className="container">
         {/* Header */}
         <div className="header">
-          <button onClick={onBack} className="back-btn">
-            <ArrowLeft size={20} />
-          </button>
           <div className="header-content">
             <h1>{clientName}'s Appointment Form</h1>
             <p>

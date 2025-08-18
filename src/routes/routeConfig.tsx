@@ -24,6 +24,12 @@ const ClientsFormsForAppointments = lazy(
 const ClientNotesPage = lazy(
   () => import("../pages/client/clients-note/ClientNotes.tsx")
 );
+// const FilledFormPreviewPage = lazy(
+//   () => import("../pages/forms/previewForms/PreviewForms.tsx")
+// );
+const SignaturePage = lazy(
+  () => import("../pages/client/client-appointment-signature/SignaturePage.tsx")
+);
 
 interface RouteProps {
   path: string;
@@ -62,6 +68,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/clients/:clientId/notes",
     element: <ClientNotesPage />,
     breadcrumbs: ["Clients", "Client Details", "Notes"],
+  },
+  {
+    path: "/clients/:id/appointments/:appointmentId/signature",
+    element: <SignaturePage />,
+    breadcrumbs: ["Clients", "Client Details", "Appointments", "Signature"],
   },
   {
     path: "/forms",

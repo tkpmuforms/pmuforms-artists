@@ -9,6 +9,8 @@ import {
   FormsCompletedSvg,
   SendConsentFormSvg,
 } from "../../../assets/svgs/ClientsSvg";
+import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
+import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
 import { ClientAppointmentData } from "../../../redux/types";
 import {
   DeleteAppointment,
@@ -16,8 +18,6 @@ import {
 } from "../../../services/artistServices";
 import { formatAppointmentTime } from "../../../utils/utils";
 import "./client-appointments.scss";
-import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
-import DeleteModal from "../../../components/clientsComp/details/DeletClientModal";
 
 const ClientAppointmentPage: React.FC = () => {
   const { id } = useParams();
@@ -25,7 +25,7 @@ const ClientAppointmentPage: React.FC = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState<ClientAppointmentData[]>([]);
   const [loading, setLoading] = useState(false);
-  const { clientName, clientEmail, clientPhone } = location.state || {};
+  const { clientName } = location.state || {};
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
   const [showDeleteAppointment, setShowDeleteAppointment] = useState(false);
 
@@ -34,7 +34,9 @@ const ClientAppointmentPage: React.FC = () => {
   };
 
   const onViewForms = (appointmentId: string) => {
-    navigate(`/clients/${id}/appointments/${appointmentId}/forms`);
+    navigate(`/clients/${id}/appointments/${appointmentId}/forms`, {
+      state: { clientName, appointments },
+    });
   };
 
   const onDeleteAppointment = (appointmentId: string) => {

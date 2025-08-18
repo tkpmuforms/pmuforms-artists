@@ -21,7 +21,8 @@ import {
   PendingFormsSvg,
   TotalAppointmentsSvg,
 } from "../../../assets/svgs/formsSvg";
-import DeleteModal from "../../../components/clientsComp/details/DeletClientModal";
+
+import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
 import EditClientModal from "../../../components/clientsComp/details/EditClientModal";
 import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
 import { LoadingSmall } from "../../../components/loading/Loading";
@@ -151,34 +152,11 @@ const ClientDetailPage: React.FC = () => {
   }
 
   if (error || !client) {
-    return (
-      <div className="client-detail-page">
-        <div className="client-detail-page__header">
-          <button
-            className="client-detail-page__back"
-            onClick={handleBackClick}
-          >
-            <ChevronLeft size={20} />
-            Clients
-          </button>
-        </div>
-        <div className="error-state">
-          <p>{error || "Client not found"}</p>
-          <button onClick={handleBackClick}>Go Back to Clients</button>
-        </div>
-      </div>
-    );
+    return <div className="client-detail-page">No client found</div>;
   }
 
   return (
     <div className="client-detail-page">
-      <div className="client-detail-page__header">
-        <button className="client-detail-page__back" onClick={handleBackClick}>
-          <ChevronLeft size={20} />
-          Clients
-        </button>
-      </div>
-
       <div className="client-detail-page__content">
         <div className="client-detail-page__profile">
           <div className="profile-info">
