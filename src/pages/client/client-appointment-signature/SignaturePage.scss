@@ -1,7 +1,4 @@
 .sign-forms-page {
-  background-color: #f9fafb;
-  padding: 20px;
-
   &__header {
     display: flex;
     align-items: center;
@@ -28,13 +25,12 @@
 
   .sign-card {
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
     overflow: hidden;
 
     &__header {
       padding: 32px 32px 24px;
-      border-bottom: 1px solid #e2e8f0;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -42,6 +38,7 @@
 
     &__title-section {
       flex: 1;
+      padding-bottom: 20px;
     }
 
     &__title {
@@ -62,10 +59,10 @@
       align-items: center;
       gap: 8px;
       padding: 12px 20px;
-      background: var(--pmu-primary, #8b5cf6);
+      background: #d764d726;
       border: none;
       border-radius: 12px;
-      color: white;
+      color: var(--pmu-primary);
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -82,6 +79,8 @@
 
   .intro-section {
     margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 0.25px solid #00000059;
   }
 
   .intro-text {
@@ -92,6 +91,8 @@
 
   .instruction-section {
     margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 0.25px solid #00000059;
   }
 
   .instruction-title {
@@ -113,6 +114,8 @@
 
   .forms-grid {
     display: grid;
+    padding-bottom: 20px;
+    border-bottom: 0.25px solid #00000059;
     grid-template-columns: 1fr;
     gap: 32px;
     margin-bottom: 32px;
@@ -125,10 +128,10 @@
   .forms-column,
   .services-column {
     .column-title {
-      font-weight: 600;
-      color: #1e293b;
+      font-weight: 400;
+      color: #707070;
       margin: 0 0 16px 0;
-      font-size: 16px;
+      font-size: 14px;
     }
   }
 
@@ -144,11 +147,6 @@
     align-items: center;
     gap: 12px;
 
-    &__icon {
-      color: #16a34a;
-      flex-shrink: 0;
-    }
-
     &__text {
       color: #374151;
       line-height: 1.5;
@@ -160,40 +158,17 @@
     align-items: center;
     gap: 8px;
 
-    &__dot {
-      width: 8px;
-      height: 8px;
-      background-color: #94a3b8;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
     &__text {
       color: #374151;
     }
   }
 
   .warning-box {
-    background: #fef3c7;
-    border: 1px solid #fbbf24;
+    background: #ffa21d1a;
     border-radius: 12px;
     padding: 16px;
     display: flex;
     gap: 12px;
-
-    &__icon {
-      width: 24px;
-      height: 24px;
-      background: #fbbf24;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: #d97706;
-      font-weight: 600;
-      font-size: 14px;
-    }
 
     &__content {
       flex: 1;
@@ -201,15 +176,15 @@
 
     &__title {
       font-weight: 600;
-      color: #92400e;
+      color: #ff9500;
       margin: 0 0 4px 0;
-      font-size: 16px;
+      font-size: 12px;
     }
 
     &__text {
-      color: #b45309;
+      color: #ff9500;
       margin: 0;
-      font-size: 14px;
+      font-size: 12px;
       line-height: 1.5;
     }
   }

@@ -7,10 +7,17 @@ import "./SignatureModal.scss";
 
 interface SignatureModalProps {
   onClose: () => void;
+  onSubmit: (signatureDataUrl: string) => Promise<void>;
   title: string;
+  isSubmitting?: boolean;
 }
 
-const SignatureModal: React.FC<SignatureModalProps> = ({ onClose, title }) => {
+const SignatureModal: React.FC<SignatureModalProps> = ({
+  onClose,
+  onSubmit,
+  title,
+  isSubmitting = false,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
@@ -87,9 +94,20 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ onClose, title }) => {
     setHasSignature(false);
   };
 
-  const handleConfirm = () => {
-    // Handle signature confirmation
-    onClose();
+  const handleConfirm = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas || !hasSignature) return;
+
+    try {
+      // Convert canvas to data URL (base64 encoded image)
+      const signatureDataUrl = canvas.toDataURL("image/png");
+
+      // Call the onSubmit function passed from parent
+      await onSubmit(signatureDataUrl);
+    } catch (error) {
+      console.error("Error submitting signature:", error);
+      // Handle error - you might want to show an error message here
+    }
   };
 
   return (
@@ -120,6 +138,7 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ onClose, title }) => {
             <button
               className="action-button delete-button"
               onClick={clearSignature}
+              disabled={isSubmitting}
             >
               <Trash2 size={20} />
             </button>
@@ -127,14 +146,16 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ onClose, title }) => {
             <button
               className="action-button confirm-button"
               onClick={handleConfirm}
-              disabled={!hasSignature}
+              disabled={!hasSignature || isSubmitting}
             >
               <Check size={20} />
+              {isSubmitting ? "Submitting..." : ""}
             </button>
 
             <button
               className="action-button undo-button"
               onClick={clearSignature}
+              disabled={isSubmitting}
             >
               <Undo size={20} />
             </button>

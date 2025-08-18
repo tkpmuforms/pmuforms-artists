@@ -1,11 +1,16 @@
 "use client";
 
-import { Check, PenTool } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  SignatureButtonSvg,
+  SignatureformsSvg,
+  SignatureServicesCheckSvg,
+} from "../../../assets/svgs/ClientsSvg";
 import SignatureModal from "../../../components/clientsComp/signature/SignatureModal";
 import "./SignaturePage.scss";
+import { signAppointment } from "../../../services/artistServices";
 
 interface FormTemplate {
   appointmentId: string;
@@ -34,11 +39,11 @@ const SignFormsPage: React.FC = () => {
   const location = useLocation();
   const { appointmentId } = useParams<{ appointmentId: string }>();
   const { forms, clientName, appointments } = location.state || {};
-
   const [showSignModal, setShowSignModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Find the specific appointment by ID from params
   const currentAppointment: Appointment = appointments?.find(
     (appointment: Appointment) => appointment.id === appointmentId
   );
@@ -49,7 +54,6 @@ const SignFormsPage: React.FC = () => {
       (form: FormTemplate) => form.appointmentId === appointmentId
     ) || [];
 
-  // Filter completed forms for this appointment
   const completedForms = appointmentForms.filter(
     (form: FormTemplate) =>
       form.status === "complete" || form.status === "completed"
@@ -76,13 +80,49 @@ const SignFormsPage: React.FC = () => {
   };
 
   const handleSignClick = () => {
-    setShowConfirmModal(true);
+    console.log("Sign button clicked");
+    setShowSignModal(true);
+    console.log(showSignModal);
   };
 
   const handleConfirmSign = () => {
     setShowConfirmModal(false);
     setShowSignModal(true);
   };
+
+  // Handle signature submission
+  const handleSignatureSubmit = async (signatureDataUrl: string) => {
+    if (!appointmentId) {
+      setSubmitError("Appointment ID is missing");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      await signAppointment(appointmentId, {
+        signatureUrl: signatureDataUrl,
+      });
+
+      // Update local appointment state to reflect signing
+      if (currentAppointment) {
+        currentAppointment.signed = true;
+      }
+
+      setShowSignModal(false);
+
+      // Optional: Show success message or navigate
+      // You could add a success toast or redirect here
+      console.log("Signature submitted successfully");
+    } catch (error) {
+      console.error("Error submitting signature:", error);
+      setSubmitError("Failed to submit signature. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const canSign =
     currentAppointment?.allFormsCompleted && !currentAppointment?.signed;
 
@@ -120,16 +160,24 @@ const SignFormsPage: React.FC = () => {
                 !canSign ? "sign-card__sign-btn--disabled" : ""
               }`}
               onClick={handleSignClick}
-              disabled={!canSign}
+              disabled={!canSign || isSubmitting}
             >
-              <PenTool size={16} />
-              {currentAppointment?.signed
+              <SignatureButtonSvg />
+              {isSubmitting
+                ? "Submitting..."
+                : currentAppointment?.signed
                 ? "Already Signed"
                 : "Sign Appointment Forms"}
             </button>
           </div>
 
           <div className="sign-card__content">
+            {submitError && (
+              <div className="error-message">
+                <p>{submitError}</p>
+              </div>
+            )}
+
             <div className="intro-section">
               <p className="intro-text">
                 {currentAppointment?.allFormsCompleted
@@ -166,15 +214,7 @@ const SignFormsPage: React.FC = () => {
                     appointmentForms.map(
                       (form: FormTemplate, index: number) => (
                         <div key={index} className="form-item">
-                          <Check
-                            className={`form-item__icon ${
-                              form.status === "complete" ||
-                              form.status === "completed"
-                                ? "form-item__icon--completed"
-                                : "form-item__icon--pending"
-                            }`}
-                            size={16}
-                          />
+                          <SignatureformsSvg />
                           <span className="form-item__text">
                             {form.formTemplate?.title ||
                               form.title ||
@@ -199,7 +239,7 @@ const SignFormsPage: React.FC = () => {
                   {services.length > 0 ? (
                     services.map((service: ServiceDetail, index: number) => (
                       <div key={service.id || index} className="service-item">
-                        <div className="service-item__dot"></div>
+                        <SignatureServicesCheckSvg />
                         <span className="service-item__text">
                           {service.service}
                         </span>
@@ -207,7 +247,6 @@ const SignFormsPage: React.FC = () => {
                     ))
                   ) : (
                     <div className="service-item">
-                      <div className="service-item__dot"></div>
                       <span className="service-item__text">
                         No services specified
                       </span>
@@ -218,9 +257,6 @@ const SignFormsPage: React.FC = () => {
             </div>
 
             <div className="warning-box">
-              <div className="warning-box__icon">
-                <span>!</span>
-              </div>
               <div className="warning-box__content">
                 <h3 className="warning-box__title">Warning</h3>
                 <p className="warning-box__text">
@@ -234,21 +270,12 @@ const SignFormsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* {showConfirmModal && (
-        <ConfirmationModal
-          onClose={() => setShowConfirmModal(false)}
-          onConfirm={handleConfirmSign}
-          title="Are you sure?"
-          description="Are you sure that the signature is correct and you want to sign these documents?"
-          confirmText="Go Back and Loose Changes"
-          cancelText="Continue Editing"
-        />
-      )} */}
-
       {showSignModal && (
         <SignatureModal
           onClose={() => setShowSignModal(false)}
+          onSubmit={handleSignatureSubmit}
           title="Sign Appointment Forms"
+          isSubmitting={isSubmitting}
         />
       )}
     </div>
