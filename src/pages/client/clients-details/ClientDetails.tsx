@@ -106,10 +106,6 @@ const ClientDetailPage: React.FC = () => {
     }
   };
 
-  const handleBackClick = () => {
-    navigate("/clients");
-  };
-
   const quickActions = [
     {
       icon: <Calendar size={20} />,
@@ -131,7 +127,7 @@ const ClientDetailPage: React.FC = () => {
     {
       icon: <Clock size={20} />,
       title: "Set Reminders",
-      onClick: () => console.log("Set Reminders"),
+      onClick: () => navigate(`/clients/${client?.id}/reminders`),
     },
     {
       icon: <User size={20} />,

@@ -33,6 +33,9 @@ const FIlledFormsPreviewPage = lazy(
 const SignaturePage = lazy(
   () => import("../pages/client/client-appointment-signature/SignaturePage.tsx")
 );
+const ReminderPage = lazy(
+  () => import("../pages/client/client-reminders/ClientReminders.tsx")
+);
 
 interface RouteProps {
   path: string;
@@ -56,6 +59,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/clients/:id",
     element: <ClientDetails />,
     breadcrumbs: ["Clients", "Client Details"],
+  },
+  {
+    path: "/clients/:id/reminders",
+    element: <ReminderPage />,
+    breadcrumbs: ["Clients", "Client Details", "Reminders"],
   },
   {
     path: "/clients/:id/appointments",

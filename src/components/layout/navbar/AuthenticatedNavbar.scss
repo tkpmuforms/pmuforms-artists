@@ -13,7 +13,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 0 32px;
+    padding: 0 10px;
     max-width: 1440px;
     margin: 0 auto;
   }
@@ -233,9 +233,6 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
-  margin-right: 8px;
-  border-radius: 4px;
   transition: background-color 0.2s ease;
 
   &:hover {
