@@ -23,8 +23,7 @@ const ClientsFormsForAppointments: React.FC = () => {
   };
 
   const onViewForm = (formId: string) => {
-    // Navigate to form view or handle form viewing
-    console.log("Viewing form:", formId);
+    navigate(`/clients/${id}/appointments/${appointmentId}/forms/${formId}`);
   };
 
   const onSignForms = () => {
@@ -90,7 +89,7 @@ const ClientsFormsForAppointments: React.FC = () => {
               <div
                 key={form.id || form._id}
                 className="form-card"
-                onClick={() => onViewForm(form.id || form._id)}
+                onClick={() => onViewForm(form.formTemplateId)}
               >
                 <div className="form-header">
                   <div className="form-icon">

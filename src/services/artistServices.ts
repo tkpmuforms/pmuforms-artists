@@ -43,8 +43,8 @@ export const getFilledFormsByAppointment = async (
 ) => axiosInstance.get(`/api/filled-forms/appointment/${appointmentId}`);
 
 export const getFilledFormByAppointmentAndTemplate = async (
-  appointmentId: string | number,
-  formTemplateId: string | number
+  appointmentId: string,
+  formTemplateId: string
 ) =>
   axiosInstance.get(
     `/api/filled-forms/appointment/${appointmentId}/form/${formTemplateId}`

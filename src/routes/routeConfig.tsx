@@ -6,7 +6,7 @@ const Client = lazy(() => import("../pages/client/Client"));
 const Forms = lazy(() => import("../pages/forms/forms"));
 const Profile = lazy(() => import("../pages/profile/Profile"));
 const ClientDetails = lazy(
-  () => import("../pages/client/details/ClientDetails")
+  () => import("../pages/client/clients-details/ClientDetails.tsx")
 );
 const PreviewForms = lazy(
   () => import("../pages/forms/previewForms/PreviewForms.tsx")
@@ -24,9 +24,12 @@ const ClientsFormsForAppointments = lazy(
 const ClientNotesPage = lazy(
   () => import("../pages/client/clients-note/ClientNotes.tsx")
 );
-// const FilledFormPreviewPage = lazy(
-//   () => import("../pages/forms/previewForms/PreviewForms.tsx")
-// );
+const FIlledFormsPreviewPage = lazy(
+  () =>
+    import(
+      "../pages/client/clients-appointments-filledforms-preview/FIlledFormsPreview.tsx"
+    )
+);
 const SignaturePage = lazy(
   () => import("../pages/client/client-appointment-signature/SignaturePage.tsx")
 );
@@ -73,6 +76,17 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/clients/:id/appointments/:appointmentId/signature",
     element: <SignaturePage />,
     breadcrumbs: ["Clients", "Client Details", "Appointments", "Signature"],
+  },
+  {
+    path: "/clients/:id/appointments/:appointmentId/forms/:templateId",
+    element: <FIlledFormsPreviewPage />,
+    breadcrumbs: [
+      "Clients",
+      "Client Details",
+      "Appointments",
+      "Forms",
+      "Filled Form Preview",
+    ],
   },
   {
     path: "/forms",
