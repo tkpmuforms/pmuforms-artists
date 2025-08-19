@@ -102,12 +102,6 @@ const RemindersPage: React.FC = () => {
 
   return (
     <div className="reminders-page">
-      <div className="reminders-page__header">
-        <button className="back-button">
-          <span>‹</span> Set Reminders
-        </button>
-      </div>
-
       <div className="reminders-page__content">
         <div className="reminders-header">
           <div>

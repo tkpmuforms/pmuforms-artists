@@ -1,33 +1,5 @@
 .reminders-page {
   padding: 24px 40px;
-
-  &__header {
-    margin-bottom: 32px;
-
-    .back-button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: none;
-      border: none;
-      color: #64748b;
-      font-size: 16px;
-      cursor: pointer;
-      transition: color 0.2s ease;
-
-      &:hover {
-        color: #1e293b;
-      }
-
-      span {
-        font-size: 20px;
-      }
-    }
-  }
-
-  &__content {
-    max-width: 1200px;
-  }
 }
 
 .reminders-header {

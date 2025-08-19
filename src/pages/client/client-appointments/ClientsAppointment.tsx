@@ -1,14 +1,8 @@
 "use client";
-import { Calendar, Clock, FileText, MoreVertical, Trash2 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import {
-  AppointmentSvg,
-  FormNotCompletedSvg,
-  FormsCompletedSvg,
-  SendConsentFormSvg,
-} from "../../../assets/svgs/ClientsSvg";
+import { SendConsentFormSvg } from "../../../assets/svgs/ClientsSvg";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
 import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
 import { ClientAppointmentData } from "../../../redux/types";
@@ -16,8 +10,10 @@ import {
   DeleteAppointment,
   getAppointmentsForCustomer,
 } from "../../../services/artistServices";
-import { formatAppointmentTime } from "../../../utils/utils";
+
 import "./client-appointments.scss";
+import AppointmentCard from "../../../components/clientsComp/appointments/AppointmentCard";
+import { LoadingSmall } from "../../../components/loading/Loading";
 
 const ClientAppointmentPage: React.FC = () => {
   const { id } = useParams();
@@ -28,6 +24,9 @@ const ClientAppointmentPage: React.FC = () => {
   const { clientName } = location.state || {};
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
   const [showDeleteAppointment, setShowDeleteAppointment] = useState(false);
+  const [appointmentToDelete, setAppointmentToDelete] = useState<string | null>(
+    null
+  );
 
   const onSendConsentForm = () => {
     setShowSendConsentForm(true);
@@ -40,9 +39,20 @@ const ClientAppointmentPage: React.FC = () => {
   };
 
   const onDeleteAppointment = (appointmentId: string) => {
-    DeleteAppointment(appointmentId).then(() => {
-      setShowDeleteAppointment(false);
-    });
+    setAppointmentToDelete(appointmentId);
+    setShowDeleteAppointment(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (appointmentToDelete) {
+      DeleteAppointment(appointmentToDelete).then(() => {
+        setAppointments((prev) =>
+          prev.filter((apt) => apt.id !== appointmentToDelete)
+        );
+        setShowDeleteAppointment(false);
+        setAppointmentToDelete(null);
+      });
+    }
   };
 
   useEffect(() => {
@@ -63,9 +73,7 @@ const ClientAppointmentPage: React.FC = () => {
   if (loading) {
     return (
       <div className="client-appointment-page">
-        <div className="container">
-          <div className="loading">Loading appointments...</div>
-        </div>
+        <LoadingSmall />
       </div>
     );
   }
@@ -93,78 +101,29 @@ const ClientAppointmentPage: React.FC = () => {
           </div>
         ) : (
           <div className="appointments-grid">
-            {appointments.map((appointment) => {
-              const primaryService = appointment.serviceDetails?.[0];
-              const serviceName = primaryService?.service || "Unknown Service";
-
-              const appointmentDate = formatAppointmentTime(appointment.date);
-              const formFilledDate = appointment.allFormsCompleted
-                ? `${appointmentDate}`
-                : "Not completed yet";
-
-              return (
-                <div key={appointment.id} className="appointment-card">
-                  <div className="card-header">
-                    <div className="service-info">
-                      <div className="service-icon">
-                        <AppointmentSvg />
-                      </div>
-                      <div className="service-content">
-                        <h3>{serviceName}</h3>
-
-                        {appointment.allFormsCompleted ? (
-                          <FormsCompletedSvg />
-                        ) : (
-                          <FormNotCompletedSvg />
-                        )}
-                      </div>
-                    </div>
-                    <div className="dropdown">
-                      <button className="dropdown-trigger">
-                        <MoreVertical size={16} />
-                      </button>
-                      <div className="dropdown-menu">
-                        <button onClick={() => onViewForms(appointment.id)}>
-                          <FileText size={16} />
-                          View Forms
-                        </button>
-                        <button
-                          onClick={() => onDeleteAppointment(appointment.id)}
-                          className="delete-option"
-                        >
-                          <Trash2 size={16} />
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="appointment-details">
-                    <div className="detail-item">
-                      <Calendar size={16} />
-                      <span className="detail-label">Appointment Date</span>
-                      <span className="detail-value">{appointmentDate}</span>
-                    </div>
-
-                    <div className="detail-item">
-                      <Clock size={16} />
-                      <span className="detail-label">Form Filled</span>
-                      <span className="detail-value">{formFilledDate}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {appointments.map((appointment) => (
+              <AppointmentCard
+                key={appointment.id}
+                appointment={appointment}
+                onViewForms={onViewForms}
+                onDeleteAppointment={onDeleteAppointment}
+              />
+            ))}
           </div>
         )}
+
         {showDeleteAppointment && (
           <DeleteModal
-            onClose={() => setShowDeleteAppointment(false)}
+            onClose={() => {
+              setShowDeleteAppointment(false);
+              setAppointmentToDelete(null);
+            }}
             headerText="Delete Appointment"
             shorterText="Are you sure you want to delete this appointment?"
-            handleDelete={() => onDeleteAppointment(appointments[0].id)}
+            handleDelete={handleDeleteConfirm}
           />
         )}
+
         {showSendConsentForm && (
           <SendConsentFormModal
             onClose={() => setShowSendConsentForm(false)}

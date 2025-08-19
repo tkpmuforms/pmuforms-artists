@@ -1,14 +1,14 @@
 "use client";
 
+import { FileText } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { ArrowLeft, FileText } from "lucide-react";
-import "./appointment-forms-page.scss";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { getFilledFormsByAppointment } from "../../../services/artistServices";
 import { FilledForm } from "../../../redux/types";
-import { formatAppointmentTime } from "../../../utils/utils";
-import { AppointmentSvg } from "../../../assets/svgs/ClientsSvg";
+import { getFilledFormsByAppointment } from "../../../services/artistServices";
+
+import "./appointment-forms-page.scss";
+import ClientFormsCard from "../../../components/clientsComp/filled-forms/ClientFormsCard";
 
 const ClientsFormsForAppointments: React.FC = () => {
   const { id, appointmentId } = useParams();
@@ -17,10 +17,6 @@ const ClientsFormsForAppointments: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { clientName, appointments } = location.state || {};
   const navigate = useNavigate();
-
-  const onBack = () => {
-    navigate(-1);
-  };
 
   const onViewForm = (formId: string) => {
     navigate(`/clients/${id}/appointments/${appointmentId}/forms/${formId}`);
@@ -77,54 +73,27 @@ const ClientsFormsForAppointments: React.FC = () => {
           </button>
         </div>
 
-        <div className="forms-grid">
-          {forms.length === 0 ? (
-            <div className="no-forms">
-              <FileText size={48} />
+        {forms.length === 0 ? (
+          <div className="no-forms">
+            <div className="empty-state">
+              <div className="empty-state__icon">
+                <FileText size={48} />
+              </div>
               <h3>No forms found</h3>
               <p>There are no forms associated with this appointment.</p>
             </div>
-          ) : (
-            forms.map((form) => (
-              <div
+          </div>
+        ) : (
+          <div className="forms-grid">
+            {forms.map((form) => (
+              <ClientFormsCard
                 key={form.id || form._id}
-                className="form-card"
-                onClick={() => onViewForm(form.formTemplateId)}
-              >
-                <div className="form-header">
-                  <div className="form-icon">
-                    <AppointmentSvg />
-                  </div>
-                  <h3>{form.title}</h3>
-                </div>
-
-                <div className="status-badge">
-                  <span className={`badge ${form.status.toLowerCase()}`}>
-                    {form.status === "completed"
-                      ? "Forms Completed"
-                      : form.status}
-                  </span>
-                </div>
-
-                <div className="form-details">
-                  <div className="detail-section">
-                    <span className="detail-label">Appointment Date</span>
-                    <span className="detail-value">
-                      {formatAppointmentTime(form.createdAt)}
-                    </span>
-                  </div>
-
-                  <div className="detail-section">
-                    <span className="detail-label">Form Filled</span>
-                    <span className="detail-value">
-                      {formatAppointmentTime(form.updatedAt)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+                form={form}
+                onViewForm={onViewForm}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
