@@ -40,17 +40,24 @@ interface ClientDetail {
   phone: string;
 }
 
+interface ClientMetrics {
+  pendingForms: number;
+  totalAppointments: number;
+}
+
 const ClientDetailPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [client, setClient] = useState<ClientDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [metricsLoading, setMetricsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showEditClient, setShowEditClient] = useState(false);
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
   const [showFormSentSuccess, setShowFormSentSuccess] = useState(false);
   const [showDeleteClient, setShowDeleteClient] = useState(false);
-  const [clientMetricsMetadata, setClientMetricsMetadata] = useState([]);
+  const [clientMetricsMetadata, setClientMetricsMetadata] =
+    useState<ClientMetrics | null>(null);
 
   const fetchClientDetails = useCallback(async () => {
     if (!id) {
@@ -63,12 +70,14 @@ const ClientDetailPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
+      // Load client data first (faster)
       const response = await getCustomerById(id);
-      const metricsResponse = await getCustomerMetrics(id);
       console.log("Client data fetched:", response.data);
+
       if (response.status !== 200) {
         throw new Error("Failed to fetch client details");
       }
+
       const customer = response?.data.customer;
 
       if (customer) {
@@ -78,15 +87,22 @@ const ClientDetailPage: React.FC = () => {
           email: customer.email || "No email provided",
           phone: customer?.info?.cell_phone || undefined,
         });
-        setClientMetricsMetadata(metricsResponse?.data?.metrics || []);
+        setLoading(false); // Main loading done
       } else {
         setError("Client not found");
+        setLoading(false);
+        return;
       }
+
+      // Load metrics separately (slower)
+      const metricsResponse = await getCustomerMetrics(id);
+      setClientMetricsMetadata(metricsResponse?.data?.metrics || null);
+      setMetricsLoading(false);
     } catch (err) {
       console.error("Error fetching client details:", err);
       setError("Failed to load client details. Please try again.");
-    } finally {
       setLoading(false);
+      setMetricsLoading(false);
     }
   }, [id]);
 
@@ -139,6 +155,48 @@ const ClientDetailPage: React.FC = () => {
     },
   ];
 
+  const renderMetricsCards = () => {
+    return (
+      <>
+        <div className="overview-card">
+          <div className="overview-card__icon pending">
+            <PendingFormsSvg />
+          </div>
+          <div className="overview-card__content">
+            <div className="overview-card__label">Pending Forms</div>
+            <div className="overview-card__value">
+              {metricsLoading ? (
+                <div className="metrics-loading">
+                  <div className="loading-skeleton"></div>
+                </div>
+              ) : (
+                clientMetricsMetadata?.pendingForms || "0"
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="overview-card">
+          <div className="overview-card__icon appointments">
+            <TotalAppointmentsSvg />
+          </div>
+          <div className="overview-card__content">
+            <div className="overview-card__label">Total Appointments</div>
+            <div className="overview-card__value">
+              {metricsLoading ? (
+                <div className="metrics-loading">
+                  <div className="loading-skeleton"></div>
+                </div>
+              ) : (
+                clientMetricsMetadata?.totalAppointments || "0"
+              )}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
+
   if (loading) {
     return <LoadingSmall />;
   }
@@ -167,29 +225,8 @@ const ClientDetailPage: React.FC = () => {
         <div className="client-detail-page__overview">
           <h2>CLIENT OVERVIEW</h2>
           <div className="overview-grid">
-            <div className="overview-card">
-              <div className="overview-card__icon pending">
-                <PendingFormsSvg />
-              </div>
-              <div className="overview-card__content">
-                <div className="overview-card__label">Pending Forms</div>
-                <div className="overview-card__value">
-                  {clientMetricsMetadata?.pendingForms}
-                </div>
-              </div>
-            </div>
+            {renderMetricsCards()}
 
-            <div className="overview-card">
-              <div className="overview-card__icon appointments">
-                <TotalAppointmentsSvg />
-              </div>
-              <div className="overview-card__content">
-                <div className="overview-card__label">Total Appointments</div>
-                <div className="overview-card__value">
-                  {clientMetricsMetadata?.totalAppointments}
-                </div>
-              </div>
-            </div>
             <div className="overview-card contact-info-card">
               <div className="contact-info">
                 <div className="contact-info__item">
@@ -284,7 +321,6 @@ const ClientDetailPage: React.FC = () => {
           onSuccess={() => {
             setShowSendConsentForm(false);
             setShowFormSentSuccess(true);
-            // Auto-hide success message after 3 seconds
             setTimeout(() => setShowFormSentSuccess(false), 3000);
           }}
         />

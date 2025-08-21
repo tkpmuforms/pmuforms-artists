@@ -1,25 +1,24 @@
 "use client";
 
-import type React from "react";
-import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // or your routing library
+import { Avatar } from "@mui/material";
 import {
   Building2,
-  Key,
-  HelpCircle,
-  FileText,
-  LogOut,
   Edit,
+  FileText,
+  HelpCircle,
+  Key,
+  LogOut,
 } from "lucide-react";
-
-import "./profile.scss";
-import useAuth from "../../context/useAuth";
-import EditBusinessNameModal from "../../components/profileComp/EditBusinessNameModal";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import BusinessInformationModal from "../../components/profileComp/BusinessInformationModal";
-import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
 import ChangePasswordModal from "../../components/profileComp/ChangePasswordModal";
+import EditBusinessNameModal from "../../components/profileComp/EditBusinessNameModal";
 import EditProfileModal from "../../components/profileComp/EditProfileModal";
-import { Avatar } from "@mui/material";
+import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
+import useAuth from "../../context/useAuth";
+import "./profile.scss";
 
 interface LocationState {
   newUser?: boolean;

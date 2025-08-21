@@ -1,21 +1,25 @@
 "use client";
-
 import { FileText } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FilledForm } from "../../../redux/types";
-import { getFilledFormsByAppointment } from "../../../services/artistServices";
+import {
+  getAppointmentsForCustomer,
+  getCustomerById,
+  getFilledFormsByAppointment,
+} from "../../../services/artistServices";
 
-import "./appointment-forms-page.scss";
 import ClientFormsCard from "../../../components/clientsComp/filled-forms/ClientFormsCard";
+import "./appointment-forms-page.scss";
 
 const ClientsFormsForAppointments: React.FC = () => {
   const { id, appointmentId } = useParams();
   const location = useLocation();
   const [forms, setForms] = useState<FilledForm[]>([]);
   const [loading, setLoading] = useState(false);
-  const { clientName, appointments } = location.state || {};
+  const [clientName, setClientName] = useState<string>("");
+  const [appointments, setAppointments] = useState<any[]>([]);
   const navigate = useNavigate();
 
   const onViewForm = (formId: string) => {
@@ -29,21 +33,46 @@ const ClientsFormsForAppointments: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!appointmentId) return;
+    const fetchData = async () => {
+      if (!appointmentId || !id) return;
 
-    setLoading(true);
-    getFilledFormsByAppointment(appointmentId)
-      .then((res) => {
-        setForms(res.data?.filledForms || []);
-      })
-      .catch((error) => {
-        console.error("Error fetching forms:", error);
+      setLoading(true);
+      try {
+        // Try to get data from location state first
+        const stateClientName = location.state?.clientName;
+        const stateAppointments = location.state?.appointments;
+
+        // If no client name in state, fetch it from API
+        if (!stateClientName) {
+          const clientResponse = await getCustomerById(id);
+          const fetchedClientName =
+            clientResponse?.data?.customer?.name || "Client";
+          setClientName(fetchedClientName);
+        } else {
+          setClientName(stateClientName);
+        }
+
+        // If no appointments in state, fetch them from API
+        if (!stateAppointments) {
+          const appointmentsResponse = await getAppointmentsForCustomer(id);
+          setAppointments(appointmentsResponse?.data?.appointments || []);
+        } else {
+          setAppointments(stateAppointments);
+        }
+
+        // Fetch forms for the appointment
+        const formsResponse = await getFilledFormsByAppointment(appointmentId);
+        setForms(formsResponse.data?.filledForms || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
         setForms([]);
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
-  }, [appointmentId]);
+      }
+    };
+
+    fetchData();
+  }, [appointmentId, id, location.state]);
 
   if (loading) {
     return (

@@ -9,11 +9,12 @@ import { ClientAppointmentData } from "../../../redux/types";
 import {
   DeleteAppointment,
   getAppointmentsForCustomer,
+  getCustomerById, // Add this import
 } from "../../../services/artistServices";
 
-import "./client-appointments.scss";
 import AppointmentCard from "../../../components/clientsComp/appointments/AppointmentCard";
 import { LoadingSmall } from "../../../components/loading/Loading";
+import "./client-appointments.scss";
 
 const ClientAppointmentPage: React.FC = () => {
   const { id } = useParams();
@@ -21,7 +22,7 @@ const ClientAppointmentPage: React.FC = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState<ClientAppointmentData[]>([]);
   const [loading, setLoading] = useState(false);
-  const { clientName } = location.state || {};
+  const [clientName, setClientName] = useState<string>("");
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
   const [showDeleteAppointment, setShowDeleteAppointment] = useState(false);
   const [appointmentToDelete, setAppointmentToDelete] = useState<string | null>(
@@ -56,19 +57,37 @@ const ClientAppointmentPage: React.FC = () => {
   };
 
   useEffect(() => {
-    setLoading(true);
-    getAppointmentsForCustomer(id)
-      .then((res) => {
-        console.log("Appointments data:", res);
-        setAppointments(res?.data?.appointments || []);
-      })
-      .catch((error) => {
-        console.error("Error fetching appointments:", error);
-      })
-      .finally(() => {
+    const fetchData = async () => {
+      if (!id) return;
+
+      setLoading(true);
+      try {
+        // Try to get client name from location state first
+        const stateClientName = location.state?.clientName;
+
+        // If no client name in state, fetch it from API
+        if (!stateClientName) {
+          const clientResponse = await getCustomerById(id);
+          const fetchedClientName =
+            clientResponse?.data?.customer?.name || "Client";
+          setClientName(fetchedClientName);
+        } else {
+          setClientName(stateClientName);
+        }
+
+        // Fetch appointments
+        const appointmentsResponse = await getAppointmentsForCustomer(id);
+        console.log("Appointments data:", appointmentsResponse);
+        setAppointments(appointmentsResponse?.data?.appointments || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
         setLoading(false);
-      });
-  }, [id]);
+      }
+    };
+
+    fetchData();
+  }, [id, location.state]);
 
   if (loading) {
     return (
