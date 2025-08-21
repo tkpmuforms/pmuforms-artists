@@ -9,7 +9,6 @@ import {
   getCustomerById,
   getFilledFormsByAppointment,
 } from "../../../services/artistServices";
-
 import ClientFormsCard from "../../../components/clientsComp/filled-forms/ClientFormsCard";
 import "./appointment-forms-page.scss";
 

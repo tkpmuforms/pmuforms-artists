@@ -145,6 +145,7 @@ const ClientAppointmentPage: React.FC = () => {
 
         {showSendConsentForm && (
           <SendConsentFormModal
+            clientName={clientName}
             onClose={() => setShowSendConsentForm(false)}
             onSuccess={() => {
               setShowSendConsentForm(false);

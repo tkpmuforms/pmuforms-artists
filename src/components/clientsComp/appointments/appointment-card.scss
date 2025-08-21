@@ -160,21 +160,26 @@
     }
   }
 
-  @media (max-width: 768px) {
+  // Tablet breakpoint
+  @media (max-width: 1024px) {
     .card-header {
       padding: 20px;
 
       .service-info {
-        .service-icon {
-          width: 40px;
-          height: 40px;
-          font-size: 18px;
-        }
+        gap: 10px;
 
         .service-content {
           h3 {
             font-size: 15px;
           }
+        }
+      }
+
+      .dropdown {
+        margin-left: 8px;
+
+        .dropdown-trigger {
+          padding: 6px;
         }
       }
     }
@@ -183,16 +188,128 @@
       padding: 20px;
 
       .detail-row {
-        flex-direction: column;
-        gap: 12px;
+        gap: 16px;
 
         .detail-item {
-          .detail-label {
-            font-size: 12px;
+          .detail-value {
+            margin-left: 20px;
+          }
+        }
+      }
+    }
+  }
+
+  // Mobile breakpoint
+  @media (max-width: 768px) {
+    .card-header {
+      padding: 16px;
+
+      .service-info {
+        gap: 8px;
+
+        .service-icon {
+          width: 36px;
+          height: 36px;
+        }
+
+        .service-content {
+          h3 {
+            font-size: 14px;
+            line-height: 1.4;
+          }
+        }
+      }
+
+      .dropdown {
+        margin-left: 4px;
+
+        .dropdown-trigger {
+          padding: 4px;
+
+          svg {
+            width: 14px;
+            height: 14px;
+          }
+        }
+
+        .dropdown-menu {
+          min-width: 120px;
+          right: -8px; // Adjust positioning for smaller screens
+
+          button {
+            padding: 8px 12px;
+            font-size: 13px;
+
+            svg {
+              width: 14px;
+              height: 14px;
+            }
+          }
+        }
+      }
+    }
+
+    .appointment-details {
+      padding: 16px;
+
+      .detail-row {
+        gap: 12px; // Keep row layout on mobile
+
+        .detail-item {
+          gap: 6px;
+
+          .detail-header {
+            gap: 6px;
+
+            svg {
+              width: 14px;
+              height: 14px;
+            }
+
+            .detail-label {
+              font-size: 12px;
+            }
           }
 
           .detail-value {
             font-size: 13px;
+            margin-left: 20px; // Adjust for smaller icon
+          }
+        }
+      }
+    }
+  }
+
+  // Extra small mobile breakpoint
+  @media (max-width: 480px) {
+    .card-header {
+      padding: 12px;
+
+      .service-info {
+        .service-content {
+          h3 {
+            font-size: 13px;
+          }
+        }
+      }
+    }
+
+    .appointment-details {
+      padding: 12px;
+
+      .detail-row {
+        gap: 8px;
+
+        .detail-item {
+          .detail-header {
+            .detail-label {
+              font-size: 11px;
+            }
+          }
+
+          .detail-value {
+            font-size: 12px;
+            margin-left: 18px;
           }
         }
       }

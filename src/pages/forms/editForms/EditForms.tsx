@@ -278,7 +278,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
           </div>
         </div>
 
-        {/* Services Section */}
         <ServicesSection
           services={form?.services || []}
           allServices={allServices}

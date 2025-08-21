@@ -317,6 +317,7 @@ const ClientDetailPage: React.FC = () => {
 
       {showSendConsentForm && (
         <SendConsentFormModal
+          clientName={client?.name}
           onClose={() => setShowSendConsentForm(false)}
           onSuccess={() => {
             setShowSendConsentForm(false);
