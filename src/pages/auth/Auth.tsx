@@ -10,22 +10,17 @@ import {
   MobileFacebookLoginSvg,
   MobileGoogleLoginSvg,
 } from "../../assets/svgs/AuthSvg";
+import LoginPage from "../../components/authComp/login/Login";
+import SignupPage from "../../components/authComp/signup/SignUp";
 import Navbar from "../../components/layout/navbar/Navbar";
 import ImageSlider from "../../components/slider/ImageSlider";
 import useAuth from "../../context/useAuth";
 import { googleProvider } from "../../firebase/firebase";
-import { HandleSocialLogin } from "./authUtils";
-import LoginPage from "../../components/authComp/login/Login";
-import SignupPage from "../../components/authComp/sigup/SignUp";
 import "./auth.scss";
+import { HandleSocialLogin } from "./authUtils";
 
 type AuthPage = "login" | "signup";
-type SignupStep =
-  | "email"
-  | "password"
-  | "verification"
-  | "business"
-  | "services";
+type SignupStep = "email" | "password" | "verification";
 
 const Auth: React.FC = () => {
   const [page, setPage] = useState<AuthPage>("signup");
@@ -65,6 +60,13 @@ const Auth: React.FC = () => {
 
   const handleBackToEmailStep = () => {
     setSignupStep("email");
+  };
+
+  // New function to handle navigation to login from verification step
+  const handleNavigateToLogin = () => {
+    setPage("login");
+    setSignupStep("email");
+    setSignupEmail("");
   };
 
   const handleGetStarted = () => {
@@ -127,6 +129,7 @@ const Auth: React.FC = () => {
                       onEmailSubmit={handleEmailSubmit}
                       onStepChange={handleStepChange}
                       onBack={handleBackToEmailStep}
+                      onNavigateToLogin={handleNavigateToLogin}
                     />
                   )}
 
@@ -212,6 +215,7 @@ const Auth: React.FC = () => {
                 onEmailSubmit={handleEmailSubmit}
                 onStepChange={handleStepChange}
                 onBack={handleBackToEmailStep}
+                onNavigateToLogin={handleNavigateToLogin}
               />
             )}
             {shouldShowSocialLogin() && (

@@ -1,23 +1,15 @@
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { auth } from "../../../firebase/firebase";
+import { sendEmailVerification } from "../../../services/artistServices";
+import EmailVerificationStep from "../verifyEmail/EmailVerification";
 import EmailStep from "./EmailStep";
 import PasswordStep from "./PasswordStep";
 import "./signup.scss";
-import BusinessNameStep from "../business-name/BusinessName";
-import EmailVerificationStep from "../verifyEmail/EmailVerification";
-import ServicesSelectionStep from "../servicesPage/ServicesSelection";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../firebase/firebase";
-import toast from "react-hot-toast";
-import { sendEmailVerification } from "../../../services/artistServices";
 
-type SignupStep =
-  | "email"
-  | "password"
-  | "verification"
-  | "business"
-  | "services";
+type SignupStep = "email" | "password" | "verification";
 
 interface SignupPageProps {
   currentStep?: SignupStep;
@@ -25,6 +17,7 @@ interface SignupPageProps {
   onEmailSubmit?: (email: string) => void;
   onStepChange?: (step: SignupStep) => void;
   onBack?: () => void;
+  onNavigateToLogin?: () => void; // New prop for login navigation
 }
 
 interface SignupData {
@@ -41,8 +34,8 @@ const SignupPage: React.FC<SignupPageProps> = ({
   onEmailSubmit: propOnEmailSubmit,
   onStepChange: propOnStepChange,
   onBack: propOnBack,
+  onNavigateToLogin, // New prop
 }) => {
-  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<SignupStep>(
     propCurrentStep || "email"
   );
@@ -82,9 +75,9 @@ const SignupPage: React.FC<SignupPageProps> = ({
           password
         );
         const user = userCredential.user;
+        localStorage.setItem("user", JSON.stringify(user));
 
         await sendEmailVerification(user?.uid).then((res) => {
-          console.log("Verification email sent:", res.data);
           toast.success("Verification link sent to your email!");
         });
         changeStep("verification");
@@ -99,52 +92,28 @@ const SignupPage: React.FC<SignupPageProps> = ({
     }
   };
 
-  const handleVerificationComplete = async (code: string) => {
-    try {
-      setSignupData((prev) => ({ ...prev, verificationCode: code }));
-
-      console.log("Verifying code:", code);
-
-      changeStep("business");
-    } catch (error) {
-      console.error("Error during verification:", error);
-    }
-  };
-
-  const handleBusinessNameSubmit = async (businessName: string) => {
-    try {
-      setSignupData((prev) => ({ ...prev, businessName }));
-      changeStep("services");
-    } catch (error) {
-      console.error("Error during business name submission:", error);
-    }
-  };
-
-  const handleServicesSubmit = async (selectedServices: string[]) => {
-    try {
-      const completeSignupData = {
-        ...signupData,
-        selectedServices,
-      };
-
-      console.log("Complete signup data:", completeSignupData);
-
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Error during services submission:", error);
-    }
-  };
-
   const handleResendCode = async () => {
-    try {
-      console.log("Resending verification code to:", signupData.email);
-    } catch (error) {
-      console.error("Error resending code:", error);
-    }
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    sendEmailVerification(user?.uid)
+      .then((res) => {
+        toast.success("Verification email resent successfully!");
+      })
+      .catch((error) => {
+        console.error("Error resending verification email:", error);
+        toast.error("Failed to resend verification email.");
+      });
   };
 
   const handleBack = () => {
     const activeStep = propCurrentStep || currentStep;
+
+    // If on verification step, navigate to login
+    if (activeStep === "verification") {
+      if (onNavigateToLogin) {
+        onNavigateToLogin();
+      }
+      return;
+    }
 
     if (propOnBack && activeStep === "password") {
       propOnBack();
@@ -155,14 +124,16 @@ const SignupPage: React.FC<SignupPageProps> = ({
       case "password":
         changeStep("email");
         break;
-      case "business":
-        changeStep("verification");
-        break;
-      case "services":
-        changeStep("business");
-        break;
+
       default:
         changeStep("email");
+    }
+  };
+
+  // Handle back navigation specifically for verification step
+  const handleVerificationBack = () => {
+    if (onNavigateToLogin) {
+      onNavigateToLogin();
     }
   };
 
@@ -174,12 +145,8 @@ const SignupPage: React.FC<SignupPageProps> = ({
       case "email":
         return 0;
       case "password":
-        return 20;
-      case "verification":
         return 40;
-      case "business":
-        return 60;
-      case "services":
+      case "verification":
         return 80;
       default:
         return 0;
@@ -211,24 +178,8 @@ const SignupPage: React.FC<SignupPageProps> = ({
         return (
           <EmailVerificationStep
             email={activeEmail}
-            onVerificationComplete={handleVerificationComplete}
             onResendCode={handleResendCode}
-          />
-        );
-
-      case "business":
-        return (
-          <BusinessNameStep
-            onBusinessNameSubmit={handleBusinessNameSubmit}
-            initialBusinessName={signupData.businessName}
-          />
-        );
-
-      case "services":
-        return (
-          <ServicesSelectionStep
-            onServicesSubmit={handleServicesSubmit}
-            initialSelectedServices={signupData.selectedServices}
+            onBack={handleVerificationBack} // Pass the verification-specific back handler
           />
         );
 
