@@ -1,7 +1,8 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // or your routing library
 import {
   Building2,
   Key,
@@ -20,13 +21,47 @@ import ChangePasswordModal from "../../components/profileComp/ChangePasswordModa
 import EditProfileModal from "../../components/profileComp/EditProfileModal";
 import { Avatar } from "@mui/material";
 
+interface LocationState {
+  newUser?: boolean;
+}
+
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const locationState = location.state as LocationState;
+
   const [showEditBusinessName, setShowEditBusinessName] = useState(false);
   const [showBusinessInfo, setShowBusinessInfo] = useState(false);
   const [showUpdateServices, setShowUpdateServices] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+
+  // Track the onboarding flow for new users
+  const [isNewUser] = useState(locationState?.newUser || false);
+  const [onboardingStep, setOnboardingStep] = useState<
+    "businessName" | "services" | "completed"
+  >("completed");
+
+  useEffect(() => {
+    if (isNewUser) {
+      // Start the onboarding flow for new users
+      setOnboardingStep("businessName");
+      setShowEditBusinessName(true);
+    }
+  }, [isNewUser]);
+
+  const handleBusinessNameSave = () => {
+    setShowEditBusinessName(false);
+    // Move to next step: services
+    setOnboardingStep("services");
+    setShowUpdateServices(true);
+  };
+
+  const handleServicesSave = () => {
+    setShowUpdateServices(false);
+    setOnboardingStep("completed");
+    // Onboarding complete - user can now use the app normally
+  };
 
   const profileMenuItems = [
     {
@@ -59,6 +94,17 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="profile-page">
+      {isNewUser && onboardingStep !== "completed" && (
+        <div className="profile-page__onboarding-banner">
+          <h2>Welcome! Let's set up your profile</h2>
+          <p>
+            {onboardingStep === "businessName"
+              ? "First, let's set your business name"
+              : "Now, let's add your services"}
+          </p>
+        </div>
+      )}
+
       <div className="profile-page__content">
         <div className="profile-page__header">
           <div className="profile-page__user">
@@ -100,7 +146,36 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {showEditBusinessName && (
+      {/* Onboarding Modals */}
+      {isNewUser &&
+        showEditBusinessName &&
+        onboardingStep === "businessName" && (
+          <EditBusinessNameModal
+            onClose={() => {
+              setShowEditBusinessName(false);
+              setOnboardingStep("completed"); // Allow them to skip if they close
+            }}
+            onSave={handleBusinessNameSave}
+          />
+        )}
+
+      {isNewUser && showUpdateServices && onboardingStep === "services" && (
+        <UpdateServicesModal
+          onClose={() => {
+            setShowUpdateServices(false);
+            setOnboardingStep("completed"); // Allow them to skip if they close
+          }}
+          onGoBack={() => {
+            setShowUpdateServices(false);
+            setOnboardingStep("businessName");
+            setShowEditBusinessName(true);
+          }}
+          onSave={handleServicesSave}
+        />
+      )}
+
+      {/* Regular Modals (for existing flow) */}
+      {!isNewUser && showEditBusinessName && (
         <EditBusinessNameModal
           onClose={() => setShowEditBusinessName(false)}
           onSave={() => setShowEditBusinessName(false)}
@@ -121,7 +196,7 @@ const ProfilePage: React.FC = () => {
         />
       )}
 
-      {showUpdateServices && (
+      {!isNewUser && showUpdateServices && (
         <UpdateServicesModal
           onClose={() => setShowUpdateServices(false)}
           onGoBack={() => {

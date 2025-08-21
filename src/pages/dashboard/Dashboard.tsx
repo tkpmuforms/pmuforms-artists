@@ -45,14 +45,16 @@ const Dashboard: React.FC = () => {
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
   const [showFormLinkModal, setShowFormLinkModal] = useState(false);
+  const [showAddClient, setShowAddClient] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showAddClient, setShowAddClient] = useState(false);
+  const [metricsLoading, setMetricsLoading] = useState(true);
   const [customers, setCustomers] = useState<
     Record<string, { name: string; avatar?: string }>
   >({});
 
+  // Configuration
   const quickActions = [
     {
       title: "Add New Client",
@@ -68,8 +70,7 @@ const Dashboard: React.FC = () => {
       title: "Send Form",
       icon: SendFormIcon,
       onClick: () => {
-        // Check if user is active (subscribed)
-        if (user?.isActive === false) {
+        if (user?.appStorePurchaseActive === true) {
           setShowSubscriptionModal(true);
         } else {
           setShowFormLinkModal(true);
@@ -78,45 +79,71 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  const getCustomerName = (customerId: string) => {
-    return (
-      customers[customerId]?.name || `Client ${customerId.substring(0, 8)}`
-    );
-  };
+  const getMetricsConfig = (metricsData?: Metrics | null) => [
+    {
+      title: "Total Clients",
+      value: metricsData?.totalClients?.toString() || "0",
+      icon: PeopleIcon,
+      color: "var(--pmu-primary)",
+    },
+    {
+      title: "Forms Shared",
+      value: metricsData?.formsShared?.toString() || "0",
+      icon: FormsSavedIcon,
+      color: "#560056",
+    },
+    {
+      title: "Pending Submissions",
+      value: metricsData?.pendingSubmissions?.toString() || "0",
+      icon: PendingSubmissionsIcon,
+      color: "#f59e0b",
+    },
+    {
+      title: "Today's Schedule",
+      value: metricsData?.todaysSchedule?.toString() || "0",
+      icon: TodaysScheduleIcon,
+      color: "#ef4444",
+    },
+  ];
+
+  // Helper functions
+  const getCustomerName = (customerId: string) =>
+    customers[customerId]?.name || `Client ${customerId.substring(0, 8)}`;
 
   const getCustomerAvatar = (customerId: string) => {
     const customerAvatar = customers[customerId]?.avatar;
-    if (customerAvatar) {
-      return customerAvatar;
-    }
+    if (customerAvatar) return customerAvatar;
+
     const customerName = customers[customerId]?.name || "Client";
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(
       customerName
     )}&background=A858F0&color=fff&size=40`;
   };
 
-  useEffect(() => {
-    Promise.all([
-      getArtistAppointments(),
-      searchCustomers(undefined, 1, 30),
-      getMyMetrics(),
-    ])
-      .then(([appointmentsResponse, customersResponse, metricsResponse]) => {
-        console.log("Fetched appointments:", appointmentsResponse.data);
-        console.log("Fetched customers:", customersResponse.data);
-        console.log("Fetched metrics:", metricsResponse.data);
+  const handleModalFlow = {
+    closeSubscription: () => setShowSubscriptionModal(false),
+    showFeatures: () => {
+      setShowSubscriptionModal(false);
+      setShowFeaturesModal(true);
+    },
+    showSubscription: () => {
+      setShowFeaturesModal(false);
+      setShowSubscriptionModal(true);
+    },
+    closeFeatures: () => setShowFeaturesModal(false),
+    closeFormLink: () => setShowFormLinkModal(false),
+    closeAddClient: () => setShowAddClient(false),
+  };
 
-        setAppointments(appointmentsResponse.data?.appointments);
-        setMetrics(metricsResponse.data?.metrics);
+  useEffect(() => {
+    Promise.all([getArtistAppointments(), searchCustomers(undefined, 1, 30)])
+      .then(([appointmentsResponse, customersResponse]) => {
+        setAppointments(appointmentsResponse.data?.appointments || []);
 
         const customerMap = customersResponse.data.customers.reduce(
           (
             acc: Record<string, { name: string; avatar?: string }>,
-            customer: {
-              id: string;
-              name: string;
-              info?: { avatar_url?: string };
-            }
+            customer: any
           ) => {
             acc[customer.id] = {
               name: customer.name,
@@ -130,140 +157,135 @@ const Dashboard: React.FC = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching appointments and customers:", error);
         setLoading(false);
+      });
+
+    // Load metrics separately
+    getMyMetrics()
+      .then((metricsResponse) => {
+        setMetrics(metricsResponse.data?.metrics);
+        setMetricsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching metrics:", error);
+        setMetricsLoading(false);
       });
   }, []);
 
-  // Show loading state for entire dashboard
-  if (loading) {
-    return (
-      <div className="dashboard">
-        <div className="dashboard__header">
-          <div className="dashboard__welcome">
-            <h1>
-              {user?.businessName
-                ? `Hey, ${user.businessName} 👋`
-                : "Hey there 👋"}
-            </h1>
-            <p>Here's your activity for today</p>
-          </div>
-          <div className="dashboard__actions">
-            <button
-              className="dashboard__add-client-btn"
-              onClick={() => setShowAddClient(true)}
-            >
-              <Plus size={16} />
-              Add New Client
-            </button>
+  // Render helpers
+  const renderMetrics = () => {
+    const metricsConfig = getMetricsConfig(metricsLoading ? null : metrics);
+    return metricsConfig.map((metric, index) => (
+      <MetricsCard
+        key={index}
+        {...metric}
+        value={metricsLoading ? "loading" : metric.value}
+      />
+    ));
+  };
+
+  const renderAppointments = () => {
+    if (appointments.length === 0) return <div>No appointments found</div>;
+
+    return appointments.map((appointment) => (
+      <AppointmentCard
+        key={appointment.id}
+        name={getCustomerName(appointment.customerId)}
+        avatar={getCustomerAvatar(appointment.customerId)}
+        time={formatAppointmentTime(appointment.date)}
+        service={
+          appointment.serviceDetails[0]?.service || "Service not specified"
+        }
+      />
+    ));
+  };
+
+  const renderHeader = () => (
+    <div className="dashboard__header">
+      <div className="dashboard__welcome">
+        <h1>
+          {user?.businessName ? `Hey, ${user.businessName} 👋` : "Hey there 👋"}
+        </h1>
+        <p>Here's your activity for today</p>
+      </div>
+      <div className="dashboard__actions">
+        <button
+          className="dashboard__add-client-btn"
+          onClick={() => setShowAddClient(true)}
+        >
+          <Plus size={16} />
+          Add New Client
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderLoadingState = () => (
+    <div className="dashboard">
+      {renderHeader()}
+      <div className="dashboard__content">
+        <section className="dashboard__metrics">
+          <div className="dashboard__metrics-header">
+            <h2 className="dashboard__section-title">KEY METRICS</h2>
             <div className="dashboard__date-filter">
               <button className="dashboard__filter-btn">
-                Last 7 days
-                <ChevronDown size={16} />
+                Last 7 days <ChevronDown size={16} />
               </button>
             </div>
           </div>
-        </div>
+          <div className="dashboard__metrics-grid">
+            <LoadingSmall />
+          </div>
+        </section>
 
-        <div className="dashboard__content">
-          <section className="dashboard__metrics">
-            <h2 className="dashboard__section-title">KEY METRICS</h2>
-            <div className="dashboard__metrics-grid">
-              <LoadingSmall />
-            </div>
-          </section>
+        <section className="dashboard__quick-actions">
+          <h2 className="dashboard__section-title">QUICK ACTIONS</h2>
+          <div className="dashboard__actions-grid">
+            {quickActions.map((action, index) => (
+              <QuickActionCard
+                key={index}
+                {...action}
+                onClick={action.onClick}
+              />
+            ))}
+          </div>
+        </section>
 
-          <section className="dashboard__quick-actions">
-            <h2 className="dashboard__section-title">QUICK ACTIONS</h2>
-            <div className="dashboard__actions-grid">
-              {quickActions.map((action, index) => (
-                <QuickActionCard
-                  key={index}
-                  {...action}
-                  onClick={action.onClick}
-                />
-              ))}
-            </div>
-          </section>
-
-          <section className="dashboard__appointments">
-            <div className="dashboard__appointments-header">
-              <h2 className="dashboard__section-title">NEXT APPOINTMENT</h2>
-              <button className="dashboard__view-all-btn">
-                View all
-                <ChevronDown size={16} />
-              </button>
-            </div>
-            <div className="dashboard__appointments-grid">
-              <LoadingSmall />
-            </div>
-          </section>
-        </div>
-      </div>
-    );
-  }
-
-  // Render dashboard content when not loading
-  return (
-    <div className="dashboard">
-      <div className="dashboard__header">
-        <div className="dashboard__welcome">
-          <h1>
-            {user?.businessName
-              ? `Hey, ${user.businessName} 👋`
-              : "Hey there 👋"}
-          </h1>
-          <p>Here's your activity for today</p>
-        </div>
-        <div className="dashboard__actions">
-          <button
-            className="dashboard__add-client-btn"
-            onClick={() => setShowAddClient(true)}
-          >
-            <Plus size={16} />
-            Add New Client
-          </button>
-          <div className="dashboard__date-filter">
-            <button className="dashboard__filter-btn">
-              Last 7 days
-              <ChevronDown size={16} />
+        <section className="dashboard__appointments">
+          <div className="dashboard__appointments-header">
+            <h2 className="dashboard__section-title">NEXT APPOINTMENT</h2>
+            <button className="dashboard__view-all-btn">
+              View all <ChevronDown size={16} />
             </button>
           </div>
-        </div>
+          <div className="dashboard__appointments-grid">
+            <LoadingSmall />
+          </div>
+        </section>
       </div>
+    </div>
+  );
+
+  if (loading) return renderLoadingState();
+
+  return (
+    <div className="dashboard">
+      {renderHeader()}
 
       <div className="dashboard__content">
         <section className="dashboard__metrics">
-          <h2 className="dashboard__section-title">KEY METRICS</h2>
-
+          <div className="dashboard__metrics-header">
+            <h2 className="dashboard__section-title">KEY METRICS</h2>
+            <div className="dashboard__date-filter">
+              <button className="dashboard__filter-btn">
+                Last 7 days <ChevronDown size={16} />
+              </button>
+            </div>
+          </div>
           <div className="dashboard__metrics-grid">
-            {metrics ? (
-              [
-                {
-                  title: "Total Clients",
-                  value: metrics.totalClients?.toString() || "0",
-                  icon: PeopleIcon,
-                  color: "var(--pmu-primary)",
-                },
-                {
-                  title: "Forms Shared",
-                  value: metrics.formsShared?.toString() || "0",
-                  icon: FormsSavedIcon,
-                  color: "#560056",
-                },
-                {
-                  title: "Pending Submissions",
-                  value: metrics.pendingSubmissions?.toString() || "0",
-                  icon: PendingSubmissionsIcon,
-                  color: "#f59e0b",
-                },
-                {
-                  title: "Today's Schedule",
-                  value: metrics.todaysSchedule?.toString() || "0",
-                  icon: TodaysScheduleIcon,
-                  color: "#ef4444",
-                },
-              ].map((metric, index) => <MetricsCard key={index} {...metric} />)
+            {metrics || metricsLoading ? (
+              renderMetrics()
             ) : (
               <div>No metrics available</div>
             )}
@@ -287,62 +309,38 @@ const Dashboard: React.FC = () => {
           <div className="dashboard__appointments-header">
             <h2 className="dashboard__section-title">NEXT APPOINTMENT</h2>
             <button className="dashboard__view-all-btn">
-              View all
-              <ChevronDown size={16} />
+              View all <ChevronDown size={16} />
             </button>
           </div>
           <div className="dashboard__appointments-grid">
-            {appointments.length > 0 ? (
-              appointments.map((appointment) => (
-                <AppointmentCard
-                  key={appointment.id}
-                  name={getCustomerName(appointment.customerId)}
-                  avatar={getCustomerAvatar(appointment.customerId)}
-                  time={formatAppointmentTime(appointment.date)}
-                  service={
-                    appointment.serviceDetails[0]?.service ||
-                    "Service not specified"
-                  }
-                />
-              ))
-            ) : (
-              <div>No appointments found</div>
-            )}
+            {renderAppointments()}
           </div>
         </section>
       </div>
 
       {showAddClient && (
-        <AddClientModal onClose={() => setShowAddClient(false)} />
+        <AddClientModal onClose={handleModalFlow.closeAddClient} />
       )}
 
       {showFormLinkModal && (
         <FormLinkModal
-          onClose={() => setShowFormLinkModal(false)}
+          onClose={handleModalFlow.closeFormLink}
           businessUri={user?.businessUri || ""}
         />
       )}
 
       {showSubscriptionModal && (
         <SubscriptionModal
-          onClose={() => setShowSubscriptionModal(false)}
-          onShowFeatures={() => {
-            setShowSubscriptionModal(false);
-            setShowFeaturesModal(true);
-          }}
-          onSubscribe={() => {
-            setShowSubscriptionModal(false);
-          }}
+          onClose={handleModalFlow.closeSubscription}
+          onShowFeatures={handleModalFlow.showFeatures}
+          onSubscribe={handleModalFlow.closeSubscription}
         />
       )}
 
       {showFeaturesModal && (
         <FeaturesModal
-          onClose={() => setShowFeaturesModal(false)}
-          onSubscribe={() => {
-            setShowFeaturesModal(false);
-            setShowSubscriptionModal(true);
-          }}
+          onClose={handleModalFlow.closeFeatures}
+          onSubscribe={handleModalFlow.showSubscription}
         />
       )}
     </div>

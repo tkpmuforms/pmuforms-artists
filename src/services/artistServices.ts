@@ -195,3 +195,6 @@ export const getMyMetrics = async () =>
 
 export const DeleteAppointment = async (appointmentId: string | number) =>
   axiosInstance.delete(`/api/appointments/${appointmentId}`);
+
+export const getCustomerMetrics = async (customerId: number) =>
+  axiosInstance.get(`/api/customers/my-customers/${customerId}/metrics`);

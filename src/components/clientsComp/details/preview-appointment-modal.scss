@@ -184,3 +184,191 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .preview-appointment-modal {
+    padding: 16px;
+
+    &__content {
+      max-width: 90vw;
+      max-height: 80vh;
+      border-radius: 12px;
+    }
+
+    &__header {
+      padding: 16px 20px;
+
+      h2 {
+        font-size: 16px;
+      }
+    }
+
+    &__back,
+    &__close {
+      padding: 6px;
+    }
+
+    &__body {
+      padding: 20px;
+    }
+
+    .appointment-info {
+      .info-section {
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .info-group {
+        label {
+          font-size: 13px;
+          margin-bottom: 6px;
+        }
+
+        .client-info {
+          gap: 8px;
+
+          .client-avatar {
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
+          }
+
+          span {
+            font-size: 14px;
+          }
+        }
+
+        .date-info {
+          gap: 6px;
+
+          span {
+            font-size: 14px;
+          }
+        }
+      }
+
+      .services-section,
+      .forms-section {
+        margin-bottom: 20px;
+
+        label {
+          font-size: 13px;
+          margin-bottom: 8px;
+        }
+      }
+
+      .services-list,
+      .forms-list {
+        gap: 6px;
+      }
+
+      .service-item,
+      .form-item {
+        gap: 6px;
+        font-size: 13px;
+      }
+    }
+
+    &__continue {
+      margin: 16px 20px 20px;
+      width: calc(100% - 40px);
+      padding: 14px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .preview-appointment-modal {
+    padding: 12px;
+
+    &__content {
+      max-width: 95vw;
+      max-height: 75vh;
+      border-radius: 8px;
+    }
+
+    &__header {
+      padding: 12px 16px;
+
+      h2 {
+        font-size: 14px;
+      }
+    }
+
+    &__back,
+    &__close {
+      padding: 4px;
+    }
+
+    &__body {
+      padding: 16px;
+    }
+
+    .appointment-info {
+      .info-section {
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .info-group {
+        label {
+          font-size: 12px;
+          margin-bottom: 4px;
+        }
+
+        .client-info {
+          gap: 6px;
+
+          .client-avatar {
+            width: 24px;
+            height: 24px;
+            font-size: 10px;
+          }
+
+          span {
+            font-size: 13px;
+          }
+        }
+
+        .date-info {
+          gap: 4px;
+
+          span {
+            font-size: 13px;
+          }
+        }
+      }
+
+      .services-section,
+      .forms-section {
+        margin-bottom: 16px;
+
+        label {
+          font-size: 12px;
+          margin-bottom: 6px;
+        }
+      }
+
+      .services-list,
+      .forms-list {
+        gap: 4px;
+      }
+
+      .service-item,
+      .form-item {
+        gap: 4px;
+        font-size: 12px;
+      }
+    }
+
+    &__continue {
+      margin: 12px 16px 16px;
+      width: calc(100% - 32px);
+      padding: 12px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+  }
+}

@@ -216,3 +216,213 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .subscription-modal {
+    padding: 16px;
+
+    &__content {
+      max-width: 90vw;
+      max-height: 80vh;
+      padding: 24px;
+      border-radius: 12px;
+    }
+
+    &__close {
+      top: 16px;
+      right: 16px;
+      padding: 6px;
+    }
+
+    &__header {
+      margin-bottom: 20px;
+
+      h2 {
+        font-size: 20px;
+        margin: 12px 0 6px 0;
+      }
+
+      p {
+        font-size: 14px;
+      }
+    }
+
+    &__logo {
+      margin-bottom: 12px;
+
+      .pmu-logo {
+        padding: 10px 14px;
+        font-size: 13px;
+        border-radius: 6px;
+      }
+    }
+
+    &__pricing {
+      margin-bottom: 20px;
+
+      h3 {
+        font-size: 13px;
+        margin: 0 0 16px 0;
+      }
+    }
+
+    .pricing-plans {
+      gap: 10px;
+    }
+
+    .pricing-plan {
+      padding: 12px;
+      border-radius: 8px;
+
+      &__badge {
+        padding: 3px 10px;
+        font-size: 11px;
+        border-radius: 8px;
+      }
+
+      &__trial {
+        padding: 3px 10px;
+        font-size: 11px;
+        border-radius: 8px;
+      }
+
+      &__name {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+
+      &__amount {
+        font-size: 20px;
+      }
+
+      &__period {
+        font-size: 14px;
+      }
+
+      &__subtitle {
+        font-size: 13px;
+      }
+    }
+
+    &__actions {
+      gap: 10px;
+    }
+
+    &__restore {
+      padding: 12px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+
+    &__subscribe {
+      padding: 14px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .subscription-modal {
+    padding: 12px;
+
+    &__content {
+      max-width: 95vw;
+      max-height: 75vh;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    &__close {
+      top: 12px;
+      right: 12px;
+      padding: 4px;
+    }
+
+    &__header {
+      margin-bottom: 16px;
+
+      h2 {
+        font-size: 18px;
+        margin: 10px 0 4px 0;
+      }
+
+      p {
+        font-size: 13px;
+      }
+    }
+
+    &__logo {
+      margin-bottom: 10px;
+
+      .pmu-logo {
+        padding: 8px 12px;
+        font-size: 12px;
+        border-radius: 4px;
+      }
+    }
+
+    &__pricing {
+      margin-bottom: 16px;
+
+      h3 {
+        font-size: 12px;
+        margin: 0 0 12px 0;
+      }
+    }
+
+    .pricing-plans {
+      gap: 8px;
+    }
+
+    .pricing-plan {
+      padding: 10px;
+      border-radius: 6px;
+
+      &__badge {
+        padding: 2px 8px;
+        font-size: 10px;
+        border-radius: 6px;
+      }
+
+      &__trial {
+        padding: 2px 8px;
+        font-size: 10px;
+        border-radius: 6px;
+      }
+
+      &__name {
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+
+      &__amount {
+        font-size: 18px;
+      }
+
+      &__period {
+        font-size: 12px;
+      }
+
+      &__subtitle {
+        font-size: 12px;
+      }
+    }
+
+    &__actions {
+      gap: 8px;
+    }
+
+    &__restore {
+      padding: 10px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+
+    &__subscribe {
+      padding: 12px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+  }
+}

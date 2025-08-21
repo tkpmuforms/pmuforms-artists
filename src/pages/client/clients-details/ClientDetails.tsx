@@ -3,7 +3,6 @@
 import {
   Calendar,
   Check,
-  ChevronLeft,
   Clock,
   Copy,
   Edit,
@@ -30,6 +29,7 @@ import {
   deleteCustomer,
   getAppointmentsForCustomer,
   getCustomerById,
+  getCustomerMetrics,
 } from "../../../services/artistServices";
 import "./client-detail-page.scss";
 
@@ -50,9 +50,7 @@ const ClientDetailPage: React.FC = () => {
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
   const [showFormSentSuccess, setShowFormSentSuccess] = useState(false);
   const [showDeleteClient, setShowDeleteClient] = useState(false);
-  const [clientAppointmentsMetadata, setClientAppointmentsMetadata] = useState(
-    []
-  );
+  const [clientMetricsMetadata, setClientMetricsMetadata] = useState([]);
 
   const fetchClientDetails = useCallback(async () => {
     if (!id) {
@@ -66,7 +64,7 @@ const ClientDetailPage: React.FC = () => {
       setError(null);
 
       const response = await getCustomerById(id);
-      const appointmentsResponse = await getAppointmentsForCustomer(id);
+      const metricsResponse = await getCustomerMetrics(id);
       console.log("Client data fetched:", response.data);
       if (response.status !== 200) {
         throw new Error("Failed to fetch client details");
@@ -80,9 +78,7 @@ const ClientDetailPage: React.FC = () => {
           email: customer.email || "No email provided",
           phone: customer?.info?.cell_phone || undefined,
         });
-        setClientAppointmentsMetadata(
-          appointmentsResponse?.data?.metadata || []
-        );
+        setClientMetricsMetadata(metricsResponse?.data?.metrics || []);
       } else {
         setError("Client not found");
       }
@@ -177,7 +173,9 @@ const ClientDetailPage: React.FC = () => {
               </div>
               <div className="overview-card__content">
                 <div className="overview-card__label">Pending Forms</div>
-                <div className="overview-card__value">{0}</div>
+                <div className="overview-card__value">
+                  {clientMetricsMetadata?.pendingForms}
+                </div>
               </div>
             </div>
 
@@ -188,7 +186,7 @@ const ClientDetailPage: React.FC = () => {
               <div className="overview-card__content">
                 <div className="overview-card__label">Total Appointments</div>
                 <div className="overview-card__value">
-                  {clientAppointmentsMetadata?.total}
+                  {clientMetricsMetadata?.totalAppointments}
                 </div>
               </div>
             </div>

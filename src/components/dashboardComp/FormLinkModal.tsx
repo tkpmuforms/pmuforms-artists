@@ -22,7 +22,7 @@ const FormLinkModal: React.FC<FormLinkModalProps> = ({
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy link:", err);
-      // Fallback for browsers that don't support clipboard API
+
       const textArea = document.createElement("textarea");
       textArea.value = formLink;
       document.body.appendChild(textArea);
@@ -38,7 +38,7 @@ const FormLinkModal: React.FC<FormLinkModalProps> = ({
     <div className="form-link-modal-overlay">
       <div className="form-link-modal">
         <div className="form-link-modal__header">
-          <h2>Your Business's Form Link</h2>
+          <h2>Your Business Form Link</h2>
           <button className="form-link-modal__close" onClick={onClose}>
             <X size={20} />
           </button>
@@ -75,13 +75,13 @@ const FormLinkModal: React.FC<FormLinkModalProps> = ({
           <p className="form-link-modal__instruction">
             Copy and paste this link into your appointment confirmation email.
           </p>
-
+          <div className="form-link-modal__divider"></div>
           <div className="form-link-modal__actions">
             <button
               className="form-link-modal__copy-action"
               onClick={handleCopyLink}
             >
-              {copied ? "Copied!" : "Copy Link"}
+              {copied ? "Copied!" : "Copy to Clipboard"}
             </button>
           </div>
         </div>

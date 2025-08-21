@@ -33,4 +33,28 @@
     font-weight: 700;
     margin: 0;
   }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    height: 36px; // Match the font-size of the value
+  }
+
+  .loading-skeleton {
+    width: 60px;
+    height: 24px;
+    background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 6px;
+  }
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

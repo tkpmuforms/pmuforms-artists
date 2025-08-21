@@ -1,6 +1,10 @@
 "use client";
 import type React from "react";
 import "./appointment-card.scss";
+import {
+  DashboardServiceIcon,
+  DashboardTimeIcon,
+} from "../../assets/svgs/DashboardSvg";
 
 interface AppointmentCardProps {
   name?: string;
@@ -32,12 +36,16 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
       </div>
 
       <div className="appointment-card__service">
-        <span className="appointment-card__service-icon">✂️</span>
+        <span className="appointment-card__service-icon">
+          <DashboardServiceIcon />
+        </span>
         <span className="appointment-card__service-text">{service}</span>
       </div>
 
       <div className="appointment-card__time">
-        <span className="appointment-card__time-icon">🕒</span>
+        <span className="appointment-card__time-icon">
+          <DashboardTimeIcon />
+        </span>
         <span className="appointment-card__time-text">{time}</span>
       </div>
 
