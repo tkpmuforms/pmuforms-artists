@@ -1,13 +1,18 @@
 .form-card {
   background: white;
   border-radius: 16px;
-  padding: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+  overflow: hidden;
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
+  }
+
+  &__content {
+    background: #fbfbfb;
+    padding: 24px;
   }
 
   &__header {
@@ -31,18 +36,29 @@
   }
 
   &__meta {
-    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 
     p {
-      font-size: 14px;
-      color: #64748b;
-      margin: 4px 0;
+      font-size: 12px;
+      color: #5d5d5d;
+      font-weight: 300;
+      margin: 0;
+      letter-spacing: -1%;
+      line-height: 100%;
     }
+  }
+
+  &__separator {
+    font-size: 12px;
+    color: #717171;
   }
 
   &__actions {
     display: flex;
     gap: 8px;
+    padding: 20px 24px 24px;
   }
 
   &__btn {
@@ -55,19 +71,21 @@
     transition: all 0.2s ease;
 
     &--preview {
-      background: #f1f5f9;
-      color: #64748b;
-      border: 1px solid #e2e8f0;
+      background: #eeeeee;
+      color: #350035;
+      border: none;
+      border-radius: 24px;
 
       &:hover {
-        background: #e2e8f0;
-        color: #1e293b;
+        filter: brightness(0.95);
       }
     }
 
     &--edit {
-      background: var(--pmu-primary);
-      color: white;
+      background: #eeeeee;
+      color: #350035;
+      border: none;
+      border-radius: 24px;
 
       &:hover {
         filter: brightness(0.9);

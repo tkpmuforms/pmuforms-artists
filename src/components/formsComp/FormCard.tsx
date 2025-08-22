@@ -1,5 +1,4 @@
 "use client";
-
 import type React from "react";
 import "./form-card.scss";
 import { FormsIconSvg } from "../../assets/svgs/formsSvg";
@@ -24,15 +23,18 @@ const FormCard: React.FC<FormCardProps> = ({
 }) => {
   return (
     <div className="form-card">
-      <div className="form-card__header">
-        <div className="form-card__icon">
-          <FormsIconSvg />
+      <div className="form-card__content">
+        <div className="form-card__header">
+          <div className="form-card__icon">
+            <FormsIconSvg />
+          </div>
+          <h3 className="form-card__title">{title}</h3>
         </div>
-        <h3 className="form-card__title">{title}</h3>
-      </div>
-      <div className="form-card__meta">
-        <p className="form-card__updated">{lastUpdated}</p>
-        <p className="form-card__usage">{usedFor}</p>
+        <div className="form-card__meta">
+          <p className="form-card__updated">{lastUpdated}</p>
+          <span className="form-card__separator">•</span>
+          <p className="form-card__usage">{usedFor}</p>
+        </div>
       </div>
       <div className="form-card__actions">
         <button
