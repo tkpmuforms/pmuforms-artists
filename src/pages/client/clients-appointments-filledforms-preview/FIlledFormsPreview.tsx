@@ -87,6 +87,113 @@ const FilledFormsPreview = () => {
     }
   }, [appointmentId, templateId, user?.businessName]);
 
+  // const generatePDF = async () => {
+  //   try {
+  //     // Show loading state
+  //     toast.loading("Generating PDF...", { id: "pdf-generation" });
+
+  //     // Method 1: Using jsPDF (you'll need to install: npm install jspdf html2canvas)
+  //     // const { jsPDF } = await import("jspdf");
+  //     // const html2canvas = (await import("html2canvas")).default;
+
+  //     // Get the form content element
+  //     const element = document.querySelector(".form-content");
+  //     if (!element) {
+  //       throw new Error("Form content not found");
+  //     }
+
+  //     // Convert HTML to canvas
+  //     // const canvas = await html2canvas(element as HTMLElement, {
+  //     //   scale: 2,
+  //     //   useCORS: true,
+  //     //   allowTaint: true,
+  //     // });
+
+  //     // // Create PDF
+  //     // const imgData = canvas.toDataURL("image/png");
+  //     // const pdf = new jsPDF({
+  //     //   orientation: "portrait",
+  //     //   unit: "mm",
+  //     //   format: "a4",
+  //     // });
+
+  //     const imgWidth = 210;
+  //     const pageHeight = 295;
+  //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  //     let heightLeft = imgHeight;
+  //     let position = 0;
+
+  //     // Add first page
+  //     pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+  //     heightLeft -= pageHeight;
+
+  //     // Add additional pages if needed
+  //     while (heightLeft >= 0) {
+  //       position = heightLeft - imgHeight;
+  //       pdf.addPage();
+  //       pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+  //       heightLeft -= pageHeight;
+  //     }
+
+  //     // Save the PDF
+  //     const fileName = `${form?.title || "Form"}_${appointmentId}.pdf`;
+  //     pdf.save(fileName);
+
+  //     toast.success("PDF generated successfully!", { id: "pdf-generation" });
+  //   } catch (error) {
+  //     console.error("Error generating PDF:", error);
+  //     toast.error("Failed to generate PDF", { id: "pdf-generation" });
+  //   }
+  // };
+
+  // Alternative method using browser's print functionality
+  const generatePDFWithPrint = () => {
+    // Create a new window with only the form content
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast.error("Please allow pop-ups to generate PDF");
+      return;
+    }
+
+    const formContent =
+      document.querySelector(".form-content")?.innerHTML || "";
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${form?.title || "Form"}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h2 { color: #333; margin-bottom: 20px; }
+            h3 { color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px; }
+            .preview-info { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+            .preview-info h5 { color: #FF9500; margin: 0 0 5px 0; }
+            .preview-info p { color: #FF9500; margin: 0; font-size: 14px; }
+            .view-pdf-button { display: none; }
+            label { display: block; margin-bottom: 15px; font-weight: 500; }
+            input, textarea { margin-top: 8px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+            @media print {
+              body { margin: 0; }
+              .no-print { display: none !important; }
+            }
+          </style>
+        </head>
+        <body>
+          ${formContent}
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+
+    // Wait for content to load, then trigger print
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 500);
+  };
+
   if (loading) {
     return <LoadingSmall />;
   }
@@ -108,40 +215,18 @@ const FilledFormsPreview = () => {
           <h2>{form?.title}</h2>
           <button
             className="view-pdf-button"
-            style={{
-              width: "171px",
-              height: "48px",
-              borderRadius: "16px",
-              opacity: 1,
-              paddingTop: "16px",
-              paddingRight: "32px",
-              paddingBottom: "16px",
-              paddingLeft: "32px",
-              gap: "8px",
-              backgroundColor: "#D764D726",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#333",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={() => {
-              // TODO: Implement PDF generation functionality
-              console.log("Generate PDF clicked");
-            }}
+            onClick={generatePDFWithPrint} // Using the advanced PDF generation method
+            // onClick={generatePDFWithPrint} // Alternative: use browser print
           >
             View as PDF
           </button>
         </div>
 
         <div className="preview-header">
-          <div className="preview-info" style={{ background: "#e8f5e8" }}>
+          <div className="preview-info">
             <div className="preview-text">
-              <h5 style={{ color: "#FF9500" }}>Filled Form Data</h5>
-              <p style={{ color: "#FF9500" }}>
+              <h5>Filled Form Data</h5>
+              <p>
                 This shows the data that was submitted by the customer for this
                 appointment.
               </p>

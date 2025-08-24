@@ -1,7 +1,10 @@
 "use client";
 
+import imageCompression from "browser-image-compression";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import type React from "react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   SignatureButtonSvg,
@@ -9,8 +12,11 @@ import {
   SignatureServicesCheckSvg,
 } from "../../../assets/svgs/ClientsSvg";
 import SignatureModal from "../../../components/clientsComp/signature/SignatureModal";
-import "./SignaturePage.scss";
+import useAuth from "../../../context/useAuth";
+import { storage } from "../../../firebase/firebase";
 import { signAppointment } from "../../../services/artistServices";
+import { formatAppointmentTime } from "../../../utils/utils";
+import "./SignaturePage.scss";
 
 interface FormTemplate {
   appointmentId: string;
@@ -37,12 +43,13 @@ interface Appointment {
 const SignFormsPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const { appointmentId } = useParams<{ appointmentId: string }>();
   const { forms, clientName, appointments } = location.state || {};
   const [showSignModal, setShowSignModal] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
 
   const currentAppointment: Appointment = appointments?.find(
     (appointment: Appointment) => appointment.id === appointmentId
@@ -59,21 +66,7 @@ const SignFormsPage: React.FC = () => {
       form.status === "complete" || form.status === "completed"
   );
 
-  // Get services from appointment
   const services = currentAppointment?.serviceDetails || [];
-
-  // Format appointment date
-  const formatAppointmentDate = (dateString: string) => {
-    if (!dateString) return "your upcoming appointment";
-
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
 
   const handleBackClick = () => {
     navigate("/");
@@ -85,12 +78,6 @@ const SignFormsPage: React.FC = () => {
     console.log(showSignModal);
   };
 
-  const handleConfirmSign = () => {
-    setShowConfirmModal(false);
-    setShowSignModal(true);
-  };
-
-  // Handle signature submission
   const handleSignatureSubmit = async (signatureDataUrl: string) => {
     if (!appointmentId) {
       setSubmitError("Appointment ID is missing");
@@ -101,8 +88,32 @@ const SignFormsPage: React.FC = () => {
     setSubmitError(null);
 
     try {
+      // Convert data URL to blob
+      const response = await fetch(signatureDataUrl);
+      const blob = await response.blob();
+
+      // Create a file from the blob
+      const timestamp = Date.now();
+      const fileName = `signature_${appointmentId}_${timestamp}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      // Compress the image
+      const options = {
+        maxSizeMB: 0.4, // 400KB
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+
+      // Upload to Firebase Storage
+      const storageRef = ref(storage, `signatures/${user.id}/${fileName}`);
+      const snapshot = await uploadBytes(storageRef, compressedFile);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+
+      // Now submit to your API with the Firebase URL
       await signAppointment(appointmentId, {
-        signatureUrl: signatureDataUrl,
+        signatureUrl: downloadUrl, // Use Firebase URL instead of data URL
       });
 
       // Update local appointment state to reflect signing
@@ -110,14 +121,15 @@ const SignFormsPage: React.FC = () => {
         currentAppointment.signed = true;
       }
 
+      setSignatureUrl(downloadUrl); // Store the Firebase URL
       setShowSignModal(false);
 
-      // Optional: Show success message or navigate
-      // You could add a success toast or redirect here
+      toast.success("Signature submitted successfully");
       console.log("Signature submitted successfully");
     } catch (error) {
       console.error("Error submitting signature:", error);
       setSubmitError("Failed to submit signature. Please try again.");
+      toast.error("Failed to submit signature");
     } finally {
       setIsSubmitting(false);
     }
@@ -181,10 +193,10 @@ const SignFormsPage: React.FC = () => {
             <div className="intro-section">
               <p className="intro-text">
                 {currentAppointment?.allFormsCompleted
-                  ? `Thank you for completing all the forms for your appointment on ${formatAppointmentDate(
+                  ? `Thank you for completing all the forms for your appointment on ${formatAppointmentTime(
                       currentAppointment?.date
                     )}! Now, all you need to do is sign!`
-                  : `Please complete all required forms before signing for your appointment on ${formatAppointmentDate(
+                  : `Please complete all required forms before signing for your appointment on ${formatAppointmentTime(
                       currentAppointment?.date
                     )}.`}
               </p>

@@ -28,7 +28,7 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        background: #ffa21d1a;
+        // background: #ffa21d1a;
         padding: 15px;
         border-radius: 20px;
 
@@ -39,13 +39,13 @@
           h5 {
             margin: 0 0 5px 0;
             font-size: 16px;
-            color: #333;
+            color: #ff9500; // Moved from inline styles
           }
 
           p {
             margin: 0;
             font-size: 14px;
-            color: #666;
+            color: #ff9500; // Moved from inline styles
           }
         }
 
@@ -69,6 +69,21 @@
       }
 
       .view-pdf-button {
+        width: 171px;
+        height: 48px;
+        border-radius: 16px;
+        opacity: 1;
+        padding: 16px 32px;
+        gap: 8px;
+        background-color: #d764d726;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         transition: opacity 0.2s ease, transform 0.1s ease;
 
         &:hover {
