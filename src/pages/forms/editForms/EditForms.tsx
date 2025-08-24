@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { LoadingSmall } from "../../../components/loading/Loading";
-
 import EditFormServices from "../../../components/formsComp/EditFormsServices";
 import RenderEditFormsFields from "../../../components/formsComp/RenderEditForms";
 import ServicesSection from "../../../components/formsComp/ServiceSection";
+import AddFieldModal from "../../../components/formsComp/AddFieldModal";
+import FieldInputModal from "../../../components/formsComp/FieldInputModal";
 import useAuth from "../../../context/useAuth";
 import { Section, Service, SingleForm } from "../../../redux/types";
 import {
@@ -14,6 +15,7 @@ import {
   getServices,
   updateFormSectionData,
   updateFormServices,
+  addFormSectionData,
 } from "../../../services/artistServices";
 import "./edit-forms.scss";
 import DeleteConfirmModal from "../../../components/formsComp/DeleteConfirmModal";
@@ -22,6 +24,14 @@ import EditParagraphModal from "../../../components/formsComp/EditParagraphModal
 interface EditFormsProps {
   onClose?: () => void;
   formId?: string;
+}
+
+interface addFormSectionDataPayload {
+  line: string;
+  title: string;
+  type: string;
+  required: boolean;
+  after: string;
 }
 
 const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
@@ -37,6 +47,12 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const [editingField, setEditingField] = useState(null);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showEditParagraphModal, setShowEditParagraphModal] = useState(false);
+
+  // New state for add field functionality
+  const [showAddFieldModal, setShowAddFieldModal] = useState(false);
+  const [showFieldInputModal, setShowFieldInputModal] = useState(false);
+  const [selectedFieldType, setSelectedFieldType] = useState(null);
+  const [currentAfterFieldId, setCurrentAfterFieldId] = useState("");
 
   // Fetch services
   useEffect(() => {
@@ -126,23 +142,56 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
     if (!form || !field) return;
 
     deleteFormSectionData(form.id, field.sectionId, field.id)
-      .then(() => {
-        // Update the form state locally
-        const updatedForm = { ...form };
-        updatedForm.sections = updatedForm.sections.map((section) => {
-          if (
-            section.id === field.sectionId ||
-            section._id === field.sectionId
-          ) {
-            return {
-              ...section,
-              data: section.data.filter((f) => f.id !== field.id),
-            };
-          }
-          return section;
-        });
+      .then((response) => {
+        // Check if response contains a new form ID
+        if (response?.data?.form?.id) {
+          const newFormId = response.data.form.id;
 
-        setForm(updatedForm);
+          // Update URL if we're using route params
+          if (paramFormId && newFormId !== form.id) {
+            navigate(`/forms/edit/${newFormId}`, { replace: true });
+          }
+
+          // Update form with new data
+          const formData = response.data.form;
+          const transformedForm: SingleForm = {
+            id: formData.id || formData._id,
+            type: formData.type,
+            title: formData.title,
+            sections: formData.sections.map((section: Section) => ({
+              ...section,
+              _id: section._id || section.id,
+            })),
+            services: formData.services || [],
+          };
+
+          // Replace business name placeholders
+          const updatedForm = JSON.parse(
+            JSON.stringify(transformedForm).replace(
+              /\(?\{\{user\.businessName\}\}\)?/g,
+              user?.businessName || "Your Business Name"
+            )
+          );
+
+          setForm(updatedForm);
+        } else {
+          // Fallback to local update if no new form data in response
+          const updatedForm = { ...form };
+          updatedForm.sections = updatedForm.sections.map((section) => {
+            if (
+              section.id === field.sectionId ||
+              section._id === field.sectionId
+            ) {
+              return {
+                ...section,
+                data: section.data.filter((f) => f.id !== field.id),
+              };
+            }
+            return section;
+          });
+          setForm(updatedForm);
+        }
+
         setShowConfirmDeleteModal(false);
         toast.success("Field deleted successfully");
       })
@@ -168,29 +217,62 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
 
     updateFormSectionData(
       form.id,
-      editingField.sectionId, // Now this should be available
+      editingField.sectionId,
       editingField.id,
       updatedField
     )
-      .then(() => {
-        // Update the form state locally
-        const updatedForm = { ...form };
-        updatedForm.sections = updatedForm.sections.map((section) => {
-          if (
-            section.id === editingField?.sectionId ||
-            section._id === editingField?.sectionId
-          ) {
-            return {
-              ...section,
-              data: section.data.map((field) =>
-                field.id === editingField?.id ? updatedField : field
-              ),
-            };
-          }
-          return section;
-        });
+      .then((response) => {
+        // Check if response contains a new form ID
+        if (response?.data?.form?.id) {
+          const newFormId = response.data.form.id;
 
-        setForm(updatedForm);
+          // Update URL if we're using route params
+          if (paramFormId && newFormId !== form.id) {
+            navigate(`/forms/edit/${newFormId}`, { replace: true });
+          }
+
+          // Update form with new data from response
+          const formData = response.data.form;
+          const transformedForm: SingleForm = {
+            id: formData.id || formData._id,
+            type: formData.type,
+            title: formData.title,
+            sections: formData.sections.map((section: Section) => ({
+              ...section,
+              _id: section._id || section.id,
+            })),
+            services: formData.services || [],
+          };
+
+          // Replace business name placeholders
+          const updatedForm = JSON.parse(
+            JSON.stringify(transformedForm).replace(
+              /\(?\{\{user\.businessName\}\}\)?/g,
+              user?.businessName || "Your Business Name"
+            )
+          );
+
+          setForm(updatedForm);
+        } else {
+          // Fallback to local update if no new form data in response
+          const updatedForm = { ...form };
+          updatedForm.sections = updatedForm.sections.map((section) => {
+            if (
+              section.id === editingField?.sectionId ||
+              section._id === editingField?.sectionId
+            ) {
+              return {
+                ...section,
+                data: section.data.map((field) =>
+                  field.id === editingField?.id ? updatedField : field
+                ),
+              };
+            }
+            return section;
+          });
+          setForm(updatedForm);
+        }
+
         setEditingField(null);
         toast.success("Field updated successfully");
       })
@@ -206,9 +288,87 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
     console.log("Show confirm delete modal for field:", field);
   };
 
-  const handleAddParagraph = (fieldId: string) => {
-    console.log("Add paragraph to field:", fieldId);
-    // TODO: Implement add paragraph functionality
+  const handleAddParagraph = (afterFieldId: string) => {
+    console.log("Add paragraph after field:", afterFieldId);
+    setCurrentAfterFieldId(afterFieldId);
+    setShowAddFieldModal(true);
+  };
+
+  const handleFieldTypeSelect = (fieldType: any) => {
+    setSelectedFieldType(fieldType);
+    setShowAddFieldModal(false);
+    setShowFieldInputModal(true);
+  };
+
+  const handleAddField = async (title: string, isRequired: boolean) => {
+    if (!form || !selectedFieldType || !currentAfterFieldId) return;
+
+    // Find which section contains the after field
+    const sectionWithField = form.sections.find((section) =>
+      section.data.some((field) => field.id === currentAfterFieldId)
+    );
+
+    if (!sectionWithField) {
+      toast.error("Could not find section for field");
+      return;
+    }
+
+    const payload: addFormSectionDataPayload = {
+      line: "full", // hardcoded as requested
+      title: title,
+      type: selectedFieldType.type,
+      required: isRequired,
+      after: currentAfterFieldId,
+    };
+
+    try {
+      const response = await addFormSectionData(
+        form.id,
+        sectionWithField._id || sectionWithField.id,
+        payload
+      );
+
+      // Update the form state locally by refetching
+      const updatedFormResponse = await getFormById(form.id);
+      if (updatedFormResponse?.data?.form) {
+        const formData = updatedFormResponse.data.form;
+        const transformedForm: SingleForm = {
+          id: formData.id || formData._id,
+          type: formData.type,
+          title: formData.title,
+          sections: formData.sections.map((section: Section) => ({
+            ...section,
+            _id: section._id || section.id,
+          })),
+          services: formData.services || [],
+        };
+
+        // Replace business name placeholders
+        const updatedForm = JSON.parse(
+          JSON.stringify(transformedForm).replace(
+            /\(?\{\{user\.businessName\}\}\)?/g,
+            user?.businessName || "Your Business Name"
+          )
+        );
+
+        setForm(updatedForm);
+      }
+
+      setShowFieldInputModal(false);
+      setSelectedFieldType(null);
+      setCurrentAfterFieldId("");
+      toast.success("Field added successfully");
+    } catch (error) {
+      console.error("Error adding field:", error);
+      toast.error("Failed to add field");
+    }
+  };
+
+  const handleCloseFieldModals = () => {
+    setShowAddFieldModal(false);
+    setShowFieldInputModal(false);
+    setSelectedFieldType(null);
+    setCurrentAfterFieldId("");
   };
 
   // Services handlers
@@ -285,7 +445,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
           loading={servicesLoading}
         />
 
-        {/* Form Sections */}
         {form.sections && form.sections.length > 0 ? (
           form.sections.map((section) => (
             <div key={section._id || section.id} className="form-section">
@@ -308,6 +467,23 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
         )}
       </div>
 
+      {/* Add Field Modals */}
+      {showAddFieldModal && (
+        <AddFieldModal
+          onClose={handleCloseFieldModals}
+          onSelectFieldType={handleFieldTypeSelect}
+        />
+      )}
+
+      {showFieldInputModal && selectedFieldType && (
+        <FieldInputModal
+          onClose={handleCloseFieldModals}
+          onSave={handleAddField}
+          fieldType={selectedFieldType}
+        />
+      )}
+
+      {/* Existing Modals */}
       {showConfirmDeleteModal && (
         <DeleteConfirmModal
           onClose={() => setShowConfirmDeleteModal(false)}
@@ -321,7 +497,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
             setShowEditParagraphModal(false);
             setEditingField(null);
           }}
-          onSave={handleSectionDataUpdate} // Now passes updated content
+          onSave={handleSectionDataUpdate}
           initialContent={editingField?.title || ""}
           initialRequired={editingField?.required || false}
           fieldType={editingField?.type}

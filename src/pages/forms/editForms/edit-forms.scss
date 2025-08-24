@@ -1,7 +1,4 @@
 .edit-dynamic-forms {
-  width: 90%;
-  margin: 0 auto;
-
   .modal-header {
     display: flex;
     justify-content: flex-end;
@@ -153,26 +150,24 @@
     border-top: 1px dashed #ddd;
 
     .add-paragraph-btn {
-      background: none;
-      border: 2px dashed var(--pmu-primary, #6a0dad);
-      color: var(--pmu-primary, #6a0dad);
+      background: #f4eaf4;
+      border: none;
+      color: var(--pmu-primary);
       padding: 10px 15px;
-      border-radius: 5px;
+      border-radius: 16px;
       cursor: pointer;
       font-size: 14px;
-      width: 100%;
+      width: 30%;
       transition: all 0.2s;
 
       &:hover {
-        background-color: #f8f9fa;
-        border-color: var(--pmu-primary, #6a0dad);
-        color: var(--pmu-primary, #6a0dad);
+        filter: brightness(0.9);
       }
     }
   }
 
-  input,
-  textarea {
+  // Form inputs styling
+  .form-input {
     margin-top: 8px;
     width: 100%;
     padding: 12px;
@@ -182,19 +177,54 @@
     box-sizing: border-box;
   }
 
-  .checkbox-group {
-    .field-header {
-      label {
-        display: flex;
-        align-items: flex-start;
-        text-align: left;
+  .form-textarea {
+    margin-top: 8px;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+  }
 
-        input {
-          margin-right: 10px;
-          margin-top: 2px;
-          width: auto;
-          flex-shrink: 0;
-        }
+  .image-upload-area {
+    margin-top: 10px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+    text-align: center;
+    color: #999;
+  }
+
+  // Checkbox specific styling
+  .checkbox-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      margin: 0;
+      font-size: 16px;
+      color: #333;
+
+      .checkbox-input {
+        margin-right: 10px;
+        margin-top: 0;
+        width: auto; // This allows checkbox to be its natural size
+        min-width: 16px; // Ensure minimum clickable area
+        flex-shrink: 0; // Prevent shrinking
+      }
+
+      .checkbox-text {
+        flex: 1;
       }
     }
   }
@@ -266,6 +296,12 @@
 
     label {
       font-size: 14px;
+    }
+
+    .checkbox-group {
+      .checkbox-label {
+        font-size: 14px;
+      }
     }
   }
 

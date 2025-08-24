@@ -17,7 +17,7 @@ const FormInputTypes = {
 
 interface RenderEditFormsFieldsProps {
   fields: any[];
-  sectionId: string; // Add sectionId prop
+  sectionId: string;
   onEditField: (field: any) => void;
   onDeleteField: (fieldId: string) => void;
   onAddParagraph: (fieldId: string) => void;
@@ -25,7 +25,7 @@ interface RenderEditFormsFieldsProps {
 
 const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
   fields,
-  sectionId, // Receive sectionId
+  sectionId,
   onEditField,
   onDeleteField,
   onAddParagraph,
@@ -40,13 +40,24 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
   const FieldActions = ({ field }: { field: any }) => (
     <div className="field-actions">
       <SmallEditIConSvg
-        onClick={() => onEditField({ ...field, sectionId })} // Include sectionId
+        onClick={() => onEditField({ ...field, sectionId })}
         className="field-action-icon edit-icon"
       />
       <SmallDeleteIconSvg
-        onClick={() => onDeleteField({ ...field, sectionId })} // Include sectionId
+        onClick={() => onDeleteField({ ...field, sectionId })}
         className="field-action-icon delete-icon"
       />
+    </div>
+  );
+
+  const AddParagraphSection = ({ fieldId }: { fieldId: string }) => (
+    <div className="add-paragraph-section">
+      <button
+        className="add-paragraph-btn"
+        onClick={() => onAddParagraph(fieldId)}
+      >
+        + Tap to add question or Paragraph
+      </button>
     </div>
   );
 
@@ -62,6 +73,7 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
             <label>{field.title}</label>
             <FieldActions field={field} />
           </div>
+          <AddParagraphSection fieldId={field.id} />
         </div>
       );
     }
@@ -78,11 +90,13 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
           </div>
           <input
             type="text"
+            className="form-input"
             value=""
             disabled
             style={previewInputStyle}
             placeholder="Signature field"
           />
+          <AddParagraphSection fieldId={field.id} />
         </div>
       );
     }
@@ -90,22 +104,24 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
     switch (field.type) {
       case FormInputTypes.CHECKBOX:
         return (
-          <div className="checkbox-group field-container" key={field.id}>
-            <div className="field-header">
-              <label>
+          <div className="field-container" key={field.id}>
+            <div className="checkbox-group">
+              <label className="checkbox-label">
                 <input
                   type="checkbox"
+                  className="checkbox-input"
                   checked={false}
                   disabled
                   style={{ cursor: "not-allowed" }}
                 />
-                <span>
+                <span className="checkbox-text">
                   {field.title}
                   {isRequired && <span className="required-star">*</span>}
                 </span>
               </label>
               <FieldActions field={field} />
             </div>
+            <AddParagraphSection fieldId={field.id} />
           </div>
         );
 
@@ -119,7 +135,14 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
               </label>
               <FieldActions field={field} />
             </div>
-            <input type="date" value="" disabled style={previewInputStyle} />
+            <input
+              type="date"
+              className="form-input"
+              value=""
+              disabled
+              style={previewInputStyle}
+            />
+            <AddParagraphSection fieldId={field.id} />
           </div>
         );
 
@@ -133,19 +156,8 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
               </label>
               <FieldActions field={field} />
             </div>
-            <div
-              style={{
-                padding: "20px",
-                backgroundColor: "#f9f9f9",
-                border: "1px dashed #ddd",
-                borderRadius: "4px",
-                textAlign: "center",
-                color: "#999",
-                marginTop: "10px",
-              }}
-            >
-              Image upload area
-            </div>
+            <div className="image-upload-area">Image upload area</div>
+            <AddParagraphSection fieldId={field.id} />
           </div>
         );
 
@@ -159,7 +171,14 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
               </label>
               <FieldActions field={field} />
             </div>
-            <input type="number" value="" disabled style={previewInputStyle} />
+            <input
+              type="number"
+              className="form-input"
+              value=""
+              disabled
+              style={previewInputStyle}
+            />
+            <AddParagraphSection fieldId={field.id} />
           </div>
         );
 
@@ -174,24 +193,12 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
               <FieldActions field={field} />
             </div>
             <textarea
+              className="form-textarea"
               value=""
               disabled
-              style={{
-                ...previewInputStyle,
-                width: "100%",
-                minHeight: "100px",
-                resize: "vertical",
-                fontFamily: "inherit",
-              }}
+              style={previewInputStyle}
             />
-            <div className="add-paragraph-section">
-              <button
-                className="add-paragraph-btn"
-                onClick={() => onAddParagraph(field.id)}
-              >
-                + Tap to add question or Paragraph
-              </button>
-            </div>
+            <AddParagraphSection fieldId={field.id} />
           </div>
         );
 
@@ -205,7 +212,14 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
               </label>
               <FieldActions field={field} />
             </div>
-            <input type="text" value="" disabled style={previewInputStyle} />
+            <input
+              type="text"
+              className="form-input"
+              value=""
+              disabled
+              style={previewInputStyle}
+            />
+            <AddParagraphSection fieldId={field.id} />
           </div>
         );
     }
