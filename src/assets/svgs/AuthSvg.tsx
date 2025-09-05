@@ -471,3 +471,79 @@ export const RegistrationSuccessSvg: React.FC<{
     </svg>
   );
 };
+
+export const EmailVerificationSvg: React.FC = () => {
+  return (
+    <svg
+      width="96"
+      height="96"
+      viewBox="0 0 96 96"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="96" height="96" rx="48" fill="#D764D7" fill-opacity="0.25" />
+      <path
+        d="M58 66.5H38C37.18 66.5 36.5 65.82 36.5 65C36.5 64.18 37.18 63.5 38 63.5H58C63.72 63.5 66.5 60.72 66.5 55V41C66.5 35.28 63.72 32.5 58 32.5H38C32.28 32.5 29.5 35.28 29.5 41C29.5 41.82 28.82 42.5 28 42.5C27.18 42.5 26.5 41.82 26.5 41C26.5 33.7 30.7 29.5 38 29.5H58C65.3 29.5 69.5 33.7 69.5 41V55C69.5 62.3 65.3 66.5 58 66.5Z"
+        fill="url(#paint0_linear_682_20184)"
+      />
+      <path
+        d="M47.9996 49.7399C46.3196 49.7399 44.6196 49.2199 43.3196 48.1599L37.0596 43.1599C36.4196 42.6399 36.2996 41.6999 36.8196 41.0599C37.3396 40.4199 38.2795 40.2999 38.9195 40.8199L45.1795 45.8199C46.6995 47.0399 49.2795 47.0399 50.7995 45.8199L57.0596 40.8199C57.6996 40.2999 58.6595 40.3999 59.1595 41.0599C59.6795 41.6999 59.5795 42.6599 58.9195 43.1599L52.6595 48.1599C51.3795 49.2199 49.6796 49.7399 47.9996 49.7399Z"
+        fill="url(#paint1_linear_682_20184)"
+      />
+      <path
+        d="M40 58.5H28C27.18 58.5 26.5 57.82 26.5 57C26.5 56.18 27.18 55.5 28 55.5H40C40.82 55.5 41.5 56.18 41.5 57C41.5 57.82 40.82 58.5 40 58.5Z"
+        fill="url(#paint2_linear_682_20184)"
+      />
+      <path
+        d="M34 50.5H28C27.18 50.5 26.5 49.82 26.5 49C26.5 48.18 27.18 47.5 28 47.5H34C34.82 47.5 35.5 48.18 35.5 49C35.5 49.82 34.82 50.5 34 50.5Z"
+        fill="url(#paint3_linear_682_20184)"
+      />
+      <defs>
+        <linearGradient
+          id="paint0_linear_682_20184"
+          x1="26.5"
+          y1="48"
+          x2="69.5"
+          y2="48"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#8E2D8E" />
+          <stop offset="1" stop-color="#A654CD" />
+        </linearGradient>
+        <linearGradient
+          id="paint1_linear_682_20184"
+          x1="36.4941"
+          y1="45.1141"
+          x2="59.4912"
+          y2="45.1141"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#8E2D8E" />
+          <stop offset="1" stop-color="#A654CD" />
+        </linearGradient>
+        <linearGradient
+          id="paint2_linear_682_20184"
+          x1="26.5"
+          y1="57"
+          x2="41.5"
+          y2="57"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#8E2D8E" />
+          <stop offset="1" stop-color="#A654CD" />
+        </linearGradient>
+        <linearGradient
+          id="paint3_linear_682_20184"
+          x1="26.5"
+          y1="49"
+          x2="35.5"
+          y2="49"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#8E2D8E" />
+          <stop offset="1" stop-color="#A654CD" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};

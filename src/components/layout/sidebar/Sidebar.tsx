@@ -78,7 +78,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Mobile Menu Toggle */}
       <button
         className="sidebar__mobile-toggle"
         onClick={toggleMobileMenu}
@@ -89,7 +88,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         <span></span>
       </button>
 
-      {/* Overlay for mobile */}
       {isMobileOpen && (
         <div
           className="sidebar__overlay"
@@ -97,14 +95,12 @@ const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`sidebar ${isMobileOpen ? "sidebar--open" : ""} ${
           isCollapsed ? "sidebar--collapsed" : ""
         } ${className}`}
         data-collapsed={isCollapsed}
       >
-        {/* Collapse Toggle Button */}
         <button
           className="sidebar__collapse-toggle"
           onClick={toggleCollapse}
@@ -113,7 +109,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
 
-        {/* User Profile Section */}
         <div className="sidebar__header">
           <div className="sidebar__user">
             {!isCollapsed && (
@@ -135,7 +130,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Navigation Menu */}
         <nav className="sidebar__nav">
           <ul className="sidebar__menu">
             {Menu.map((item) => {
@@ -162,7 +156,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             })}
           </ul>
         </nav>
-        {/* Logout Button */}
+
         <div className="sidebar__footer">
           <button
             className="sidebar__logout-button"

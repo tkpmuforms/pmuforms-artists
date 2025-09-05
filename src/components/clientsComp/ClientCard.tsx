@@ -15,7 +15,10 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onClick }) => {
     <button className="client-card" onClick={onClick}>
       <div
         className="client-card__avatar"
-        style={{ backgroundColor: client.color }}
+        style={{
+          backgroundColor: "#5555550D",
+          color: client.color,
+        }}
       >
         {client.initials}
       </div>

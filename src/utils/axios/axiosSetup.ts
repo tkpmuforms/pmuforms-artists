@@ -3,8 +3,7 @@ import { createBrowserHistory } from "history";
 
 const history = createBrowserHistory();
 
-const baseURL = "https://test-admin.pmuforms.com/";
-// const baseURL = "http://localhost:3333";
+const baseURL = "https://admin.pmuforms.com/";
 
 const axiosInstance = axios.create({
   baseURL,

@@ -7,23 +7,29 @@
   margin: 0 auto;
 
   &.desktop {
+    flex-direction: row; // Explicitly set direction
+    flex-wrap: nowrap; // Prevent wrapping
+    align-items: stretch; // Ensure both sections have same height
+
     .auth-slider-section {
-      flex: 1;
+      flex: 1 1 50%; // Give it exactly 50% and allow it to grow/shrink
+      min-width: 400px; // Set minimum width to prevent collapse
       min-height: 100%;
       display: flex;
+
       align-items: center;
       justify-content: center;
     }
 
     .auth-form-section {
-      flex: 1;
+      flex: 1 1 50%; // Give it exactly 50% and allow it to grow/shrink
+      min-width: 400px; // Set minimum width to prevent collapse
       display: flex;
       align-items: center;
       justify-content: center;
       background-color: white;
-      max-height: 800px;
+      margin: 50px 0;
       border-radius: 10px;
-      margin-top: 50px;
     }
   }
 
@@ -34,7 +40,46 @@
   }
 }
 
-// Mobile Slider View
+// Add a media query to handle smaller desktop screens
+@media screen and (max-width: 1200px) and (min-width: 769px) {
+  .auth-main-container.desktop {
+    max-width: 95%;
+    margin: 0 auto;
+
+    .auth-slider-section,
+    .auth-form-section {
+      min-width: 350px; // Reduce minimum width for smaller screens
+    }
+  }
+}
+
+// Handle very small desktop/large tablet screens
+@media screen and (max-width: 900px) and (min-width: 769px) {
+  .auth-main-container.desktop {
+    .auth-slider-section,
+    .auth-form-section {
+      min-width: 300px;
+    }
+  }
+}
+
+// If screen becomes too small for side-by-side layout
+@media screen and (max-width: 800px) {
+  .auth-main-container.desktop {
+    flex-direction: column !important;
+
+    .auth-slider-section {
+      min-width: unset;
+      height: 300px; // Fixed height when stacked
+    }
+
+    .auth-form-section {
+      min-width: unset;
+      margin-top: 20px;
+    }
+  }
+}
+
 .mobile-slider-view {
   display: flex;
   flex-direction: column;
@@ -69,7 +114,6 @@
   }
 }
 
-// Mobile Auth Form View
 .mobile-auth-view {
   display: flex;
   flex-direction: column;
@@ -90,9 +134,9 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 450px; // Reduced from 500px to better fit
+  max-width: 450px;
   position: relative;
-  margin: 0 auto; // Center the container
+  margin: 0 auto;
 
   .auth-logo {
     margin-bottom: 20px;
@@ -158,13 +202,13 @@
     display: flex;
     gap: 10px;
     width: 100%;
-    max-width: 400px; // Reduced to fit better
+    max-width: 400px;
     justify-content: center;
   }
 }
 
-// Password step - when slider is hidden
-.auth-main-container.desktop.password-step {
+// Specific styles for password step
+.auth-main-container.desktop.full-screen-step {
   .auth-form-section {
     flex: none;
     width: 100%;
@@ -173,8 +217,7 @@
   }
 }
 
-// Mobile password step styling
-.mobile-auth-view.password-step {
+.mobile-auth-view.full-screen-step {
   .auth-slider-section {
     display: none;
   }
@@ -184,32 +227,21 @@
   }
 }
 
-// Large screen adjustments
 @media screen and (min-width: 1400px) {
   .auth-main-container.desktop {
     max-width: 1200px;
   }
 }
 
-// Tablet adjustments
-@media screen and (max-width: 1024px) and (min-width: 769px) {
-  .auth-main-container.desktop {
-    .auth-slider-section,
-    .auth-form-section {
-      flex: 1;
-    }
-  }
-}
-
-// Mobile-specific adjustments
 @media screen and (max-width: 768px) {
   .auth-container {
     padding: 20px;
     width: 95%;
+
     .social-signin {
       gap: 10px;
       width: 100%;
-      max-width: none; // Remove max-width for better responsiveness
+      max-width: none;
       justify-content: center;
       display: flex;
       flex-direction: column;

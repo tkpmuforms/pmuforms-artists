@@ -1,0 +1,326 @@
+.edit-dynamic-forms {
+  .modal-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+
+      &:hover {
+        color: #000;
+      }
+    }
+  }
+
+  .form-content {
+    padding: 20px;
+    border-radius: 10px;
+
+    .title-actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+
+      h2 {
+        margin: 0;
+        font-size: 24px;
+        color: black;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 12px;
+
+        .save-btn {
+          background-color: var(--pmu-primary, #6a0dad);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 14px;
+
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+      }
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+
+      h3 {
+        margin-top: 30px;
+        font-size: 20px;
+        color: #444;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+    }
+  }
+
+  .no-forms {
+    text-align: center;
+    padding: 40px 20px;
+
+    p {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: var(--pmu-primary, #6a0dad);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+  }
+}
+
+.field-container {
+  margin-bottom: 20px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 15px;
+  background: white;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: #ddd;
+  }
+
+  .field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+
+    label {
+      margin: 0;
+      flex: 1;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .field-actions {
+      display: flex;
+      gap: 8px;
+      opacity: 1; /* Always visible now */
+      transition: opacity 0.2s;
+
+      .field-action-icon {
+        cursor: pointer;
+        width: 26px;
+        height: 26px;
+        transition: transform 0.2s;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+
+        &.edit-icon {
+          color: #007bff;
+        }
+
+        &.delete-icon {
+          color: #dc3545;
+        }
+      }
+    }
+  }
+
+  .add-paragraph-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ddd;
+
+    .add-paragraph-btn {
+      background: #f4eaf4;
+      border: none;
+      color: var(--pmu-primary);
+      padding: 10px 15px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 30%;
+      transition: all 0.2s;
+
+      &:hover {
+        filter: brightness(0.9);
+      }
+    }
+  }
+
+  // Form inputs styling
+  .form-input {
+    margin-top: 8px;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+
+  .form-textarea {
+    margin-top: 8px;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  .image-upload-area {
+    margin-top: 10px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+    text-align: center;
+    color: #999;
+  }
+
+  // Checkbox specific styling
+  .checkbox-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      margin: 0;
+      font-size: 16px;
+      color: #333;
+
+      .checkbox-input {
+        margin-right: 10px;
+        margin-top: 0;
+        width: auto; // This allows checkbox to be its natural size
+        min-width: 16px; // Ensure minimum clickable area
+        flex-shrink: 0; // Prevent shrinking
+      }
+
+      .checkbox-text {
+        flex: 1;
+      }
+    }
+  }
+}
+
+.required-star {
+  color: red;
+  margin-left: 4px;
+}
+
+@media (max-width: 768px) {
+  .edit-dynamic-forms {
+    width: 95%;
+    margin: 0 auto;
+
+    .form-content {
+      padding: 15px;
+
+      .title-actions-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+
+        h2 {
+          font-size: 20px;
+        }
+
+        .action-buttons {
+          align-self: flex-end;
+        }
+      }
+
+      .form-section {
+        h3 {
+          margin-top: 20px;
+          font-size: 18px;
+        }
+      }
+    }
+  }
+
+  .services-section {
+    .services-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+
+      .change-services-btn {
+        align-self: flex-end;
+        font-size: 12px;
+        padding: 6px 12px;
+      }
+    }
+
+    .services-list {
+      .service-item {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+    }
+  }
+
+  .field-container {
+    .field-header {
+      .field-actions {
+        opacity: 1; // Always show on mobile
+      }
+    }
+
+    label {
+      font-size: 14px;
+    }
+
+    .checkbox-group {
+      .checkbox-label {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .modal-overlay {
+    .services-modal {
+      .modal-content {
+        .services-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .modal-footer {
+        flex-direction: column;
+        gap: 10px;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

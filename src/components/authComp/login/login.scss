@@ -5,13 +5,13 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 450px; // Set consistent max-width
-  margin: 0 auto; // Center the page
+  max-width: 450px;
+  margin: 0 auto;
 
   .login-container {
     text-align: center;
     width: 100%;
-    max-width: 400px; // Contain the form
+    max-width: 400px;
 
     h2 {
       font-size: 24px;
@@ -40,14 +40,38 @@
           color: #333;
         }
 
+        .input-wrapper {
+          position: relative;
+        }
+
         input {
-          width: 100%; // Full width of container
+          width: 100%;
           padding: 12px;
+          padding-right: 48px;
           border: 1px solid #ddd;
           background-color: #bcbbc133;
           border-radius: 10px;
           font-size: 14px;
-          box-sizing: border-box; // Include padding in width
+          box-sizing: border-box;
+        }
+
+        .input-icon {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: #64748b;
+          cursor: pointer;
+          padding: 4px;
+          border-radius: 4px;
+          transition: all 0.2s ease;
+
+          &:hover {
+            color: #333;
+            background: #f1f5f9;
+          }
         }
       }
 
@@ -110,7 +134,12 @@
 
           input {
             padding: 10px;
+            padding-right: 48px;
             font-size: 16px;
+          }
+
+          .input-icon {
+            right: 12px;
           }
         }
 

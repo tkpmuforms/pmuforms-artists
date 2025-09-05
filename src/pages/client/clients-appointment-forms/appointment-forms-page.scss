@@ -1,0 +1,123 @@
+.appointment-forms-page {
+  padding: 24px;
+  @media (max-width: 1024px) {
+    padding: 20px 24px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 5px;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 48px 24px;
+    color: #6b7280;
+    font-size: 16px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+
+    .header-content {
+      h1 {
+        font-size: 30px;
+        font-weight: bold;
+        color: #111827;
+        margin: 0 0 4px 0;
+      }
+
+      p {
+        color: #6b7280;
+        margin: 0;
+        font-size: 14px;
+      }
+    }
+
+    .sign-forms-btn {
+      background-color: var(--pmu-primary);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: var(--pmu--primary-background);
+      }
+    }
+  }
+
+  .forms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .no-forms {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+
+      &__icon {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 16px;
+        color: #9ca3af;
+      }
+
+      h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #374151;
+        margin: 0 0 8px 0;
+      }
+
+      p {
+        color: #6b7280;
+        margin: 0;
+        font-size: 14px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+
+      .header-content h1 {
+        font-size: 24px;
+      }
+
+      .sign-forms-btn {
+        align-self: flex-end;
+      }
+    }
+
+    .forms-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { Calendar, Clock, Send, User } from "lucide-react";
 import {
   FormsSavedIcon,
   PendingSubmissionsIcon,
@@ -5,45 +6,41 @@ import {
   TodaysScheduleIcon,
 } from "../assets/svgs/DashboardSvg";
 
-export const metricsData = [
-  {
-    title: "Total Clients",
-    value: "32",
-    icon: PeopleIcon,
-    color: "var(--pmu-primary)",
-  },
-  {
-    title: "Forms Shared",
-    value: "12",
-    icon: FormsSavedIcon,
-    color: "#560056",
-  },
-  {
-    title: "Pending Submissions",
-    value: "04",
-    icon: PendingSubmissionsIcon,
-    color: "#f59e0b",
-  },
-  {
-    title: "Today's Schedule",
-    value: "07",
-    icon: TodaysScheduleIcon,
-    color: "#ef4444",
-  },
-];
+// export const quickActionsCLientDetails = [
+//   {
+//     icon: <Calendar size={20} />,
+//     title: "View Appointment",
+//     onClick: () => setShowPreviewAppointment(true),
+//   },
+//   {
+//     icon: <Send size={20} />,
+//     title: "Send Consent Form",
+//     onClick: () => setShowSendConsentForm(true),
+//   },
+//   {
+//     icon: <Clock size={20} />,
+//     title: "Set Reminders",
+//     onClick: () => console.log("Set Reminders"),
+//   },
+//   {
+//     icon: <User size={20} />,
+//     title: "View Notes",
+//     onClick: () => console.log("View Notes"),
+//   },
+// ];
 
 export const quickActions = [
   {
     title: "Add New Client",
     icon: "👤",
     color: "var(--pmu-primary)",
-    onClick: () => console.log("Add client"),
+    onClick: (navigate) => navigate("/clients"),
   },
   {
     title: "Create Form",
     icon: "📋",
     color: "#f59e0b",
-    onClick: () => console.log("Create form"),
+    onClick: (navigate) => navigate("/forms"),
   },
   {
     title: "Send Form",

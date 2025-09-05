@@ -1,6 +1,9 @@
 :root {
   --pmu-primary: #8e2d8e;
+  --pmu--primary-background: #8e2d8e40;
   --pmu-primary-light: #c158c1;
+  --pmu-background-light: #f4eaf4;
+  --pmu-darkest: #000000;
   --pmu-primary-dark: #5c005c;
   --pmu-orange: #ff9500;
   --pmu-grey-text: #707070;

@@ -7,22 +7,27 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  overflow-x: hidden;
 
   .navbar-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    padding: 0 10px;
     max-width: 1440px;
     margin: 0 auto;
+    min-width: 0; /* Allow flex items to shrink */
+    overflow: hidden; /* Prevent container overflow */
   }
 
-  // Breadcrumbs Section
   .navbar-breadcrumbs {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+    min-width: 0; /* Allow breadcrumbs to shrink */
+    overflow: hidden; /* Prevent overflow */
 
     .breadcrumb-item {
       display: flex;
@@ -30,6 +35,7 @@
       gap: 8px;
       font-size: 14px;
       color: #6b7280;
+      min-width: 0; /* Allow shrinking */
 
       .breadcrumb-link {
         color: #6b7280;
@@ -42,8 +48,14 @@
       }
 
       .breadcrumb-text {
-        color: #111827;
-        font-weight: 500;
+        color: #000000;
+        font-weight: 700;
+        line-height: 140%;
+        font-size: 20px;
+        white-space: nowrap; /* Prevent text wrapping */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px; /* Limit breadcrumb width */
       }
 
       .breadcrumb-separator {
@@ -53,11 +65,11 @@
     }
   }
 
-  // Search Section
   .navbar-search {
     flex: 1;
     max-width: 480px;
     margin: 0 32px;
+    min-width: 0; /* Allow search to shrink */
 
     .search-form {
       width: 100%;
@@ -101,7 +113,6 @@
     }
   }
 
-  // User Actions Section
   .navbar-actions {
     display: flex;
     align-items: center;
@@ -187,11 +198,16 @@
         font-size: 14px;
         font-weight: 500;
         color: #111827;
+        white-space: nowrap; /* Prevent wrapping */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 120px; /* Limit user name width */
       }
 
       .dropdown-icon {
         color: #6b7280;
         transition: transform 0.2s ease;
+        flex-shrink: 0; /* Don't let icon shrink */
       }
 
       &:hover .dropdown-icon {
@@ -200,31 +216,130 @@
     }
   }
 
-  // Responsive Design
+  /* Mobile optimizations */
   @media (max-width: 768px) {
-    padding: 0 16px;
+    padding: 0 12px; /* Reduce padding */
 
+    .navbar-container {
+      padding: 0 4px; /* Reduce container padding */
+    }
+
+    /* Hide search completely on mobile */
     .navbar-search {
-      margin: 0 16px;
-      max-width: 300px;
+      display: none;
+    }
 
-      .search-input {
-        font-size: 16px; // Prevents zoom on iOS
+    .navbar-breadcrumbs {
+      flex: 1; /* Allow breadcrumbs to take available space */
+      min-width: 0;
+
+      .breadcrumb-item .breadcrumb-text {
+        font-size: 16px; /* Smaller breadcrumb text */
+        max-width: none; /* Remove max-width to use available space */
+      }
+    }
+
+    .navbar-actions {
+      gap: 8px; /* Reduce gap between actions */
+
+      .avatar-button {
+        padding: 6px 8px; /* Reduce padding */
+        gap: 6px;
+      }
+
+      .notification-button {
+        padding: 6px; /* Reduce padding */
       }
     }
 
     .user-name {
-      display: none;
+      display: none; /* Hide user name on mobile */
     }
   }
 
   @media (max-width: 640px) {
-    .navbar-breadcrumbs {
-      display: none;
+    padding: 0 8px; /* Further reduce padding */
+    height: 56px; /* Slightly reduce height on small screens */
+
+    .navbar-container {
+      padding: 0 2px;
     }
 
-    .navbar-search {
-      margin: 0 8px;
+    .navbar-breadcrumbs {
+      .breadcrumb-item .breadcrumb-text {
+        font-size: 14px; /* Smaller text for very small screens */
+        max-width: 150px; /* Add back max-width for very small screens */
+      }
     }
+
+    .navbar-actions {
+      gap: 4px; /* Minimal gap */
+
+      .avatar-button {
+        padding: 4px 6px;
+
+        .avatar-container {
+          width: 28px;
+          height: 28px;
+        }
+      }
+
+      .notification-button {
+        padding: 4px;
+      }
+    }
+  }
+
+  /* Extra small screens */
+  @media (max-width: 480px) {
+    .navbar-breadcrumbs {
+      .breadcrumb-item .breadcrumb-text {
+        font-size: 12px;
+        max-width: 120px;
+      }
+    }
+
+    .navbar-actions {
+      .avatar-button .dropdown-icon {
+        display: none; /* Hide dropdown icon on very small screens */
+      }
+
+      .avatar-button {
+        padding: 2px 4px;
+      }
+
+      .notification-button {
+        padding: 2px;
+      }
+    }
+  }
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 4px; /* Add padding */
+  border-radius: 4px;
+  flex-shrink: 0; /* Don't let back button shrink */
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .back-arrow {
+    color: currentColor;
+  }
+
+  @media (max-width: 640px) {
+    padding: 2px; /* Smaller on mobile */
+  }
+
+  @media (max-width: 480px) {
+    padding: 1px; /* Even smaller on very small screens */
   }
 }

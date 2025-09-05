@@ -1,0 +1,135 @@
+.signature-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  &__content {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  &__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 32px;
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .canvas-container {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .signature-canvas {
+    width: 100%;
+    height: 300px;
+    cursor: crosshair;
+    background-color: #f8fafc;
+    display: block;
+  }
+
+  .action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &.delete-button {
+      color: #dc2626;
+      border-color: #fecaca;
+
+      &:hover:not(:disabled) {
+        background: #fef2f2;
+      }
+    }
+
+    &.confirm-button {
+      background: #16a34a;
+      color: white;
+      border-color: #16a34a;
+
+      &:hover:not(:disabled) {
+        background: #15803d;
+      }
+    }
+
+    &.undo-button {
+      color: #64748b;
+
+      &:hover:not(:disabled) {
+        background: #f8fafc;
+      }
+    }
+  }
+}

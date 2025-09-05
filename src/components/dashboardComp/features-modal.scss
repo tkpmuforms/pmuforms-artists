@@ -67,15 +67,6 @@
     }
   }
 
-  &__crown {
-    margin-bottom: 16px;
-
-    .crown-icon {
-      font-size: 48px;
-      filter: hue-rotate(280deg);
-    }
-  }
-
   &__features {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -92,8 +83,9 @@
     align-items: flex-start;
     gap: 12px;
     padding: 16px;
-    border-radius: 12px;
+    border-radius: 18px;
     transition: all 0.2s ease;
+    background: #f5f5f5;
 
     &:hover {
       background: #f8fafc;
@@ -143,6 +135,138 @@
 
     &:hover {
       background: var(pmu-primary-light);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .features-modal {
+    padding: 16px;
+
+    &__content {
+      max-width: 90vw;
+      max-height: 80vh;
+      padding: 24px;
+      border-radius: 12px;
+    }
+
+    &__close {
+      top: 16px;
+      right: 16px;
+      padding: 6px;
+    }
+
+    &__header {
+      margin-bottom: 20px;
+
+      h2 {
+        font-size: 20px;
+        margin: 12px 0 6px 0;
+      }
+
+      p {
+        font-size: 14px;
+      }
+    }
+
+    &__features {
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .feature-item {
+      gap: 10px;
+      padding: 12px;
+      border-radius: 12px;
+
+      &__icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+      }
+
+      &__content {
+        h3 {
+          font-size: 14px;
+          margin: 0 0 3px 0;
+        }
+
+        p {
+          font-size: 13px;
+        }
+      }
+    }
+
+    &__subscribe {
+      padding: 14px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .features-modal {
+    padding: 12px;
+
+    &__content {
+      max-width: 95vw;
+      max-height: 75vh;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    &__close {
+      top: 12px;
+      right: 12px;
+      padding: 4px;
+    }
+
+    &__header {
+      margin-bottom: 16px;
+
+      h2 {
+        font-size: 18px;
+        margin: 10px 0 4px 0;
+      }
+
+      p {
+        font-size: 13px;
+      }
+    }
+
+    &__features {
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .feature-item {
+      gap: 8px;
+      padding: 10px;
+      border-radius: 8px;
+
+      &__icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+      }
+
+      &__content {
+        h3 {
+          font-size: 13px;
+          margin: 0 0 2px 0;
+        }
+
+        p {
+          font-size: 12px;
+        }
+      }
+    }
+
+    &__subscribe {
+      padding: 12px;
+      font-size: 13px;
+      border-radius: 6px;
     }
   }
 }

@@ -65,7 +65,7 @@
     }
   }
 
-  &__recent {
+  &__results {
     h3 {
       font-size: 14px;
       font-weight: 500;
@@ -76,13 +76,13 @@
     }
   }
 
-  .recent-list {
+  .results-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
 
-  .recent-item {
+  .result-item {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -133,6 +133,150 @@
     &__arrow {
       color: #94a3b8;
       flex-shrink: 0;
+    }
+  }
+
+  .loading-state {
+    padding: 20px;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+  }
+
+  .no-results,
+  .no-recent {
+    padding: 20px;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    font-style: italic;
+  }
+}
+
+@media (max-width: 768px) {
+  .client-search-modal {
+    padding: 60px 16px 16px;
+
+    &__content {
+      max-width: 90vw;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    &__search {
+      margin-bottom: 16px;
+
+      .search-icon {
+        left: 12px;
+      }
+
+      .search-input {
+        padding: 10px 12px 10px 40px;
+        font-size: 13px;
+        border-radius: 8px;
+      }
+    }
+
+    &__results {
+      h3 {
+        font-size: 13px;
+        margin: 0 0 12px 0;
+      }
+    }
+
+    .results-list {
+      gap: 6px;
+    }
+
+    .result-item {
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+
+      &__avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+      }
+
+      &__name {
+        font-size: 13px;
+      }
+
+      &__email {
+        font-size: 11px;
+      }
+    }
+
+    .loading-state,
+    .no-results,
+    .no-recent {
+      padding: 16px;
+      font-size: 13px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .client-search-modal {
+    padding: 40px 12px 12px;
+
+    &__content {
+      max-width: 95vw;
+      padding: 16px;
+      border-radius: 8px;
+    }
+
+    &__search {
+      margin-bottom: 12px;
+
+      .search-icon {
+        left: 10px;
+      }
+
+      .search-input {
+        padding: 8px 10px 8px 36px;
+        font-size: 12px;
+        border-radius: 6px;
+      }
+    }
+
+    &__results {
+      h3 {
+        font-size: 12px;
+        margin: 0 0 10px 0;
+      }
+    }
+
+    .results-list {
+      gap: 4px;
+    }
+
+    .result-item {
+      gap: 8px;
+      padding: 8px;
+      border-radius: 6px;
+
+      &__avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+      }
+
+      &__name {
+        font-size: 12px;
+      }
+
+      &__email {
+        font-size: 10px;
+      }
+    }
+
+    .loading-state,
+    .no-results,
+    .no-recent {
+      padding: 12px;
+      font-size: 12px;
     }
   }
 }

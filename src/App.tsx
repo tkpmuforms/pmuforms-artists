@@ -8,11 +8,10 @@ function App() {
     <>
       <Router>
         <Toaster />
-        {/* <SnackbarProvider>     */}
+
         <AuthProvider>
           <RouteGuard />
         </AuthProvider>
-        {/* </SnackbarProvider> */}
       </Router>
     </>
   );

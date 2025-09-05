@@ -1,0 +1,352 @@
+.client-notes-page {
+  padding: 10px;
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #64748b;
+    font-size: 16px;
+  }
+
+  &__header {
+    margin-bottom: 32px;
+  }
+
+  &__back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #475569;
+    }
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+
+    @media (min-width: 1024px) {
+      grid-template-columns: 450px 1fr;
+    }
+  }
+
+  .notes-column {
+    &__header {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 20px;
+
+      @media (max-width: 640px) {
+        padding: 24px;
+      }
+    }
+
+    .appointment-info {
+      &__title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0 0 8px 0;
+      }
+
+      &__subtitle {
+        color: #64748b;
+        font-size: 14px;
+        margin: 0;
+      }
+    }
+  }
+
+  .add-note-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--pmu-primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      filter: brightness(0.9);
+    }
+  }
+
+  .notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    &__empty {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+
+      p {
+        color: #000000;
+        font-size: 16px;
+        margin: 0 0 20px 0;
+      }
+
+      .add-note-btn {
+        margin: 0 auto;
+      }
+    }
+  }
+
+  .note-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+
+    &--selected {
+      // border-color: var(--pmu-primary);
+      background: #f6f7f7;
+    }
+
+    &__content {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    &__text {
+      color: black;
+      font-size: 14px;
+      line-height: 1.6;
+      flex: 1;
+      margin: 0;
+    }
+
+    &__actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    &__timestamp {
+      color: #707070;
+      font-size: 12px;
+      margin: 0;
+    }
+  }
+
+  .note-action-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &--delete {
+      color: #ef4444;
+
+      &:hover {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+    }
+  }
+
+  .editor-column {
+    .editor-card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      height: fit-content;
+
+      &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      &__title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+      }
+
+      &__actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      &__content {
+        min-height: 300px;
+      }
+    }
+
+    .editor-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      font-size: 14px;
+
+      &--edit {
+        background: #f1f5f9;
+        color: #64748b;
+
+        &:hover {
+          background: #e2e8f0;
+          color: #475569;
+        }
+      }
+
+      &--save {
+        background: var(--pmu-primary);
+        color: white;
+
+        &:hover {
+          filter: brightness(0.9);
+        }
+      }
+
+      &--cancel {
+        background: #f8fafc;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+
+        &:hover {
+          background: #f1f5f9;
+          color: #475569;
+        }
+      }
+    }
+
+    .editor-preview {
+      &__text {
+        color: #374151;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0 0 20px 0;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        white-space: pre-wrap;
+      }
+
+      &__textarea {
+        width: 100%;
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 14px;
+        color: #1e293b;
+        background: #f8fafc;
+        transition: all 0.2s ease;
+        resize: vertical;
+        font-family: inherit;
+        line-height: 1.6;
+        margin-bottom: 20px;
+
+        &:focus {
+          outline: none;
+          border-color: var(--pmu-primary);
+          box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+          background: white;
+        }
+
+        &::placeholder {
+          color: #94a3b8;
+        }
+      }
+
+      &__meta {
+        padding-top: 16px;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      &__date {
+        color: #64748b;
+        font-size: 12px;
+        margin: 0;
+      }
+    }
+
+    .editor-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      color: #94a3b8;
+      font-size: 16px;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .notes-column__header {
+      padding: 24px;
+    }
+
+    .note-card {
+      padding: 20px;
+    }
+
+    .editor-card {
+      padding: 24px;
+
+      &__header {
+        flex-direction: column;
+        align-items: stretch;
+
+        .editor-card__actions {
+          justify-content: flex-end;
+        }
+      }
+    }
+
+    .editor-action-btn {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+}

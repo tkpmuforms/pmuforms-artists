@@ -1,0 +1,95 @@
+.form-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &__content {
+    background: #fbfbfb;
+    padding: 24px;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  &__icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    p {
+      font-size: 12px;
+      color: #5d5d5d;
+      font-weight: 300;
+      margin: 0;
+      letter-spacing: -1%;
+      line-height: 100%;
+    }
+  }
+
+  &__separator {
+    font-size: 12px;
+    color: #717171;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    padding: 20px 24px 24px;
+  }
+
+  &__btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &--preview {
+      background: #eeeeee;
+      color: #350035;
+      border: none;
+      border-radius: 24px;
+
+      &:hover {
+        filter: brightness(0.95);
+      }
+    }
+
+    &--edit {
+      background: #eeeeee;
+      color: #350035;
+      border: none;
+      border-radius: 24px;
+
+      &:hover {
+        filter: brightness(0.9);
+      }
+    }
+  }
+}

@@ -1,7 +1,16 @@
 .dashboard {
-  padding: 24px;
+  padding: 24px 40px;
+  @media (max-width: 1024px) {
+    padding: 20px 24px;
+  }
 
-  min-height: 100vh;
+  @media (max-width: 768px) {
+    padding: 16px 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 5px;
+  }
 
   &__header {
     display: flex;
@@ -12,6 +21,7 @@
     @media (max-width: 768px) {
       flex-direction: column;
       gap: 16px;
+      margin-bottom: 24px;
     }
   }
 
@@ -21,12 +31,28 @@
       font-weight: 600;
       color: #1e293b;
       margin: 0 0 8px 0;
+
+      @media (max-width: 1024px) {
+        font-size: 28px;
+      }
+
+      @media (max-width: 768px) {
+        font-size: 24px;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 22px;
+      }
     }
 
     p {
       font-size: 16px;
       color: #64748b;
       margin: 0;
+
+      @media (max-width: 768px) {
+        font-size: 14px;
+      }
     }
   }
 
@@ -37,8 +63,19 @@
 
     @media (max-width: 768px) {
       width: 100%;
-      justify-content: space-between;
+      justify-content: flex-start;
+      gap: 12px;
     }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+  }
+
+  &__date-filter {
+    // No additional styles needed, inherits from parent
   }
 
   &__add-client-btn {
@@ -54,8 +91,18 @@
     cursor: pointer;
     transition: all 0.2s ease;
 
+    @media (max-width: 768px) {
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      width: 100%;
+      justify-content: center;
+    }
+
     &:hover {
-      background: var(pmu-primary-light);
+      background: var(--pmu-primary-light);
     }
   }
 
@@ -71,6 +118,16 @@
     cursor: pointer;
     transition: all 0.2s ease;
 
+    @media (max-width: 768px) {
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      width: 100%;
+      justify-content: center;
+    }
+
     &:hover {
       border-color: var(--pmu-primary);
       color: var(--pmu-primary);
@@ -81,27 +138,108 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
+
+    @media (max-width: 768px) {
+      gap: 24px;
+    }
+
+    @media (max-width: 480px) {
+      gap: 20px;
+    }
   }
 
   &__section-title {
     font-size: 12px;
-    font-weight: 600;
-    color: #64748b;
+    font-weight: 400;
+    color: #4a4a4b;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.1em;
     margin: 0 0 16px 0;
+    line-height: 100%;
+
+    @media (max-width: 768px) {
+      font-size: 11px;
+      margin: 0 0 12px 0;
+    }
   }
 
+  // Metrics header - for title and filter
+  &__metrics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    @media (max-width: 768px) {
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
+
+  // Metrics Grid - Responsive
   &__metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
+
+    // Large tablets
+    @media (max-width: 1200px) {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    // Tablets
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    // Small tablets
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    // Mobile
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
   }
 
+  // Quick Actions Grid - Column on mobile
   &__actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, minmax(20px, 1fr));
     gap: 16px;
+
+    // Large tablets - 3 columns
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    // Tablets - 2 columns
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    // Mobile - Single column
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    // Extra small mobile
+    @media (max-width: 360px) {
+      gap: 8px;
+    }
   }
 
   &__appointments {
@@ -110,12 +248,48 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
+
+      @media (max-width: 768px) {
+        margin-bottom: 12px;
+      }
+
+      @media (max-width: 480px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
     }
 
+    // Appointments Grid - Responsive
     &-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 320px));
       gap: 16px;
+      justify-content: start;
+
+      // Large tablets
+      @media (max-width: 1200px) {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 300px));
+        gap: 14px;
+      }
+
+      // Tablets
+      @media (max-width: 1024px) {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 280px));
+        gap: 12px;
+      }
+
+      // Small tablets
+      @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      // Mobile
+      @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
     }
   }
 
@@ -130,8 +304,57 @@
     cursor: pointer;
     transition: color 0.2s ease;
 
+    @media (max-width: 768px) {
+      font-size: 13px;
+    }
+
+    @media (max-width: 480px) {
+      align-self: flex-start;
+    }
+
     &:hover {
       color: var(--pmu-primary);
+    }
+  }
+
+  // Loading states responsive
+  .loading-small {
+    @media (max-width: 768px) {
+      min-height: 120px;
+    }
+
+    @media (max-width: 480px) {
+      min-height: 100px;
+    }
+  }
+}
+
+// Additional responsive utilities
+@media (max-width: 1440px) {
+  .dashboard {
+    &__metrics-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+  }
+}
+
+// Extra large screens
+@media (min-width: 1920px) {
+  .dashboard {
+    padding: 32px 60px;
+
+    &__content {
+      gap: 40px;
+    }
+
+    &__metrics-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    &__actions-grid {
+      grid-template-columns: repeat(5, minmax(20px, 1fr));
+      gap: 20px;
     }
   }
 }

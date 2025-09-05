@@ -1,0 +1,105 @@
+.services-section {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+
+  .services-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+  }
+
+  .services-description {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 15px;
+  }
+
+  .services-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+
+    .service-item {
+      display: flex;
+      align-items: center;
+      border-radius: 8px;
+
+      .checkmark {
+        background: var(--pmu-primary, #6a0dad);
+        color: white;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        margin-right: 10px;
+        flex-shrink: 0;
+      }
+
+      .service-name {
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+      }
+    }
+
+    .no-services-text {
+      grid-column: 1 / -1;
+      color: #999;
+      font-style: italic;
+      margin: 0;
+      text-align: center;
+      padding: 20px;
+    }
+
+    // Responsive design for smaller screens
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+  }
+
+  .change-services-btn {
+    background: none;
+    border: 2px solid var(--pmu-primary, #6a0dad);
+    color: var(--pmu-primary, #6a0dad);
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: var(--pmu-primary, #6a0dad);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(106, 13, 173, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}

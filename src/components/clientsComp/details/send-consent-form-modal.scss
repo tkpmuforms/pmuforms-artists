@@ -172,3 +172,149 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .send-consent-form-modal {
+    padding: 16px;
+
+    &__content {
+      max-width: 90vw;
+      max-height: 80vh;
+      padding: 24px;
+      border-radius: 12px;
+    }
+
+    &__close {
+      top: 16px;
+      right: 16px;
+      padding: 6px;
+    }
+
+    &__header {
+      margin-bottom: 20px;
+
+      h2 {
+        font-size: 20px;
+      }
+
+      p {
+        font-size: 14px;
+      }
+    }
+
+    &__body {
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+
+      label {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+    }
+
+    .date-input-wrapper {
+      .form-input {
+        padding: 10px 12px;
+        padding-right: 40px;
+        font-size: 13px;
+        border-radius: 8px;
+      }
+
+      .date-icon {
+        right: 12px;
+      }
+    }
+
+    .services-grid {
+      gap: 8px;
+    }
+
+    .service-tag {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 16px;
+    }
+
+    &__continue {
+      padding: 14px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .send-consent-form-modal {
+    padding: 12px;
+
+    &__content {
+      max-width: 95vw;
+      max-height: 75vh;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    &__close {
+      top: 12px;
+      right: 12px;
+      padding: 4px;
+    }
+
+    &__header {
+      margin-bottom: 16px;
+
+      h2 {
+        font-size: 18px;
+      }
+
+      p {
+        font-size: 13px;
+      }
+    }
+
+    &__body {
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+
+      label {
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+    }
+
+    .date-input-wrapper {
+      .form-input {
+        padding: 8px 10px;
+        padding-right: 36px;
+        font-size: 12px;
+        border-radius: 6px;
+      }
+
+      .date-icon {
+        right: 10px;
+      }
+    }
+
+    .services-grid {
+      gap: 6px;
+    }
+
+    .service-tag {
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: 12px;
+    }
+
+    &__continue {
+      padding: 12px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+  }
+}

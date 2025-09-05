@@ -16,6 +16,8 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
   icon,
   color,
 }) => {
+  const isLoading = value === "loading";
+
   return (
     <div className="metrics-card">
       <div className="metrics-card__header">
@@ -25,7 +27,13 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
         <h3 className="metrics-card__title">{title}</h3>
       </div>
       <div className="metrics-card__value" style={{ color }}>
-        {value}
+        {isLoading ? (
+          <div className="metrics-card__loading">
+            <div className="loading-skeleton"></div>
+          </div>
+        ) : (
+          value
+        )}
       </div>
     </div>
   );
