@@ -36,7 +36,6 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
     }
   };
 
-  // Get selected service names for preview
   const getSelectedServiceNames = () => {
     return (
       user?.services

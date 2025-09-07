@@ -4,6 +4,7 @@ import { ChevronLeft, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import "./preview-appointment-modal.scss";
 import { formatAppointmentTime } from "../../../utils/utils";
+import { getMyServiceForms } from "../../../services/artistServices";
 
 interface PreviewAppointmentModalProps {
   onClose: () => void;
@@ -14,6 +15,12 @@ interface PreviewAppointmentModalProps {
   selectedServiceIds: string[];
 }
 
+interface FormData {
+  id: number;
+  name: string;
+  title: string;
+}
+
 const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
   onClose,
   onSuccess,
@@ -22,16 +29,37 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
   selectedServices,
   selectedServiceIds,
 }) => {
-  const [formsToSend, setFormsToSend] = useState<string[]>([
-    "Client Information & Medical History",
-    "Precautionary Coronavirus Liability Release Form",
-    "Picture of the area getting treatment done",
-    "Possible Risks, Hazards, or Complications",
-    "Permanent Makeup Consent & Procedure Permission",
-  ]);
+  const [formsToSend, setFormsToSend] = useState<FormData[]>([]);
+  const [isLoadingForms, setIsLoadingForms] = useState(false);
 
   // Function to fetch forms based on service IDs
-  const fetchFormsForServices = async (serviceIds: string[]) => {};
+  const fetchFormsForServices = async (serviceIds: string[]) => {
+    if (!serviceIds || serviceIds.length === 0) return;
+
+    setIsLoadingForms(true);
+
+    try {
+      // Convert string IDs to numbers for the API
+      const numericServiceIds = serviceIds
+        .map((id) => parseInt(id, 10))
+        .filter((id) => !isNaN(id));
+
+      if (numericServiceIds.length === 0) {
+        throw new Error("Invalid service IDs");
+      }
+
+      const response = await getMyServiceForms(numericServiceIds);
+
+      // Assuming the API returns an array of forms in response.data
+      setFormsToSend(response.data?.forms || []);
+    } catch (error) {
+      console.error("Error fetching forms:", error);
+
+      setFormsToSend([]);
+    } finally {
+      setIsLoadingForms(false);
+    }
+  };
 
   useEffect(() => {
     if (selectedServiceIds && selectedServiceIds.length > 0) {
@@ -48,8 +76,36 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
   };
 
   const handleContinue = () => {
-    // Add your logic here to send the consent forms
     onSuccess();
+  };
+
+  const renderFormsSection = () => {
+    if (isLoadingForms) {
+      return (
+        <div className="forms-loading">
+          <span>Loading forms...</span>
+        </div>
+      );
+    }
+
+    if (formsToSend.length === 0) {
+      return (
+        <div className="no-forms">
+          <span>No forms available for selected services</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="forms-list">
+        {formsToSend.map((form) => (
+          <div key={form.id} className="form-item">
+            <span className="form-icon">📄</span>
+            <span>{form?.title}</span>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -109,14 +165,7 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
 
             <div className="forms-section">
               <span className="section-label">Forms to be sent</span>
-              <div className="forms-list">
-                {formsToSend.map((form, index) => (
-                  <div key={index} className="form-item">
-                    <span className="form-icon">📄</span>
-                    <span>{form}</span>
-                  </div>
-                ))}
-              </div>
+              {renderFormsSection()}
             </div>
           </div>
         </div>
@@ -124,7 +173,11 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
         <div className="divider"></div>
 
         <div className="preview-appointment-modal__footer">
-          <button className="continue-button" onClick={handleContinue}>
+          <button
+            className="continue-button"
+            onClick={handleContinue}
+            disabled={isLoadingForms || formsToSend.length === 0}
+          >
             Continue
           </button>
         </div>
