@@ -198,3 +198,36 @@ export const DeleteAppointment = async (appointmentId: string | number) =>
 
 export const getCustomerMetrics = async (customerId: number) =>
   axiosInstance.get(`/api/customers/my-customers/${customerId}/metrics`);
+
+// Reminder Services
+export const createReminder = async (data: {
+  sendAt: string;
+  type: string;
+  customerId: string | number;
+  note: string;
+}) => axiosInstance.post("/api/reminders/new-reminder", data);
+
+export const getAllReminders = async () =>
+  axiosInstance.get("/api/reminders/all-reminders");
+
+export const getRemindersByCustomer = async (customerId: string | number) =>
+  axiosInstance.get(`/api/reminders/customer/${customerId}`);
+
+export const updateReminder = async (
+  reminderId: string | number,
+  data: {
+    sendAt?: string;
+    type?: string;
+    note?: string;
+  }
+) => axiosInstance.patch(`/api/reminders/${reminderId}`, data);
+
+export const deleteReminder = async (reminderId: string | number) =>
+  axiosInstance.delete(`/api/reminders/${reminderId}`);
+
+export const getMyServiceForms = async (services: number[]) => {
+  const servicesParam = services.join(",");
+  return axiosInstance.get(
+    `/api/forms/my-service-forms?services=${servicesParam}`
+  );
+};

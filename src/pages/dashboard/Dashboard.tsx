@@ -70,7 +70,7 @@ const Dashboard: React.FC = () => {
       title: "Send Form",
       icon: SendFormIcon,
       onClick: () => {
-        if (user?.appStorePurchaseActive === true) {
+        if (user?.appStorePurchaseActive === false) {
           setShowSubscriptionModal(true);
         } else {
           setShowFormLinkModal(true);

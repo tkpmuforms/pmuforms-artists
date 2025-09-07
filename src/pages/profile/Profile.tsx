@@ -152,7 +152,7 @@ const ProfilePage: React.FC = () => {
           <EditBusinessNameModal
             onClose={() => {
               setShowEditBusinessName(false);
-              setOnboardingStep("completed"); // Allow them to skip if they close
+              setOnboardingStep("completed");
             }}
             onSave={handleBusinessNameSave}
           />
@@ -162,7 +162,7 @@ const ProfilePage: React.FC = () => {
         <UpdateServicesModal
           onClose={() => {
             setShowUpdateServices(false);
-            setOnboardingStep("completed"); // Allow them to skip if they close
+            setOnboardingStep("completed");
           }}
           onGoBack={() => {
             setShowUpdateServices(false);
@@ -173,7 +173,6 @@ const ProfilePage: React.FC = () => {
         />
       )}
 
-      {/* Regular Modals (for existing flow) */}
       {!isNewUser && showEditBusinessName && (
         <EditBusinessNameModal
           onClose={() => setShowEditBusinessName(false)}

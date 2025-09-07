@@ -4,7 +4,7 @@ import "./reminder-modal.scss";
 
 interface SelectReminderTypeModalProps {
   onClose: () => void;
-  onSelectType: (type: "checkin" | "followup") => void;
+  onSelectType: (type: "check-in" | "follow-up") => void;
 }
 
 const SelectReminderTypeModal: React.FC<SelectReminderTypeModalProps> = ({
@@ -24,9 +24,9 @@ const SelectReminderTypeModal: React.FC<SelectReminderTypeModalProps> = ({
         <div className="reminder-types">
           <button
             className="reminder-type-card"
-            onClick={() => onSelectType("checkin")}
+            onClick={() => onSelectType("check-in")}
           >
-            <div className="reminder-type-card__icon checkin">
+            <div className="reminder-type-card__icon check-in">
               <Calendar size={24} />
             </div>
             <div className="reminder-type-card__content">
@@ -43,9 +43,9 @@ const SelectReminderTypeModal: React.FC<SelectReminderTypeModalProps> = ({
 
           <button
             className="reminder-type-card"
-            onClick={() => onSelectType("followup")}
+            onClick={() => onSelectType("follow-up")}
           >
-            <div className="reminder-type-card__icon followup">
+            <div className="reminder-type-card__icon follow-up">
               <Bell size={24} />
             </div>
             <div className="reminder-type-card__content">
