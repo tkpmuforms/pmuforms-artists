@@ -231,3 +231,12 @@ export const getMyServiceForms = async (services: number[]) => {
     `/api/forms/my-service-forms?services=${servicesParam}`
   );
 };
+
+export const updateMyProfile = async (data: {
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+}) => axiosInstance.patch("/api/artists/my-profile/update", data);
+
+export const getMyProfile = async () =>
+  axiosInstance.get("/api/artists/my-profile");
