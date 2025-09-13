@@ -110,13 +110,13 @@ const Dashboard: React.FC = () => {
   ];
 
   const getCustomerName = (customerId: string) =>
-    customers[customerId]?.name || `Client ${customerId?.substring(0, 8)}`;
+    customers[customerId]?.name || `Client 1`;
 
   const getCustomerAvatar = (customerId: string) => {
     const customerAvatar = customers[customerId]?.avatar;
     if (customerAvatar) return customerAvatar;
 
-    const customerName = customers[customerId]?.name || "Client";
+    const customerName = customers[customerId]?.name || "Unknown Client";
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(
       customerName
     )}&background=A858F0&color=fff&size=40`;
@@ -240,6 +240,7 @@ const Dashboard: React.FC = () => {
 
   const renderAppointments = () => {
     if (appointments.length === 0) return <div>No appointments found</div>;
+    console.log(appointments);
 
     return appointments
 
@@ -247,7 +248,11 @@ const Dashboard: React.FC = () => {
       .map((appointment) => (
         <AppointmentCard
           key={appointment.id}
-          name={getCustomerName(appointment.customerId)}
+          name={
+            appointment?.customerId
+              ? getCustomerName(appointment.customerId)
+              : "Unknown Client"
+          }
           avatar={getCustomerAvatar(appointment.customerId)}
           time={formatAppointmentTime(appointment.date)}
           service={
