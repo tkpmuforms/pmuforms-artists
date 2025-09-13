@@ -36,6 +36,9 @@ const SignaturePage = lazy(
 const ReminderPage = lazy(
   () => import("../pages/client/client-reminders/ClientReminders.tsx")
 );
+const IntegrationsPage = lazy(
+  () => import("../pages/profile/IntegrationsPage.tsx")
+);
 
 interface RouteProps {
   path: string;
@@ -115,6 +118,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/profile",
     element: <Profile />,
     breadcrumbs: ["Profile"],
+  },
+  {
+    path: "/profile/integrations",
+    element: <IntegrationsPage />,
+    breadcrumbs: ["Profile", "Integrations"],
   },
 ];
 

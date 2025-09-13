@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import BusinessInformationModal from "../../components/profileComp/BusinessInformationModal";
 import ChangePasswordModal from "../../components/profileComp/ChangePasswordModal";
 import EditBusinessNameModal from "../../components/profileComp/EditBusinessNameModal";
@@ -26,9 +26,9 @@ interface LocationState {
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as LocationState;
-
   const [showEditBusinessName, setShowEditBusinessName] = useState(false);
   const [showBusinessInfo, setShowBusinessInfo] = useState(false);
   const [showUpdateServices, setShowUpdateServices] = useState(false);
@@ -72,6 +72,11 @@ const ProfilePage: React.FC = () => {
       icon: <Key size={10} />,
       title: "Change Password",
       onClick: () => setShowChangePassword(true),
+    },
+    {
+      icon: <FileText size={10} />,
+      title: "Integrations ",
+      onClick: () => navigate("/profile/integrations"),
     },
     {
       icon: <HelpCircle size={10} />,
@@ -152,7 +157,7 @@ const ProfilePage: React.FC = () => {
           <EditBusinessNameModal
             onClose={() => {
               setShowEditBusinessName(false);
-              setOnboardingStep("completed"); // Allow them to skip if they close
+              setOnboardingStep("completed");
             }}
             onSave={handleBusinessNameSave}
           />
@@ -162,7 +167,7 @@ const ProfilePage: React.FC = () => {
         <UpdateServicesModal
           onClose={() => {
             setShowUpdateServices(false);
-            setOnboardingStep("completed"); // Allow them to skip if they close
+            setOnboardingStep("completed");
           }}
           onGoBack={() => {
             setShowUpdateServices(false);
@@ -173,7 +178,6 @@ const ProfilePage: React.FC = () => {
         />
       )}
 
-      {/* Regular Modals (for existing flow) */}
       {!isNewUser && showEditBusinessName && (
         <EditBusinessNameModal
           onClose={() => setShowEditBusinessName(false)}

@@ -12,10 +12,12 @@ import { Form } from "../../redux/types";
 import { getArtistForms } from "../../services/artistServices";
 import { transformFormData } from "../../utils/utils";
 import "./forms-page.scss";
+import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
 
 const FormsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"consent" | "care">("consent");
-  const [showAddFieldModal, setShowAddFieldModal] = useState(false);
+  const [showAddMoreServicesModal, setShowAddMoreServicesModal] =
+    useState(false);
   const [forms, setForms] = useState<Form[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -68,7 +70,7 @@ const FormsPage: React.FC = () => {
             onClick={() => setShowAddFieldModal(true)}
           >
             <Plus size={16} />
-            Create a New Form
+            Unlock More Forms
           </button>
         </div>
 
@@ -106,7 +108,7 @@ const FormsPage: React.FC = () => {
               <p>No {activeTab} forms found.</p>
               <button
                 className="forms-page__create-btn"
-                onClick={() => setShowAddFieldModal(true)}
+                onClick={() => setShowAddMoreServicesModal(true)}
               >
                 <Plus size={16} />
                 Create a New{" "}
@@ -117,8 +119,10 @@ const FormsPage: React.FC = () => {
         </div>
       </div>
 
-      {showAddFieldModal && (
-        <AddFieldModal onClose={() => setShowAddFieldModal(false)} />
+      {showAddMoreServicesModal && (
+        <UpdateServicesModal
+          onClose={() => setShowAddMoreServicesModal(false)}
+        />
       )}
     </div>
   );

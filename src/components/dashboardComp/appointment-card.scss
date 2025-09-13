@@ -1,13 +1,12 @@
-.appointment-card {
+.appointment-card-dashboard {
   display: flex;
   flex-direction: column;
   background: #f8f8f8;
   border-radius: 12px;
-  padding: 24px 21px;
+  padding: 24px 31px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
-  min-width: 280px;
-  max-width: 320px;
+  max-width: 300px;
   align-content: center;
   text-align: center;
 
