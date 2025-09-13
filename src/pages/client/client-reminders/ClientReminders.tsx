@@ -1,104 +1,184 @@
-import { Bell, Calendar } from "lucide-react";
-import { useState } from "react";
-import "./client-reminder.scss";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import ReminderCard from "../../../components/clientsComp/reminder/ReminderCard";
 import SelectReminderTypeModal from "../../../components/clientsComp/reminder/ReminderModalType";
 import SetReminderModal from "../../../components/clientsComp/reminder/SetReminderModal";
+import "./client-reminder.scss";
+import {
+  createReminder,
+  deleteReminder,
+  getRemindersByCustomer,
+  updateReminder,
+} from "../../../services/artistServices";
+import toast from "react-hot-toast";
+import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
 
 interface Reminder {
   id: string;
-  type: "checkin" | "followup";
-  date: string;
+  type: "check-in" | "follow-up";
+  sendAt: string;
   note: string;
-  clientId: string;
+  customerId: string;
 }
 
 const RemindersPage: React.FC = () => {
-  const [reminders, setReminders] = useState<Reminder[]>([
-    {
-      id: "1",
-      type: "checkin",
-      date: "20/10/2022 - 03:00",
-      note: "Get a new make up set before this client checks in and also find a new steriliser",
-      clientId: "1",
-    },
-    {
-      id: "2",
-      type: "followup",
-      date: "20/10/2022 - 03:00",
-      note: "Get a new make up set before this client checks in and also find a new steriliser",
-      clientId: "1",
-    },
-    {
-      id: "3",
-      type: "checkin",
-      date: "20/10/2022 - 03:00",
-      note: "Get a new make up set before this client checks in and also find a new steriliser",
-      clientId: "1",
-    },
-  ]);
-
+  const { id } = useParams<{ id: string }>();
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showSelectType, setShowSelectType] = useState(false);
   const [showSetReminder, setShowSetReminder] = useState(false);
   const [selectedType, setSelectedType] = useState<
-    "checkin" | "followup" | null
+    "check-in" | "follow-up" | null
   >(null);
+  const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
+  const [showDeleteReminder, setShowDeleteReminder] = useState(false);
+  // Add state to track which reminder to delete
+  const [reminderToDelete, setReminderToDelete] = useState<string | null>(null);
 
-  const handleDeleteReminder = (id: string) => {
-    setReminders(reminders.filter((r) => r.id !== id));
+  // Fetch reminders on component mount
+  useEffect(() => {
+    if (id) {
+      fetchReminders();
+    }
+  }, [id]);
+
+  const fetchReminders = async () => {
+    if (!id) return;
+
+    try {
+      setLoading(true);
+      const response = await getRemindersByCustomer(id);
+      setReminders(response.data?.reminders || []);
+    } catch (err) {
+      console.error("Error fetching reminders:", err);
+      toast.error("Failed to fetch reminders");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleEditReminder = (id: string) => {
-    // Handle edit logic
-    console.log("Edit reminder:", id);
+  const handleDeleteReminder = async () => {
+    if (!reminderToDelete) return;
+
+    try {
+      await deleteReminder(reminderToDelete);
+      setReminders(reminders.filter((r) => r.id !== reminderToDelete));
+      toast.success("Reminder deleted successfully");
+      setShowDeleteReminder(false);
+      setReminderToDelete(null);
+    } catch (err) {
+      console.error("Error deleting reminder:", err);
+      toast.error("Failed to delete reminder");
+    }
+  };
+
+  const handleEditReminder = (reminderId: string) => {
+    const reminder = reminders.find((r) => r.id === reminderId);
+    if (reminder) {
+      setEditingReminder(reminder);
+      setSelectedType(reminder.type);
+      setShowSetReminder(true);
+    }
+  };
+
+  // Updated delete handler to set the reminder ID and show modal
+  const handleDeleteReminderClick = (reminderId: string) => {
+    setReminderToDelete(reminderId);
+    setShowDeleteReminder(true);
   };
 
   const handleAddReminderClick = () => {
+    setEditingReminder(null);
     setShowSelectType(true);
   };
 
-  const handleTypeSelect = (type: "checkin" | "followup") => {
+  const handleTypeSelect = (type: "check-in" | "follow-up") => {
     setSelectedType(type);
     setShowSelectType(false);
     setShowSetReminder(true);
   };
 
-  const handleReminderConfirm = (date: string, note: string) => {
-    if (selectedType) {
-      const newReminder: Reminder = {
-        id: Date.now().toString(), // Simple ID generation
-        type: selectedType,
-        date: formatDateForDisplay(date),
-        note: note || "",
-        clientId: "1", // You might want to pass this as a prop
-      };
+  const handleReminderConfirm = async (date: string, note: string) => {
+    if (!selectedType || !id) return;
 
-      setReminders([...reminders, newReminder]);
+    try {
+      if (editingReminder) {
+        // Update existing reminder - include type and customerId
+        const updateData = {
+          sendAt: date,
+          note: note || "",
+          type: selectedType, // Add this line
+          customerId: id, // Add this line
+        };
+
+        await updateReminder(editingReminder.id, updateData);
+
+        setReminders(
+          reminders.map((r) =>
+            r.id === editingReminder.id
+              ? { ...r, sendAt: date, note: note || "", type: selectedType }
+              : r
+          )
+        );
+        toast.success("Reminder updated successfully");
+      } else {
+        // Create new reminder
+        const reminderData = {
+          sendAt: date,
+          type: selectedType,
+          customerId: id,
+          note: note || "",
+        };
+
+        const response = await createReminder(reminderData);
+
+        // Add the new reminder to the list
+        if (response.data) {
+          setReminders([...reminders, response.data]);
+        } else {
+          await fetchReminders();
+        }
+        toast.success("Reminder created successfully");
+      }
+    } catch (err) {
+      console.error("Error saving reminder:", err);
+      if (editingReminder) {
+        toast.error("Failed to update reminder");
+      } else {
+        toast.error("Failed to create reminder");
+      }
     }
 
     // Reset modal states
     setShowSetReminder(false);
     setSelectedType(null);
+    setEditingReminder(null);
   };
 
   const handleModalClose = () => {
     setShowSelectType(false);
     setShowSetReminder(false);
     setSelectedType(null);
+    setEditingReminder(null);
   };
 
-  // Helper function to format datetime-local input to display format
-  const formatDateForDisplay = (dateTimeLocal: string): string => {
-    if (!dateTimeLocal) return "";
-
-    const date = new Date(dateTimeLocal);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-
-    return `${day}/${month}/${year} - ${hours}:${minutes}`;
+  // Updated close handler for delete modal
+  const handleDeleteModalClose = () => {
+    setShowDeleteReminder(false);
+    setReminderToDelete(null);
   };
+
+  if (loading) {
+    return (
+      <div className="reminders-page">
+        <div className="reminders-page__content">
+          <div className="loading-state">
+            <p>Loading reminders...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="reminders-page">
@@ -116,33 +196,12 @@ const RemindersPage: React.FC = () => {
         {reminders.length > 0 ? (
           <div className="reminders-grid">
             {reminders.map((reminder) => (
-              <div key={reminder.id} className="reminder-card">
-                <div className={`reminder-card__icon ${reminder.type}`}>
-                  {reminder.type === "checkin" ? (
-                    <Calendar size={24} />
-                  ) : (
-                    <Bell size={24} />
-                  )}
-                </div>
-                <div className="reminder-card__content">
-                  <div className="reminder-card__date">{reminder.date}</div>
-                  <div className="reminder-card__note">{reminder.note}</div>
-                </div>
-                <div className="reminder-card__actions">
-                  <button
-                    className="edit-btn"
-                    onClick={() => handleEditReminder(reminder.id)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDeleteReminder(reminder.id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+              <ReminderCard
+                key={reminder.id}
+                reminder={reminder}
+                onEdit={handleEditReminder}
+                onDelete={handleDeleteReminderClick} // Updated to use the new handler
+              />
             ))}
           </div>
         ) : (
@@ -181,6 +240,18 @@ const RemindersPage: React.FC = () => {
           onClose={handleModalClose}
           onConfirm={handleReminderConfirm}
           type={selectedType}
+          initialDate={editingReminder?.sendAt}
+          initialNote={editingReminder?.note}
+          isEditing={!!editingReminder}
+        />
+      )}
+
+      {showDeleteReminder && (
+        <DeleteModal
+          onClose={handleDeleteModalClose} // Updated to use the new close handler
+          headerText="Delete Reminder"
+          shorterText="Are you sure you want to delete this reminder?"
+          handleDelete={handleDeleteReminder} // This now uses the correct reminder ID
         />
       )}
     </div>

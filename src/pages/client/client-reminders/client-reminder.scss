@@ -72,12 +72,19 @@
   border-radius: 16px;
   padding: 24px;
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  flex-direction: column;
   transition: all 0.2s ease;
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  // Header section with icon and content
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
   }
 
   &__icon {
@@ -89,12 +96,12 @@
     justify-content: center;
     flex-shrink: 0;
 
-    &.checkin {
+    &.check-in {
       background: #dbeafe;
       color: #3b82f6;
     }
 
-    &.followup {
+    &.follow-up {
       background: #fef3c7;
       color: #f59e0b;
     }
@@ -116,12 +123,14 @@
     font-size: 14px;
     color: #64748b;
     line-height: 1.5;
-    margin-bottom: 16px;
+    margin: 0;
   }
 
   &__actions {
     display: flex;
+    flex-direction: row;
     gap: 12px;
+    margin-top: auto;
 
     button {
       padding: 8px 16px;

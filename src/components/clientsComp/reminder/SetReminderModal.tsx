@@ -1,19 +1,36 @@
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SetReminderModalProps {
   onClose: () => void;
   onConfirm: (date: string, note: string) => void;
-  type: "checkin" | "followup";
+  type: "check-in" | "follow-up";
+  initialDate?: string;
+  initialNote?: string;
+  isEditing?: boolean;
 }
 
 const SetReminderModal: React.FC<SetReminderModalProps> = ({
   onClose,
   onConfirm,
   type,
+  initialDate = "",
+  initialNote = "",
+  isEditing = false,
 }) => {
   const [date, setDate] = useState<string>("");
   const [note, setNote] = useState<string>("");
+
+  useEffect(() => {
+    if (initialDate) {
+      const dateObj = new Date(initialDate);
+      const formattedDate = dateObj.toISOString().slice(0, 16);
+      setDate(formattedDate);
+    } else {
+      setDate("");
+    }
+    setNote(initialNote);
+  }, [initialDate, initialNote]);
 
   const handleConfirm = () => {
     if (date) {
@@ -21,8 +38,13 @@ const SetReminderModal: React.FC<SetReminderModalProps> = ({
     }
   };
 
-  const title =
-    type === "checkin" ? "Set Check-in Reminder" : "Follow-up Reminder";
+  const title = isEditing
+    ? `Edit ${type === "check-in" ? "Check-in" : "Follow-up"} Reminder`
+    : type === "check-in"
+    ? "Set Check-in Reminder"
+    : "Follow-up Reminder";
+
+  const confirmButtonText = isEditing ? "Update Reminder" : "Confirm Reminder";
 
   return (
     <div className="reminder-modal">
@@ -33,7 +55,11 @@ const SetReminderModal: React.FC<SetReminderModalProps> = ({
         </button>
 
         <h2>{title}</h2>
-        <p>Choose a date to set a reminder.</p>
+        <p>
+          {isEditing
+            ? "Update the date and note for this reminder."
+            : "Choose a date to set a reminder."}
+        </p>
 
         <div className="form-group">
           <label>Select Reminder Date & Time</label>
@@ -66,7 +92,7 @@ const SetReminderModal: React.FC<SetReminderModalProps> = ({
             onClick={handleConfirm}
             disabled={!date}
           >
-            Confirm Reminder
+            {confirmButtonText}
           </button>
         </div>
       </div>

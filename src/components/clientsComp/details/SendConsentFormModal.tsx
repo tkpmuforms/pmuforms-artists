@@ -1,5 +1,5 @@
 "use client";
-import { Calendar, X } from "lucide-react";
+import { X } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import useAuth from "../../../context/useAuth";
@@ -10,12 +10,14 @@ interface SendConsentFormModalProps {
   onClose: () => void;
   onSuccess: () => void;
   clientName: string;
+  clientId: string | undefined;
 }
 
 const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
   onClose,
   onSuccess,
   clientName,
+  clientId,
 }) => {
   const { user } = useAuth();
   const [appointmentDate, setAppointmentDate] = useState("");
@@ -36,7 +38,6 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
     }
   };
 
-  // Get selected service names for preview
   const getSelectedServiceNames = () => {
     return (
       user?.services
@@ -72,7 +73,6 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
                   onChange={(e) => setAppointmentDate(e.target.value)}
                   className="form-input"
                 />
-                <Calendar className="date-icon" size={16} />
               </div>
             </div>
 
@@ -115,6 +115,7 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
       {showPreviewAppointment && (
         <PreviewAppointmentModal
           clientName={clientName}
+          clientId={clientId || ""}
           appointmentDate={appointmentDate}
           selectedServices={getSelectedServiceNames()}
           selectedServiceIds={selectedServices}
