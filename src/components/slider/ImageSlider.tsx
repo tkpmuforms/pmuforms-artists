@@ -7,7 +7,7 @@ import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import "./ImageSlider.scss";
 import artistauth1 from "../../assets/images/artistauth1.png";
-import artistauth2 from "../../assets/images/artistauth4.png";
+import artistauth2 from "../../assets/images/artistauth5.png";
 import artistauth3 from "../../assets/images/artistauth3.png";
 
 const ImageSlider: React.FC = () => {
