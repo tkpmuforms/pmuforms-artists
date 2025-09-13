@@ -77,7 +77,7 @@ const SignupPage: React.FC<SignupPageProps> = ({
         const user = userCredential.user;
         localStorage.setItem("user", JSON.stringify(user));
 
-        await sendEmailVerification(user?.uid).then((res) => {
+        await sendEmailVerification(user?.uid).then(() => {
           toast.success("Verification link sent to your email!");
         });
         changeStep("verification");
@@ -95,7 +95,7 @@ const SignupPage: React.FC<SignupPageProps> = ({
   const handleResendCode = async () => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     sendEmailVerification(user?.uid)
-      .then((res) => {
+      .then(() => {
         toast.success("Verification email resent successfully!");
       })
       .catch((error) => {

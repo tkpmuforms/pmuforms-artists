@@ -49,7 +49,7 @@ const SignFormsPage: React.FC = () => {
   const [showSignModal, setShowSignModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
+  const [, setSignatureUrl] = useState<string | null>(null);
 
   const currentAppointment: Appointment = appointments?.find(
     (appointment: Appointment) => appointment.id === appointmentId
@@ -102,7 +102,7 @@ const SignFormsPage: React.FC = () => {
 
       const compressedFile = await imageCompression(file, options);
 
-      const storageRef = ref(storage, `signatures/${user.id}/${fileName}`);
+      const storageRef = ref(storage, `signatures/${user?._id}/${fileName}`);
       const snapshot = await uploadBytes(storageRef, compressedFile);
       const downloadUrl = await getDownloadURL(snapshot.ref);
 

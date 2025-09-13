@@ -27,7 +27,6 @@ import SendConsentFormModal from "../../../components/clientsComp/details/SendCo
 import { LoadingSmall } from "../../../components/loading/Loading";
 import {
   deleteCustomer,
-  getAppointmentsForCustomer,
   getCustomerById,
   getCustomerMetrics,
 } from "../../../services/artistServices";
@@ -93,7 +92,7 @@ const ClientDetailPage: React.FC = () => {
         return;
       }
 
-      const metricsResponse = await getCustomerMetrics(id);
+      const metricsResponse = await getCustomerMetrics(Number(id));
       setClientMetricsMetadata(metricsResponse?.data?.metrics || null);
       setMetricsLoading(false);
     } catch (err) {
@@ -315,6 +314,7 @@ const ClientDetailPage: React.FC = () => {
 
       {showSendConsentForm && (
         <SendConsentFormModal
+          clientId={id}
           clientName={client?.name}
           onClose={() => setShowSendConsentForm(false)}
           onSuccess={() => {

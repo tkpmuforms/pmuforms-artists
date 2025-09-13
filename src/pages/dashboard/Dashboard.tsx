@@ -29,6 +29,7 @@ import {
   getArtistAppointments,
   getArtistForms,
   getCustomerById,
+  getMyMetrics,
 } from "../../services/artistServices";
 import { formatAppointmentTime, transformFormData } from "../../utils/utils";
 import "./dashboard.scss";
@@ -145,8 +146,10 @@ const Dashboard: React.FC = () => {
 
         const displayedAppointments = appointments.slice(0, 4);
         const uniqueCustomerIds = [
-          ...new Set(displayedAppointments.map((apt) => apt.customerId)),
-        ];
+          ...new Set(
+            displayedAppointments.map((apt: any) => apt.customerId as string)
+          ),
+        ] as string[];
 
         if (uniqueCustomerIds.length > 0) {
           const customerPromises = uniqueCustomerIds.map((customerId) =>
@@ -181,6 +184,16 @@ const Dashboard: React.FC = () => {
         setLoading(false);
       }
     };
+
+    getMyMetrics()
+      .then((metricsResponse) => {
+        setMetrics(metricsResponse.data?.metrics);
+        setMetricsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching metrics:", error);
+        setMetricsLoading(false);
+      });
 
     fetchAppointmentsAndCustomers();
   }, []);
@@ -227,7 +240,7 @@ const Dashboard: React.FC = () => {
 
   const renderAppointments = () => {
     if (appointments.length === 0) return <div>No appointments found</div>;
-console.log(appointments);
+    console.log(appointments);
 
     return appointments
 
@@ -235,7 +248,11 @@ console.log(appointments);
       .map((appointment) => (
         <AppointmentCard
           key={appointment.id}
-          name={appointment?.customerId ? getCustomerName(appointment.customerId) : "Unknown Client"}
+          name={
+            appointment?.customerId
+              ? getCustomerName(appointment.customerId)
+              : "Unknown Client"
+          }
           avatar={getCustomerAvatar(appointment.customerId)}
           time={formatAppointmentTime(appointment.date)}
           service={

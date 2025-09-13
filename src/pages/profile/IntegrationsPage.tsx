@@ -62,11 +62,6 @@ const IntegrationsPage: React.FC = () => {
     setSelectedIntegration(null);
   };
 
-  const handleDisconnect = (integrationId: string) => {
-    // Handle disconnection
-    console.log(`Disconnecting ${integrationId}`);
-  };
-
   return (
     <div className="integrations-page">
       <div className="integrations-page__header">

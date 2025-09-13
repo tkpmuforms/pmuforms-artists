@@ -2,22 +2,26 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import "./forgotPasswordForm.scss";
 
-const ForgotPasswordForm = ({ onCancel }) => {
+interface ForgotPasswordFormProps {
+  onCancel: () => void;
+}
+
+const ForgotPasswordForm = ({ onCancel }: ForgotPasswordFormProps) => {
   const [email, setEmail] = useState("");
   const auth = getAuth();
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await sendPasswordResetEmail(auth, email);
       alert(`Reset link sent to: ${email}`);
       onCancel();
     } catch (error) {
-      console.error("Error sending password reset email:", error.message);
+      console.error("Error sending password reset email:", (error as Error).message);
       alert("Failed to send reset link. Please try again.");
     }
   };

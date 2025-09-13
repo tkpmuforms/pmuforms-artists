@@ -46,7 +46,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
     {}
   );
 
-  // Utility functions for localStorage
   const getCachedProfile = () => {
     try {
       const cached = localStorage.getItem(PROFILE_CACHE_KEY);
@@ -54,11 +53,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
         const { data, timestamp } = JSON.parse(cached);
         const now = Date.now();
 
-        // Check if cache is still valid (within 30 minutes)
         if (now - timestamp < CACHE_EXPIRY_TIME) {
           return data;
         } else {
-          // Remove expired cache
           localStorage.removeItem(PROFILE_CACHE_KEY);
         }
       }
@@ -89,7 +86,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
     }
   };
 
-  // Validation functions
   const validateName = (name: string): string | undefined => {
     const trimmedName = name.trim();
     if (!trimmedName) {
@@ -106,31 +102,25 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
 
   const validateUSAPhone = (phone: string): string | undefined => {
     if (!phone.trim()) {
-      return undefined; // Phone is optional
+      return undefined;
     }
 
-    // Remove all non-digit characters
     const digits = phone.replace(/\D/g, "");
 
-    // USA phone number validation
     if (digits.length === 10) {
-      // Format: 1234567890
       const areaCode = digits.substring(0, 3);
       const exchange = digits.substring(3, 6);
 
-      // Area code cannot start with 0 or 1
       if (areaCode[0] === "0" || areaCode[0] === "1") {
         return "Invalid area code";
       }
 
-      // Exchange cannot start with 0 or 1
       if (exchange[0] === "0" || exchange[0] === "1") {
         return "Invalid phone number format";
       }
 
       return undefined;
     } else if (digits.length === 11 && digits[0] === "1") {
-      // Format: 11234567890 (with country code)
       const areaCode = digits.substring(1, 4);
       const exchange = digits.substring(4, 7);
 
@@ -150,7 +140,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
 
   const validateEmail = (email: string): string | undefined => {
     if (!email.trim()) {
-      return undefined; // Email is optional
+      return undefined;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -169,7 +159,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
     errors.phoneNumber = validateUSAPhone(data.phoneNumber);
     errors.email = validateEmail(data.email);
 
-    // Remove undefined errors
     Object.keys(errors).forEach((key) => {
       if (!errors[key as keyof ValidationErrors]) {
         delete errors[key as keyof ValidationErrors];
@@ -179,7 +168,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
     return errors;
   };
 
-  // Format phone number for display
   const formatPhoneNumber = (phone: string): string => {
     const digits = phone.replace(/\D/g, "");
 
@@ -198,10 +186,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
     return phone;
   };
 
-  // Fetch current profile data on mount
   useEffect(() => {
     const fetchProfile = async () => {
-      // First, try to get cached profile
       const cachedProfile = getCachedProfile();
 
       if (cachedProfile) {
@@ -218,7 +204,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
         return;
       }
 
-      // If no cache, fetch from API
       try {
         setIsLoading(true);
         setError(null);
@@ -234,12 +219,10 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
 
         setProfileData(newProfileData);
 
-        // Update avatar if available
         if (response.data?.avatarUrl) {
           setAvatarUrl(response.data.avatarUrl);
         }
 
-        // Cache the response
         setCachedProfile(response.data);
       } catch (err) {
         console.error("Failed to fetch profile:", err);
@@ -257,30 +240,26 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
     if (file) {
       setUploadingAvatar(true);
 
-      // Create a preview URL for the selected image
       const previewUrl = URL.createObjectURL(file);
       setAvatarUrl(previewUrl);
 
       setTimeout(() => {
         setUploadingAvatar(false);
-      }, 2000); // Simulate upload delay
+      }, 2000);
     }
   };
 
   const handleInputChange = (field: keyof ProfileData, value: string) => {
     let processedValue = value;
 
-    // Format phone number as user types
     if (field === "phoneNumber") {
       processedValue = formatPhoneNumber(value);
     }
 
     setProfileData((prev) => ({ ...prev, [field]: processedValue }));
 
-    // Clear general error when user starts typing
     if (error) setError(null);
 
-    // Clear specific field validation error
     if (validationErrors[field]) {
       setValidationErrors((prev) => {
         const newErrors = { ...prev };
@@ -295,7 +274,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
       setIsSaving(true);
       setError(null);
 
-      // Validate form
       const errors = validateForm(profileData);
 
       if (Object.keys(errors).length > 0) {
@@ -303,21 +281,24 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
         return;
       }
 
-      // Prepare data for API call
-      const updateData = {
+      let updateData: any = {
         firstName: profileData.firstName.trim(),
         lastName: profileData.lastName.trim(),
         email: profileData.email.trim(),
-        phoneNumber: profileData.phoneNumber.replace(/\D/g, ""), // Send only digits
+        phoneNumber: profileData.phoneNumber.replace(/\D/g, ""),
       };
 
-      // Remove empty optional fields
-      if (!updateData.email) delete updateData.email;
-      if (!updateData.phoneNumber) delete updateData.phoneNumber;
+      if (!updateData.email) {
+        const { email, ...rest } = updateData;
+        updateData = rest;
+      }
+      if (!updateData.phoneNumber) {
+        const { phoneNumber, ...rest } = updateData;
+        updateData = rest;
+      }
 
-      const response = await updateMyProfile(updateData);
+      await updateMyProfile(updateData);
 
-      // Clear cache after successful update so fresh data is fetched next time
       clearProfileCache();
 
       onClose();
@@ -414,8 +395,10 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
                     alt="Profile Avatar"
                     sx={{ width: 100, height: 100, opacity: 0.5 }}
                   >
-                    {user?.displayName
-                      ? user.displayName.slice(0, 2).toUpperCase()
+                    {user?.firstName && user?.lastName
+                      ? (user.firstName + user.lastName)
+                          .slice(0, 2)
+                          .toUpperCase()
                       : (profileData.firstName + profileData.lastName)
                           .slice(0, 2)
                           .toUpperCase()}
@@ -441,8 +424,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
                   alt="Profile Avatar"
                   sx={{ width: 100, height: 100 }}
                 >
-                  {user?.displayName
-                    ? user.displayName.slice(0, 2).toUpperCase()
+                  {user?.businessName
+                    ? user.businessName.slice(0, 2).toUpperCase()
                     : (profileData.firstName + profileData.lastName)
                         .slice(0, 2)
                         .toUpperCase()}

@@ -124,9 +124,9 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-            {user?.notifications > 0 && (
+            {/* {user?.notifications > 0 && (
               <span className="notification-badge">{user?.notifications}</span>
-            )}
+            )} */}
           </button>
 
           <button
@@ -137,7 +137,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
             <div className="avatar-container">
               <Avatar
                 src={user?.info?.avatar_url ?? ""}
-                alt={user?.businessName ?? user?.info?.client_name ?? ""}
+                alt={user?.businessName ?? ""}
                 sx={{ width: 40, height: 40 }}
               />
             </div>

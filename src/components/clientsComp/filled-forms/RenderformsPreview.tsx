@@ -7,9 +7,14 @@ const FormInputTypes = {
   NUMBER: "numberOfField",
 };
 
-export const RenderFilledFormFields = ({ fields, filledData }) => {
-  const renderFilledFormFields = (fields) => {
-    return fields.map((field) => {
+interface RenderFilledFormFieldsProps {
+  fields: any[];
+  filledData: any;
+}
+
+export const RenderFilledFormFields = ({ fields, filledData }: RenderFilledFormFieldsProps) => {
+  const renderFilledFormFields = (fields: any[]) => {
+    return fields.map((field: any) => {
       if (!field || !field.id) return null;
 
       const fieldValue = filledData[field.id];

@@ -481,7 +481,7 @@ export const AppointmentCardIconSvg: React.FC = () => {
       viewBox="0 0 36 36"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      xlink="http://www.w3.org/1999/xlink"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
     >
       <g clip-path="url(#clip0_181_14512)">
         <rect width="36" height="36" rx="18" fill="#E2E8F0" />

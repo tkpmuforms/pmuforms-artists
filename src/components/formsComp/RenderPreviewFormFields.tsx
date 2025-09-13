@@ -7,8 +7,8 @@ const FormInputTypes = {
   NUMBER: "numberOfField",
 };
 
-export const renderPreviewFormFields = (fields) =>
-  fields.map((field) => {
+export const renderPreviewFormFields = (fields: any[]) =>
+  fields.map((field: any) => {
     if (!field || !field.id) return null;
     const isRequired = field?.required;
 

@@ -1,5 +1,9 @@
 export interface User {
   _id?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  avatarUrl?: string;
   documentPath?: string;
   documentId?: string;
   userId?: string;

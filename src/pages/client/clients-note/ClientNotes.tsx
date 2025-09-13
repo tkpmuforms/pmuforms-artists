@@ -28,7 +28,7 @@ interface Note {
 
 const ClientNotesPage: React.FC = () => {
   const location = useLocation();
-  const { clientName, clientEmail, clientPhone } = location.state || {};
+  const { clientName } = location.state || {};
   const { clientId } = useParams<{ clientId: string }>();
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);

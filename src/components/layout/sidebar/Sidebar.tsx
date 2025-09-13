@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, type MenuItem } from "../menu";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "./sidebar.scss";
@@ -115,7 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <div className="sidebar__avatar">
                 <Avatar
                   src={user?.info?.avatar_url ?? ""}
-                  alt={user?.businessName ?? user?.info?.client_name ?? ""}
+                  alt={user?.businessName ?? ""}
                   sx={{ width: 40, height: 40 }}
                 />
               </div>

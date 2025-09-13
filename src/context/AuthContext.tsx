@@ -1,7 +1,8 @@
 import React, { createContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setAuthenticated, setLoading, setUser, User } from "../redux/auth";
+import { setAuthenticated, setLoading, setUser } from "../redux/auth";
+import { User } from "../redux/types";
 import axiosInstance, {
   getAccessToken,
   isValidToken,
@@ -59,9 +60,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       dispatch(setAuthenticated(true));
       dispatch(
         setUser({
-          id: "test-user-123",
-          name: "Test User",
+          _id: "test-user-123",
           email: "test@example.com",
+          businessName: "Test Business",
         })
       );
       return;

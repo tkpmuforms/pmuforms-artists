@@ -3,13 +3,13 @@ export const quickActions = [
     title: "Add New Client",
     icon: "👤",
     color: "var(--pmu-primary)",
-    onClick: (navigate) => navigate("/clients"),
+    onClick: (navigate: any) => navigate("/clients"),
   },
   {
     title: "Create Form",
     icon: "📋",
     color: "#f59e0b",
-    onClick: (navigate) => navigate("/forms"),
+    onClick: (navigate: any) => navigate("/forms"),
   },
   {
     title: "Send Form",

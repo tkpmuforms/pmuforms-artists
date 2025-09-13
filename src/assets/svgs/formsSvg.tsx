@@ -42,7 +42,7 @@ export const FormsIconSvg: React.FC<IconProps> = () => {
   );
 };
 
-export const DeleteFormSvg: React.FC<IconProps> = ({ isActive, onClick }) => {
+export const DeleteFormSvg: React.FC<IconProps> = ({ onClick }) => {
   return (
     <svg
       onClick={onClick}
@@ -103,7 +103,7 @@ export const DeleteFormSvg: React.FC<IconProps> = ({ isActive, onClick }) => {
   );
 };
 
-export const EditFormsSvg: React.FC<IconProps> = ({ isActive, onClick }) => {
+export const EditFormsSvg: React.FC<IconProps> = ({ onClick }) => {
   return (
     <svg
       onClick={onClick}
@@ -163,7 +163,6 @@ export const PreviewAlertSvg: React.FC<IconProps> = ({}) => {
 };
 
 export const SmallEditIConSvg: React.FC<IconProps> = ({
-  isActive,
   onClick,
   className,
   style,
@@ -218,7 +217,7 @@ export const SmallDeleteIconSvg: React.FC<IconProps> = ({
   );
 };
 
-export const GarbageIconSvg: React.FC<IconProps> = ({ onClick, className }) => {
+export const GarbageIconSvg: React.FC<IconProps> = () => {
   return (
     <svg
       width="120"
