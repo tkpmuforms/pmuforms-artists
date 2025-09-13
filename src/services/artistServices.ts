@@ -27,7 +27,7 @@ export const getArtistAppointments = async () =>
 
 export const bookAppointment = async (data: {
   appointmentDate: string;
-  artistId: number | string;
+  customerId: string;
   services: number[];
 }) => axiosInstance.post("/api/appointments/book-appointment", data);
 

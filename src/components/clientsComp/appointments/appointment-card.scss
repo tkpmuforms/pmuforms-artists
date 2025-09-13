@@ -13,7 +13,7 @@
 
   .card-header {
     background: #f6f7f7;
-    padding: 24px;
+    padding: 20px 15px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -120,12 +120,12 @@
   }
 
   .appointment-details {
-    padding: 24px;
+    padding: 20px 15px;
 
     .detail-row {
       display: flex;
       justify-content: space-between;
-      gap: 24px;
+      gap: 44px;
 
       .detail-item {
         display: flex;

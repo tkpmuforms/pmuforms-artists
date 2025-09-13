@@ -11,7 +11,6 @@ import {
   getAppointmentsForCustomer,
   getCustomerById, // Add this import
 } from "../../../services/artistServices";
-
 import AppointmentCard from "../../../components/clientsComp/appointments/AppointmentCard";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import "./client-appointments.scss";
@@ -145,6 +144,7 @@ const ClientAppointmentPage: React.FC = () => {
 
         {showSendConsentForm && (
           <SendConsentFormModal
+            clientId={id}
             clientName={clientName}
             onClose={() => setShowSendConsentForm(false)}
             onSuccess={() => {

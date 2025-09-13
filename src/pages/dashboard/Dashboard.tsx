@@ -25,11 +25,14 @@ import useAuth from "../../context/useAuth";
 import { Appointment } from "../../redux/types";
 import {
   getArtistAppointments,
+  getArtistForms,
   getMyMetrics,
   searchCustomers,
 } from "../../services/artistServices";
-import { formatAppointmentTime } from "../../utils/utils";
+import { formatAppointmentTime, transformFormData } from "../../utils/utils";
 import "./dashboard.scss";
+import toast from "react-hot-toast";
+import FormCard from "../../components/formsComp/FormCard";
 
 interface Metrics {
   totalClients: number;
@@ -53,8 +56,8 @@ const Dashboard: React.FC = () => {
   const [customers, setCustomers] = useState<
     Record<string, { name: string; avatar?: string }>
   >({});
+  const [recentForms, setRecentForms] = useState<any[]>([]); // Placeholder for recent forms
 
-  // Configuration
   const quickActions = [
     {
       title: "Add New Client",
@@ -173,6 +176,35 @@ const Dashboard: React.FC = () => {
       });
   }, []);
 
+  const handlePreview = (formId: string) => {
+    navigate(`/forms/preview/${formId}`);
+  };
+  const handleEdit = (formId: string) => {
+    navigate(`/forms/edit/${formId}`);
+  };
+
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        setLoading(true);
+        const response = await getArtistForms();
+        if (response && response.data && response.data.forms) {
+          const transformedForms = response.data.forms.map(transformFormData);
+          setRecentForms(transformedForms);
+        } else {
+          toast.error("No forms data received");
+        }
+      } catch (err) {
+        console.error("Error fetching forms:", err);
+        toast.error("Failed to fetch forms. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchForms();
+  }, []);
+
   // Render helpers
   const renderMetrics = () => {
     const metricsConfig = getMetricsConfig(metricsLoading ? null : metrics);
@@ -188,17 +220,37 @@ const Dashboard: React.FC = () => {
   const renderAppointments = () => {
     if (appointments.length === 0) return <div>No appointments found</div>;
 
-    return appointments.map((appointment) => (
-      <AppointmentCard
-        key={appointment.id}
-        name={getCustomerName(appointment.customerId)}
-        avatar={getCustomerAvatar(appointment.customerId)}
-        time={formatAppointmentTime(appointment.date)}
-        service={
-          appointment.serviceDetails[0]?.service || "Service not specified"
-        }
-      />
-    ));
+    return appointments
+
+      .slice(0, 4)
+      .map((appointment) => (
+        <AppointmentCard
+          key={appointment.id}
+          name={getCustomerName(appointment.customerId)}
+          avatar={getCustomerAvatar(appointment.customerId)}
+          time={formatAppointmentTime(appointment.date)}
+          service={
+            appointment.serviceDetails[0]?.service || "Service not specified"
+          }
+        />
+      ));
+  };
+  const renderRecentForms = () => {
+    if (recentForms.length === 0) return <div>No recent forms found</div>;
+    return recentForms
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      )
+      .slice(0, 8)
+      .map((form) => (
+        <FormCard
+          key={form.id}
+          {...form}
+          onPreview={() => handlePreview(form.id)}
+          onEdit={() => handleEdit(form.id)}
+        />
+      ));
   };
 
   const renderHeader = () => (
@@ -314,6 +366,17 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="dashboard__appointments-grid">
             {renderAppointments()}
+          </div>
+        </section>
+        <section className="dashboard__recent_forms">
+          <div className="dashboard__appointments-header">
+            <h2 className="dashboard__section-title">Recent Forms</h2>
+            <button className="dashboard__view-all-btn">
+              View all <ChevronDown size={16} />
+            </button>
+          </div>
+          <div className="dashboard__appointments-grid">
+            {renderRecentForms()}
           </div>
         </section>
       </div>

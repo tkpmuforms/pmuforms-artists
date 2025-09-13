@@ -4,12 +4,17 @@ import { ChevronLeft, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import "./preview-appointment-modal.scss";
 import { formatAppointmentTime } from "../../../utils/utils";
-import { getMyServiceForms } from "../../../services/artistServices";
+import {
+  getMyServiceForms,
+  bookAppointment,
+} from "../../../services/artistServices";
+import { LoadingSmall } from "../../loading/Loading";
 
 interface PreviewAppointmentModalProps {
   onClose: () => void;
   onSuccess: () => void;
   clientName: string;
+  clientId: string;
   appointmentDate: string;
   selectedServices: string[];
   selectedServiceIds: string[];
@@ -24,6 +29,7 @@ interface FormData {
 const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
   onClose,
   onSuccess,
+  clientId,
   clientName,
   appointmentDate,
   selectedServices,
@@ -81,11 +87,7 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
 
   const renderFormsSection = () => {
     if (isLoadingForms) {
-      return (
-        <div className="forms-loading">
-          <span>Loading forms...</span>
-        </div>
-      );
+      return <LoadingSmall />;
     }
 
     if (formsToSend.length === 0) {
