@@ -8,7 +8,7 @@ import "swiper/css/autoplay";
 import "./ImageSlider.scss";
 import artistauth1 from "../../assets/images/artistauth1.jpg";
 import artistauth2 from "../../assets/images/artistauth5.png";
-import artistauth3 from "../../assets/images/artistauth3.png";
+import artistauth3 from "../../assets/images/artistauth3.jpg";
 
 const ImageSlider: React.FC = () => {
   const slides = [
