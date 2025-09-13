@@ -44,6 +44,7 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
           const transformedForm: SingleForm = {
             id: formData.id || formData._id,
             title: formData.title,
+            type: formData.type || "consent",
             sections: formData.sections
               .filter((section: Section) => !section.skip)
               .map((section: Section) => ({

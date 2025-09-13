@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, type MenuItem } from "../menu";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "./sidebar.scss";

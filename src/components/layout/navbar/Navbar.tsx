@@ -5,7 +5,7 @@ import "./navbar.scss";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
+  const [, setMobileMenuVisible] = useState(false);
   const mobileMenuRef = useRef(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -17,8 +17,6 @@ const Navbar = () => {
     }
   };
 
-  const videolink =
-    "https://pmuforms.crunch.help/en/pmuforms-functionality/how-to-use-pmu-forms";
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);

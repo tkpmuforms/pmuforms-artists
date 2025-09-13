@@ -44,7 +44,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const [allServices, setAllServices] = useState<Service[]>([]);
   const [servicesLoading, setServicesLoading] = useState(false);
   const [showServicesModal, setShowServicesModal] = useState(false);
-  const [editingField, setEditingField] = useState(null);
+  const [editingField, setEditingField] = useState<any>(null);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showEditParagraphModal, setShowEditParagraphModal] = useState(false);
   const [showAddFieldModal, setShowAddFieldModal] = useState(false);
@@ -304,10 +304,10 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
     };
 
     try {
-      const response = await addFormSectionData(
+      await addFormSectionData(
         form.id,
         sectionWithField._id || sectionWithField.id,
-        payload
+        payload as any
       );
 
       const updatedFormResponse = await getFormById(form.id);

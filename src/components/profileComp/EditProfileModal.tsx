@@ -312,10 +312,16 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
       };
 
       // Remove empty optional fields
-      if (!updateData.email) delete updateData.email;
-      if (!updateData.phoneNumber) delete updateData.phoneNumber;
+      if (!updateData.email) {
+        const { email, ...rest } = updateData;
+        updateData = rest;
+      }
+      if (!updateData.phoneNumber) {
+        const { phoneNumber, ...rest } = updateData;
+        updateData = rest;
+      }
 
-      const response = await updateMyProfile(updateData);
+      await updateMyProfile(updateData);
 
       // Clear cache after successful update so fresh data is fetched next time
       clearProfileCache();

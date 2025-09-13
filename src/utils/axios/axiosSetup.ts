@@ -36,10 +36,7 @@ axiosInstance.interceptors.request.use((req) => {
   if (pathname === "/" || pathname.includes("#")) {
     return req;
   }
-  history.push({
-    pathname: "/",
-    state: { sessionExpired: true } as { sessionExpired: boolean },
-  });
+  history.push("/", { sessionExpired: true });
   return req;
 });
 

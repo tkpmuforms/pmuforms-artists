@@ -5,11 +5,13 @@ import "./emailVerification.scss";
 interface EmailVerificationStepProps {
   email: string;
   onResendCode: () => void;
+  onBack: () => void;
 }
 
 const EmailVerificationStep: React.FC<EmailVerificationStepProps> = ({
   email,
   onResendCode,
+  onBack,
 }) => {
   const [resendTimer, setResendTimer] = useState(0);
 

@@ -174,7 +174,6 @@ const ProfilePage: React.FC = () => {
             setOnboardingStep("businessName");
             setShowEditBusinessName(true);
           }}
-          onSave={handleServicesSave}
         />
       )}
 

@@ -5,7 +5,6 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import AddFieldModal from "../../components/formsComp/AddFieldModal";
 import FormCard from "../../components/formsComp/FormCard";
 import { Loading } from "../../components/loading/Loading";
 import { Form } from "../../redux/types";
@@ -67,7 +66,7 @@ const FormsPage: React.FC = () => {
           </div>
           <button
             className="forms-page__create-btn"
-            onClick={() => setShowAddFieldModal(true)}
+            onClick={() => {}}
           >
             <Plus size={16} />
             Unlock More Forms
@@ -122,6 +121,7 @@ const FormsPage: React.FC = () => {
       {showAddMoreServicesModal && (
         <UpdateServicesModal
           onClose={() => setShowAddMoreServicesModal(false)}
+          onGoBack={() => setShowAddMoreServicesModal(false)}
         />
       )}
     </div>

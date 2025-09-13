@@ -18,7 +18,6 @@ interface AuthenticatedLayoutProps {
 const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
   children,
   breadcrumbs,
-  showAds,
   onSearch,
   onNotificationClick,
   onAvatarClick,

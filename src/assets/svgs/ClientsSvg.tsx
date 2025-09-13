@@ -75,7 +75,7 @@ export const ClientDetailsSvg: React.FC = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g style="mix-blend-mode:multiply">
+      <g style={{ mixBlendMode: "multiply" }}>
         <rect x="0.5" y="0.5" width="24" height="24" rx="12" fill="#EDEDED" />
         <path
           d="M10.5 9.375C10.295 9.375 10.125 9.205 10.125 9V7.5C10.125 7.295 10.295 7.125 10.5 7.125C10.705 7.125 10.875 7.295 10.875 7.5V9C10.875 9.205 10.705 9.375 10.5 9.375Z"

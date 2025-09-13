@@ -18,10 +18,9 @@ const EditParagraphModal: React.FC<EditParagraphModalProps> = ({
   onSave,
   initialContent,
   initialRequired = false,
-  fieldType,
 }) => {
   const [content, setContent] = useState(initialContent || "");
-  const [isRequired, setIsRequired] = useState(initialRequired);
+  const [isRequired] = useState(initialRequired);
 
   const handleSave = () => {
     onSave(content, isRequired);

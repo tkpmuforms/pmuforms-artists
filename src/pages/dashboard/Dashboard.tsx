@@ -30,7 +30,6 @@ import {
   getArtistForms,
   getCustomerById,
   getMyMetrics,
-  searchCustomers,
 } from "../../services/artistServices";
 import { formatAppointmentTime, transformFormData } from "../../utils/utils";
 import "./dashboard.scss";
@@ -147,11 +146,11 @@ const Dashboard: React.FC = () => {
 
         const displayedAppointments = appointments.slice(0, 4);
         const uniqueCustomerIds = [
-          ...new Set(displayedAppointments.map((apt) => apt.customerId)),
+          ...new Set(displayedAppointments.map((apt: any) => apt.customerId)),
         ];
 
         if (uniqueCustomerIds.length > 0) {
-          const customerPromises = uniqueCustomerIds.map((customerId) =>
+          const customerPromises = uniqueCustomerIds.map((customerId: string) =>
             getCustomerById(customerId).catch((error) => {
               console.error(`Error fetching customer ${customerId}:`, error);
               return null;
@@ -164,7 +163,7 @@ const Dashboard: React.FC = () => {
               if (response && response.data) {
                 const customerId = uniqueCustomerIds[index];
                 const customer = response.data?.customer;
-                acc[customerId] = {
+                acc[customerId as string] = {
                   name: customer.info?.client_name,
                   avatar: customer.info?.avatar_url,
                 };
@@ -183,6 +182,16 @@ const Dashboard: React.FC = () => {
         setLoading(false);
       }
     };
+
+    getMyMetrics()
+      .then((metricsResponse) => {
+        setMetrics(metricsResponse.data?.metrics);
+        setMetricsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching metrics:", error);
+        setMetricsLoading(false);
+      });
 
     fetchAppointmentsAndCustomers();
   }, []);

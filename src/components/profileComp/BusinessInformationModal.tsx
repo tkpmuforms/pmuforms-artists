@@ -4,7 +4,7 @@ import type React from "react";
 import { X, Edit } from "lucide-react";
 import "./business-information-modal.scss";
 import useAuth from "../../context/useAuth";
-import { Service } from "../../redux/auth";
+import { Service } from "../../redux/types";
 
 interface BusinessInformationModalProps {
   onClose: () => void;

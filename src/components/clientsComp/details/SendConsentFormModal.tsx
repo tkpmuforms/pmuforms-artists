@@ -41,8 +41,8 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
   const getSelectedServiceNames = () => {
     return (
       user?.services
-        ?.filter((service) => selectedServices.includes(service?.id))
-        ?.map((service) => service?.service) || []
+        ?.filter((service: any) => selectedServices.includes(service?.id))
+        ?.map((service: any) => service?.service) || []
     );
   };
 
@@ -81,7 +81,7 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
                 Select services for this client's upcoming appointment(s)*
               </label>
               <div className="services-grid">
-                {user?.services?.map((service) => (
+                {user?.services?.map((service: any) => (
                   <div
                     key={service?.id}
                     className={`service-tag ${

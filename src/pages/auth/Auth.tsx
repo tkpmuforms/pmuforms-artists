@@ -94,7 +94,7 @@ const Auth: React.FC = () => {
     type: "error" | "success" | "warning" | "info",
     message: string
   ) => {
-    toast[type](message);
+    (toast as any)[type](message);
   };
 
   if (isMobile) {
