@@ -146,11 +146,13 @@ const Dashboard: React.FC = () => {
 
         const displayedAppointments = appointments.slice(0, 4);
         const uniqueCustomerIds = [
-          ...new Set(displayedAppointments.map((apt: any) => apt.customerId)),
-        ];
+          ...new Set(
+            displayedAppointments.map((apt: any) => apt.customerId as string)
+          ),
+        ] as string[];
 
         if (uniqueCustomerIds.length > 0) {
-          const customerPromises = uniqueCustomerIds.map((customerId: string) =>
+          const customerPromises = uniqueCustomerIds.map((customerId) =>
             getCustomerById(customerId).catch((error) => {
               console.error(`Error fetching customer ${customerId}:`, error);
               return null;
@@ -163,7 +165,7 @@ const Dashboard: React.FC = () => {
               if (response && response.data) {
                 const customerId = uniqueCustomerIds[index];
                 const customer = response.data?.customer;
-                acc[customerId as string] = {
+                acc[customerId] = {
                   name: customer.info?.client_name,
                   avatar: customer.info?.avatar_url,
                 };

@@ -36,10 +36,10 @@ interface addFormSectionDataPayload {
 
 interface FieldType {
   type: string;
+  title: string;
   label?: string;
   [key: string]: any;
 }
-
 const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const { formId: paramFormId } = useParams<{ formId?: string }>();
   const formTemplateId = formId || paramFormId;
