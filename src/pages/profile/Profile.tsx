@@ -56,12 +56,6 @@ const ProfilePage: React.FC = () => {
     setShowUpdateServices(true);
   };
 
-  const handleServicesSave = () => {
-    setShowUpdateServices(false);
-    setOnboardingStep("completed");
-    // Onboarding complete - user can now use the app normally
-  };
-
   const profileMenuItems = [
     {
       icon: <Building2 size={10} />,

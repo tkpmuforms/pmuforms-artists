@@ -62,7 +62,6 @@ const IntegrationsPage: React.FC = () => {
     setSelectedIntegration(null);
   };
 
-
   return (
     <div className="integrations-page">
       <div className="integrations-page__header">

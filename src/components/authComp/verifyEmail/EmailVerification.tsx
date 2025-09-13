@@ -11,7 +11,6 @@ interface EmailVerificationStepProps {
 const EmailVerificationStep: React.FC<EmailVerificationStepProps> = ({
   email,
   onResendCode,
-  onBack,
 }) => {
   const [resendTimer, setResendTimer] = useState(0);
 

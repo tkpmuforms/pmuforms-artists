@@ -17,7 +17,6 @@ const Navbar = () => {
     }
   };
 
-
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {

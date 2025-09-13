@@ -34,6 +34,12 @@ interface addFormSectionDataPayload {
   after: string;
 }
 
+interface FieldType {
+  type: string;
+  label?: string;
+  [key: string]: any;
+}
+
 const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const { formId: paramFormId } = useParams<{ formId?: string }>();
   const formTemplateId = formId || paramFormId;
@@ -49,7 +55,9 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const [showEditParagraphModal, setShowEditParagraphModal] = useState(false);
   const [showAddFieldModal, setShowAddFieldModal] = useState(false);
   const [showFieldInputModal, setShowFieldInputModal] = useState(false);
-  const [selectedFieldType, setSelectedFieldType] = useState(null);
+  const [selectedFieldType, setSelectedFieldType] = useState<FieldType | null>(
+    null
+  );
   const [currentAfterFieldId, setCurrentAfterFieldId] = useState("");
 
   useEffect(() => {
@@ -277,7 +285,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
     setShowAddFieldModal(true);
   };
 
-  const handleFieldTypeSelect = (fieldType: any) => {
+  const handleFieldTypeSelect = (fieldType: FieldType) => {
     setSelectedFieldType(fieldType);
     setShowAddFieldModal(false);
     setShowFieldInputModal(true);
@@ -405,7 +413,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
       )}
 
       <div className="form-content">
-        {/* Title and Actions */}
         <div className="title-actions-row">
           <h2>{form.title}</h2>
           <div className="action-buttons">
@@ -444,7 +451,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
         )}
       </div>
 
-      {/* Add Field Modals */}
       {showAddFieldModal && (
         <AddFieldModal
           onClose={handleCloseFieldModals}
@@ -460,7 +466,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
         />
       )}
 
-      {/* Existing Modals */}
       {showConfirmDeleteModal && (
         <DeleteConfirmModal
           onClose={() => setShowConfirmDeleteModal(false)}

@@ -102,7 +102,7 @@ const SignFormsPage: React.FC = () => {
 
       const compressedFile = await imageCompression(file, options);
 
-      const storageRef = ref(storage, `signatures/${user.id}/${fileName}`);
+      const storageRef = ref(storage, `signatures/${user?._id}/${fileName}`);
       const snapshot = await uploadBytes(storageRef, compressedFile);
       const downloadUrl = await getDownloadURL(snapshot.ref);
 

@@ -217,7 +217,7 @@ export const SmallDeleteIconSvg: React.FC<IconProps> = ({
   );
 };
 
-export const GarbageIconSvg: React.FC<IconProps> = ({ onClick }) => {
+export const GarbageIconSvg: React.FC<IconProps> = () => {
   return (
     <svg
       width="120"
