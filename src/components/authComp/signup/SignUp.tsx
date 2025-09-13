@@ -17,7 +17,7 @@ interface SignupPageProps {
   onEmailSubmit?: (email: string) => void;
   onStepChange?: (step: SignupStep) => void;
   onBack?: () => void;
-  onNavigateToLogin?: () => void; // New prop for login navigation
+  onNavigateToLogin?: () => void;
 }
 
 interface SignupData {
@@ -34,7 +34,7 @@ const SignupPage: React.FC<SignupPageProps> = ({
   onEmailSubmit: propOnEmailSubmit,
   onStepChange: propOnStepChange,
   onBack: propOnBack,
-  onNavigateToLogin, // New prop
+  onNavigateToLogin,
 }) => {
   const [currentStep, setCurrentStep] = useState<SignupStep>(
     propCurrentStep || "email"
@@ -129,7 +129,6 @@ const SignupPage: React.FC<SignupPageProps> = ({
     }
   };
 
-  // Handle back navigation specifically for verification step
   const handleVerificationBack = () => {
     if (onNavigateToLogin) {
       onNavigateToLogin();
@@ -178,7 +177,7 @@ const SignupPage: React.FC<SignupPageProps> = ({
           <EmailVerificationStep
             email={activeEmail}
             onResendCode={handleResendCode}
-            onBack={handleVerificationBack} // Pass the verification-specific back handler
+            onBack={handleVerificationBack}
           />
         );
 

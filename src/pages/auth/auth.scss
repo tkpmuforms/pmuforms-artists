@@ -7,13 +7,13 @@
   margin: 0 auto;
 
   &.desktop {
-    flex-direction: row; // Explicitly set direction
-    flex-wrap: nowrap; // Prevent wrapping
-    align-items: stretch; // Ensure both sections have same height
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
 
     .auth-slider-section {
-      flex: 1 1 50%; // Give it exactly 50% and allow it to grow/shrink
-      min-width: 400px; // Set minimum width to prevent collapse
+      flex: 1 1 50%;
+      min-width: 400px;
       min-height: 100%;
       display: flex;
 
@@ -22,8 +22,8 @@
     }
 
     .auth-form-section {
-      flex: 1 1 50%; // Give it exactly 50% and allow it to grow/shrink
-      min-width: 400px; // Set minimum width to prevent collapse
+      flex: 1 1 50%;
+      min-width: 400px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -40,7 +40,6 @@
   }
 }
 
-// Add a media query to handle smaller desktop screens
 @media screen and (max-width: 1200px) and (min-width: 769px) {
   .auth-main-container.desktop {
     max-width: 95%;
@@ -48,12 +47,11 @@
 
     .auth-slider-section,
     .auth-form-section {
-      min-width: 350px; // Reduce minimum width for smaller screens
+      min-width: 350px;
     }
   }
 }
 
-// Handle very small desktop/large tablet screens
 @media screen and (max-width: 900px) and (min-width: 769px) {
   .auth-main-container.desktop {
     .auth-slider-section,
@@ -63,14 +61,13 @@
   }
 }
 
-// If screen becomes too small for side-by-side layout
 @media screen and (max-width: 800px) {
   .auth-main-container.desktop {
     flex-direction: column !important;
 
     .auth-slider-section {
       min-width: unset;
-      height: 300px; // Fixed height when stacked
+      height: 300px;
     }
 
     .auth-form-section {
@@ -207,7 +204,6 @@
   }
 }
 
-// Specific styles for password step
 .auth-main-container.desktop.full-screen-step {
   .auth-form-section {
     flex: none;

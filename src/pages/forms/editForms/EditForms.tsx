@@ -47,14 +47,11 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const [editingField, setEditingField] = useState(null);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showEditParagraphModal, setShowEditParagraphModal] = useState(false);
-
-  // New state for add field functionality
   const [showAddFieldModal, setShowAddFieldModal] = useState(false);
   const [showFieldInputModal, setShowFieldInputModal] = useState(false);
   const [selectedFieldType, setSelectedFieldType] = useState(null);
   const [currentAfterFieldId, setCurrentAfterFieldId] = useState("");
 
-  // Fetch services
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -83,7 +80,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
     fetchServices();
   }, []);
 
-  // Fetch form data
   useEffect(() => {
     const fetchForm = async () => {
       if (!formTemplateId) return;
@@ -108,7 +104,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
             services: formData.services || [],
           };
 
-          // Replace business name placeholders
           const updatedForm = JSON.parse(
             JSON.stringify(transformedForm).replace(
               /\(?\{\{user\.businessName\}\}\)?/g,
@@ -143,16 +138,13 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
 
     deleteFormSectionData(form.id, field.sectionId, field.id)
       .then((response) => {
-        // Check if response contains a new form ID
         if (response?.data?.form?.id) {
           const newFormId = response.data.form.id;
 
-          // Update URL if we're using route params
           if (paramFormId && newFormId !== form.id) {
             navigate(`/forms/edit/${newFormId}`, { replace: true });
           }
 
-          // Update form with new data
           const formData = response.data.form;
           const transformedForm: SingleForm = {
             id: formData.id || formData._id,
@@ -165,7 +157,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
             services: formData.services || [],
           };
 
-          // Replace business name placeholders
           const updatedForm = JSON.parse(
             JSON.stringify(transformedForm).replace(
               /\(?\{\{user\.businessName\}\}\)?/g,
@@ -175,7 +166,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
 
           setForm(updatedForm);
         } else {
-          // Fallback to local update if no new form data in response
           const updatedForm = { ...form };
           updatedForm.sections = updatedForm.sections.map((section) => {
             if (
@@ -222,16 +212,13 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
       updatedField
     )
       .then((response) => {
-        // Check if response contains a new form ID
         if (response?.data?.form?.id) {
           const newFormId = response.data.form.id;
 
-          // Update URL if we're using route params
           if (paramFormId && newFormId !== form.id) {
             navigate(`/forms/edit/${newFormId}`, { replace: true });
           }
 
-          // Update form with new data from response
           const formData = response.data.form;
           const transformedForm: SingleForm = {
             id: formData.id || formData._id,
@@ -244,7 +231,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
             services: formData.services || [],
           };
 
-          // Replace business name placeholders
           const updatedForm = JSON.parse(
             JSON.stringify(transformedForm).replace(
               /\(?\{\{user\.businessName\}\}\)?/g,
@@ -254,7 +240,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
 
           setForm(updatedForm);
         } else {
-          // Fallback to local update if no new form data in response
           const updatedForm = { ...form };
           updatedForm.sections = updatedForm.sections.map((section) => {
             if (
@@ -301,7 +286,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const handleAddField = async (title: string, isRequired: boolean) => {
     if (!form || !selectedFieldType || !currentAfterFieldId) return;
 
-    // Find which section contains the after field
     const sectionWithField = form.sections.find((section) =>
       section.data.some((field) => field.id === currentAfterFieldId)
     );
@@ -312,7 +296,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
     }
 
     const payload: addFormSectionDataPayload = {
-      line: "full", // hardcoded as requested
+      line: "full",
       title: title,
       type: selectedFieldType.type,
       required: isRequired,
@@ -326,7 +310,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
         payload
       );
 
-      // Update the form state locally by refetching
       const updatedFormResponse = await getFormById(form.id);
       if (updatedFormResponse?.data?.form) {
         const formData = updatedFormResponse.data.form;
@@ -341,7 +324,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
           services: formData.services || [],
         };
 
-        // Replace business name placeholders
         const updatedForm = JSON.parse(
           JSON.stringify(transformedForm).replace(
             /\(?\{\{user\.businessName\}\}\)?/g,
@@ -369,7 +351,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
     setCurrentAfterFieldId("");
   };
 
-  // Services handlers
   const handleUpdateServices = (selectedServiceIds: number[]) => {
     if (!form) return;
     const updatedForm = {
@@ -389,12 +370,10 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   };
 
   const handleSaveForm = () => {
-    // TODO: Implement form save functionality
     console.log("Save form:", form);
     toast.success("Form saved successfully");
   };
 
-  // Navigation guard
   if (!formTemplateId) {
     navigate("/forms");
     return null;

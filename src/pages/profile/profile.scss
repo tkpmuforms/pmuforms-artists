@@ -176,21 +176,17 @@
     margin-bottom: 64px;
     width: 100%;
 
-    // Desktop layout - 3 columns, 2 rows
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, auto);
 
-    // All items take up 1 column each - perfectly balanced
     .profile-page__menu-item {
       grid-column: span 1;
     }
 
-    // Large tablet layout
     @media (max-width: 1024px) {
       gap: 24px;
     }
 
-    // Tablet layout - 2 columns
     @media (max-width: 768px) {
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: auto;
@@ -198,7 +194,6 @@
       margin-bottom: 48px;
     }
 
-    // Mobile layout - 1 column
     @media (max-width: 480px) {
       grid-template-columns: 1fr;
       gap: 16px;
@@ -220,8 +215,6 @@
     text-align: left;
     width: 100%;
     box-sizing: border-box;
-    // Remove overflow hidden to allow cards to expand
-    // overflow: hidden;
 
     @media (max-width: 1024px) {
       gap: 28px;
@@ -308,7 +301,6 @@
       border-radius: 10px;
     }
 
-    // Ensure icons scale with container
     svg {
       width: 40%;
       height: 40%;
@@ -332,10 +324,7 @@
     font-weight: 500;
     color: #1e293b;
     flex: 1;
-    min-width: 0; // Allows text to shrink
-
-    // Prevent text wrapping on larger screens
-    // white-space: nowrap;
+    min-width: 0;
 
     @media (max-width: 1024px) {
       font-size: 18px;
@@ -358,7 +347,6 @@
     }
   }
 
-  // Extra small screens
   @media (max-width: 320px) {
     padding: 12px;
 
