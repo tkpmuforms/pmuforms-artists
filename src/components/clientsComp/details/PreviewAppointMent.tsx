@@ -12,7 +12,7 @@ import { LoadingSmall } from "../../loading/Loading";
 
 interface PreviewAppointmentModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (appointmentUrl?: string) => void;
   clientName: string;
   clientId: string;
   appointmentDate: string;
@@ -37,6 +37,7 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
 }) => {
   const [formsToSend, setFormsToSend] = useState<FormData[]>([]);
   const [isLoadingForms, setIsLoadingForms] = useState(false);
+  const [isBooking, setIsBooking] = useState(false);
 
   // Function to fetch forms based on service IDs
   const fetchFormsForServices = async (serviceIds: string[]) => {
@@ -81,8 +82,48 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
       .substring(0, 2);
   };
 
-  const handleContinue = () => {
-    onSuccess();
+  const handleContinue = async () => {
+    setIsBooking(true);
+
+    try {
+      // Prepare the booking data
+      const bookingData = {
+        appointmentDate,
+        customerId: clientId,
+        services: selectedServiceIds
+          .map((id) => parseInt(id, 10))
+          .filter((id) => !isNaN(id)),
+      };
+
+      // Call the book appointment API
+      const response = await bookAppointment(bookingData);
+
+      // Extract the appointment ID from the response
+      const appointmentId = response.data?.appointmentId || response.data?.id;
+
+      if (appointmentId) {
+        // Construct the URL with the appointment ID
+        const baseUrl =
+          process.env.REACT_APP_USER_WEBSITE_URL || "https://yourwebsite.com";
+        const appointmentUrl = `${baseUrl}/appointment/${appointmentId}`;
+
+        console.log("Appointment booked successfully!");
+        console.log("Appointment URL:", appointmentUrl);
+
+        // Call the success callback with the appointment URL
+        onSuccess(appointmentUrl);
+      } else {
+        console.error("No appointment ID returned from API");
+        // Handle error case - you might want to show an error message
+        alert("Error: No appointment ID received");
+      }
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+      // Handle error - show toast, alert, etc.
+      alert("Error booking appointment. Please try again.");
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   const renderFormsSection = () => {
@@ -178,9 +219,9 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
           <button
             className="continue-button"
             onClick={handleContinue}
-            disabled={isLoadingForms || formsToSend.length === 0}
+            disabled={formsToSend.length === 0 || isBooking}
           >
-            Continue
+            {isBooking ? "Booking..." : "Continue"}
           </button>
         </div>
       </div>
