@@ -39,14 +39,12 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
   const [isLoadingForms, setIsLoadingForms] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
 
-  // Function to fetch forms based on service IDs
   const fetchFormsForServices = async (serviceIds: string[]) => {
     if (!serviceIds || serviceIds.length === 0) return;
 
     setIsLoadingForms(true);
 
     try {
-      // Convert string IDs to numbers for the API
       const numericServiceIds = serviceIds
         .map((id) => parseInt(id, 10))
         .filter((id) => !isNaN(id));
@@ -57,7 +55,6 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
 
       const response = await getMyServiceForms(numericServiceIds);
 
-      // Assuming the API returns an array of forms in response.data
       setFormsToSend(response.data?.forms || []);
     } catch (error) {
       console.error("Error fetching forms:", error);
@@ -95,31 +92,26 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
           .filter((id) => !isNaN(id)),
       };
 
-      // Call the book appointment API
       const response = await bookAppointment(bookingData);
 
       // Extract the appointment ID from the response
       const appointmentId = response.data?.appointmentId || response.data?.id;
 
       if (appointmentId) {
-        // Construct the URL with the appointment ID
         const baseUrl =
-          process.env.REACT_APP_USER_WEBSITE_URL || "https://yourwebsite.com";
+          process.env.REACT_APP_USER_WEBSITE_URL ||
+          "https://pmu-beauty-forms.web.app/#/${businessUri}";
         const appointmentUrl = `${baseUrl}/appointment/${appointmentId}`;
 
-        console.log("Appointment booked successfully!");
-        console.log("Appointment URL:", appointmentUrl);
-
-        // Call the success callback with the appointment URL
         onSuccess(appointmentUrl);
       } else {
         console.error("No appointment ID returned from API");
-        // Handle error case - you might want to show an error message
+
         alert("Error: No appointment ID received");
       }
     } catch (error) {
       console.error("Error booking appointment:", error);
-      // Handle error - show toast, alert, etc.
+
       alert("Error booking appointment. Please try again.");
     } finally {
       setIsBooking(false);

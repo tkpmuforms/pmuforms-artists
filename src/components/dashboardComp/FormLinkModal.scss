@@ -34,7 +34,7 @@
 
     h2 {
       margin: 0;
-      font-size: 1.75rem; // Increased from 1.25rem
+      font-size: 1.75rem;
       font-weight: 600;
       color: #111827;
       text-align: center;
@@ -144,21 +144,17 @@
     background: linear-gradient(135deg, #8e2d8e 0%, #a654cd 100%);
     color: white;
     border: none;
-    padding: 16px 90px; // Increased padding to make button wider
-    border-radius: 12px; // Slightly more rounded
-    font-size: 1rem; // Increased font size
-    font-weight: 600; // Slightly bolder
+    padding: 16px 90px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(142, 45, 142, 0.3);
-    min-width: 180px; // Ensures consistent width
+    min-width: 180px;
 
     &:hover {
-      background: linear-gradient(
-        135deg,
-        #a654cd 0%,
-        #8e2d8e 100%
-      ); // Reversed gradient on hover
+      background: linear-gradient(135deg, #a654cd 0%, #8e2d8e 100%);
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(142, 45, 142, 0.4);
     }
@@ -172,138 +168,138 @@
 
 @media (max-width: 768px) {
   .form-link-modal-overlay {
-    padding: 16px; // Reduced padding
+    padding: 16px;
   }
 
   .form-link-modal {
-    max-width: 90vw; // Limit width to 90% of viewport
-    max-height: 80vh; // Reduced height
-    padding: 20px; // Reduced overall padding
-    border-radius: 8px; // Smaller border radius
+    max-width: 90vw;
+    max-height: 80vh;
+    padding: 20px;
+    border-radius: 8px;
 
     &__header {
-      padding: 16px 16px 12px; // Reduced padding
+      padding: 16px 16px 12px;
 
       h2 {
-        font-size: 1.25rem; // Smaller title
+        font-size: 1.25rem;
       }
     }
 
     &__close {
-      right: 16px; // Adjusted position
+      right: 16px;
     }
 
     &__content {
-      padding: 16px; // Reduced content padding
+      padding: 16px;
     }
 
     &__subtitle {
-      font-size: 0.8rem; // Smaller subtitle
-      margin: 0 0 12px 0; // Reduced margin
+      font-size: 0.8rem;
+      margin: 0 0 12px 0;
     }
 
     &__description {
-      font-size: 0.8rem; // Smaller description
-      margin: 0 0 16px 0; // Reduced margin
+      font-size: 0.8rem;
+      margin: 0 0 16px 0;
     }
 
     &__link-container {
-      margin-bottom: 12px; // Reduced margin
+      margin-bottom: 12px;
     }
 
     &__link-field {
-      padding: 10px 12px; // Reduced padding
-      font-size: 0.8rem; // Smaller font
+      padding: 10px 12px;
+      font-size: 0.8rem;
     }
 
     &__copy-btn {
-      padding: 10px 20px; // Reduced padding
-      font-size: 0.8rem; // Smaller font
+      padding: 10px 20px;
+      font-size: 0.8rem;
     }
 
     &__instruction {
-      font-size: 0.8rem; // Smaller instruction text
-      margin: 0 0 16px 0; // Reduced margin
+      font-size: 0.8rem;
+      margin: 0 0 16px 0;
     }
 
     &__divider {
-      margin: 0 0 16px 0; // Reduced margin
+      margin: 0 0 16px 0;
     }
 
     &__copy-action {
-      padding: 12px 24px; // Much smaller padding
-      font-size: 0.85rem; // Smaller font
-      min-width: 140px; // Smaller minimum width
-      border-radius: 8px; // Smaller border radius
+      padding: 12px 24px;
+      font-size: 0.85rem;
+      min-width: 140px;
+      border-radius: 8px;
     }
   }
 }
 
 @media (max-width: 480px) {
   .form-link-modal-overlay {
-    padding: 12px; // Even smaller padding
+    padding: 12px;
   }
 
   .form-link-modal {
-    max-width: 95vw; // Take up more width on very small screens
-    max-height: 75vh; // Even smaller height
-    padding: 16px; // Minimal padding
+    max-width: 95vw;
+    max-height: 75vh;
+    padding: 16px;
 
     &__header {
-      padding: 12px 12px 8px; // Minimal header padding
+      padding: 12px 12px 8px;
 
       h2 {
-        font-size: 1.1rem; // Even smaller title
+        font-size: 1.1rem;
       }
     }
 
     &__close {
-      right: 12px; // Adjusted position
-      padding: 2px; // Smaller close button
+      right: 12px;
+      padding: 2px;
     }
 
     &__content {
-      padding: 12px; // Minimal content padding
+      padding: 12px;
     }
 
     &__subtitle {
-      font-size: 0.75rem; // Very small subtitle
-      margin: 0 0 8px 0; // Minimal margin
+      font-size: 0.75rem;
+      margin: 0 0 8px 0;
     }
 
     &__description {
-      font-size: 0.75rem; // Very small description
-      margin: 0 0 12px 0; // Minimal margin
+      font-size: 0.75rem;
+      margin: 0 0 12px 0;
     }
 
     &__link-container {
-      margin-bottom: 8px; // Minimal margin
+      margin-bottom: 8px;
     }
 
     &__link-field {
-      padding: 8px 10px; // Minimal padding
-      font-size: 0.75rem; // Very small font
+      padding: 8px 10px;
+      font-size: 0.75rem;
     }
 
     &__copy-btn {
-      padding: 8px 16px; // Minimal padding
-      font-size: 0.75rem; // Very small font
+      padding: 8px 16px;
+      font-size: 0.75rem;
     }
 
     &__instruction {
-      font-size: 0.75rem; // Very small instruction text
-      margin: 0 0 12px 0; // Minimal margin
+      font-size: 0.75rem;
+      margin: 0 0 12px 0;
     }
 
     &__divider {
-      margin: 0 0 12px 0; // Minimal margin
+      margin: 0 0 12px 0;
     }
 
     &__copy-action {
-      padding: 10px 20px; // Minimal padding
-      font-size: 0.8rem; // Small font
-      min-width: 120px; // Small minimum width
-      border-radius: 6px; // Small border radius
+      padding: 10px 20px;
+      font-size: 0.8rem;
+      min-width: 120px;
+      border-radius: 6px;
     }
   }
 }

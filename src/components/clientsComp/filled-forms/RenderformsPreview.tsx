@@ -15,7 +15,6 @@ export const RenderFilledFormFields = ({ fields, filledData }) => {
       const fieldValue = filledData[field.id];
       const isRequired = field?.required;
 
-      // Style for filled data display
       const filledInputStyle = {
         backgroundColor: "#f8f9fa",
         border: "1px solid #e9ecef",
@@ -24,7 +23,6 @@ export const RenderFilledFormFields = ({ fields, filledData }) => {
         fontWeight: "500",
       };
 
-      // Handle non-input fields (display text)
       if (!field.type) {
         return (
           <div key={field.id} className="read-only-field">
@@ -33,7 +31,6 @@ export const RenderFilledFormFields = ({ fields, filledData }) => {
         );
       }
 
-      // Handle signature fields
       if (field.id === "signature" || field.id.includes("sign")) {
         return (
           <div key={field.id}>

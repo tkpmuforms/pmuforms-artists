@@ -57,17 +57,14 @@ const IntegrationsPage: React.FC = () => {
   };
 
   const handleConnectionSuccess = (integrationId: string) => {
-    // Update integration status
     console.log(`Successfully connected ${integrationId}`);
     setShowConnectModal(false);
     setSelectedIntegration(null);
-    // Here you would update your state/context to reflect the connection
   };
 
   const handleDisconnect = (integrationId: string) => {
     // Handle disconnection
     console.log(`Disconnecting ${integrationId}`);
-    // Here you would update your state/context to reflect the disconnection
   };
 
   return (

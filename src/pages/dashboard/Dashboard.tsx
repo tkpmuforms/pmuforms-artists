@@ -3,6 +3,7 @@
 import { ChevronDown, Plus } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import {
   CreateNewClientIcon,
@@ -20,19 +21,19 @@ import FormLinkModal from "../../components/dashboardComp/FormLinkModal";
 import MetricsCard from "../../components/dashboardComp/MetricsCard";
 import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
 import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
+import FormCard from "../../components/formsComp/FormCard";
 import { LoadingSmall } from "../../components/loading/Loading";
 import useAuth from "../../context/useAuth";
 import { Appointment } from "../../redux/types";
 import {
   getArtistAppointments,
   getArtistForms,
+  getCustomerById,
   getMyMetrics,
   searchCustomers,
 } from "../../services/artistServices";
 import { formatAppointmentTime, transformFormData } from "../../utils/utils";
 import "./dashboard.scss";
-import toast from "react-hot-toast";
-import FormCard from "../../components/formsComp/FormCard";
 
 interface Metrics {
   totalClients: number;
@@ -56,7 +57,7 @@ const Dashboard: React.FC = () => {
   const [customers, setCustomers] = useState<
     Record<string, { name: string; avatar?: string }>
   >({});
-  const [recentForms, setRecentForms] = useState<any[]>([]); // Placeholder for recent forms
+  const [recentForms, setRecentForms] = useState<any[]>([]);
 
   const quickActions = [
     {
@@ -109,9 +110,8 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  // Helper functions
   const getCustomerName = (customerId: string) =>
-    customers[customerId]?.name || `Client ${customerId.substring(0, 8)}`;
+    customers[customerId]?.name || `Client ${customerId?.substring(0, 8)}`;
 
   const getCustomerAvatar = (customerId: string) => {
     const customerAvatar = customers[customerId]?.avatar;
@@ -139,41 +139,52 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    Promise.all([getArtistAppointments(), searchCustomers(undefined, 1, 30)])
-      .then(([appointmentsResponse, customersResponse]) => {
-        setAppointments(appointmentsResponse.data?.appointments || []);
+    const fetchAppointmentsAndCustomers = async () => {
+      try {
+        const appointmentsResponse = await getArtistAppointments();
+        const appointments = appointmentsResponse.data?.appointments || [];
+        setAppointments(appointments);
 
-        const customerMap = customersResponse.data.customers.reduce(
-          (
-            acc: Record<string, { name: string; avatar?: string }>,
-            customer: any
-          ) => {
-            acc[customer.id] = {
-              name: customer.name,
-              avatar: customer.info?.avatar_url,
-            };
-            return acc;
-          },
-          {}
-        );
-        setCustomers(customerMap);
+        const displayedAppointments = appointments.slice(0, 4);
+        const uniqueCustomerIds = [
+          ...new Set(displayedAppointments.map((apt) => apt.customerId)),
+        ];
+
+        if (uniqueCustomerIds.length > 0) {
+          const customerPromises = uniqueCustomerIds.map((customerId) =>
+            getCustomerById(customerId).catch((error) => {
+              console.error(`Error fetching customer ${customerId}:`, error);
+              return null;
+            })
+          );
+
+          const customerResponses = await Promise.all(customerPromises);
+          const customerMap = customerResponses.reduce(
+            (acc, response, index) => {
+              if (response && response.data) {
+                const customerId = uniqueCustomerIds[index];
+                const customer = response.data?.customer;
+                acc[customerId] = {
+                  name: customer.info?.client_name,
+                  avatar: customer.info?.avatar_url,
+                };
+              }
+              return acc;
+            },
+            {} as Record<string, { name: string; avatar?: string }>
+          );
+
+          setCustomers(customerMap);
+        }
+
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching appointments and customers:", error);
         setLoading(false);
-      });
+      }
+    };
 
-    // Load metrics separately
-    getMyMetrics()
-      .then((metricsResponse) => {
-        setMetrics(metricsResponse.data?.metrics);
-        setMetricsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching metrics:", error);
-        setMetricsLoading(false);
-      });
+    fetchAppointmentsAndCustomers();
   }, []);
 
   const handlePreview = (formId: string) => {
@@ -205,7 +216,6 @@ const Dashboard: React.FC = () => {
     fetchForms();
   }, []);
 
-  // Render helpers
   const renderMetrics = () => {
     const metricsConfig = getMetricsConfig(metricsLoading ? null : metrics);
     return metricsConfig.map((metric, index) => (

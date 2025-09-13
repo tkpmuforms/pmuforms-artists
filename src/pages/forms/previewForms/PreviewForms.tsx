@@ -37,7 +37,6 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
         setLoading(true);
 
         const response = await getFormById(formTemplateId || "");
-        console.log("API Response:", response);
 
         if (response?.data?.form) {
           const formData = response?.data?.form;
