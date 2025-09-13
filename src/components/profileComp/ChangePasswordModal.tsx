@@ -35,7 +35,6 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   };
 
   const handleSave = () => {
-    console.log("Password changed");
     onClose();
   };
 

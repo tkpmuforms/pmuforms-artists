@@ -34,7 +34,6 @@ const EditBusinessNameModal: React.FC<EditBusinessNameModalProps> = ({
         getAuthUser();
         onSave();
         toast.success("Business name updated successfully!");
-        console.log("Business name saved:", businessName);
       })
       .catch((error) => {
         console.error("Error saving business name:", error);

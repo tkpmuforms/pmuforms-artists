@@ -29,17 +29,14 @@ const SignatureModal: React.FC<SignatureModalProps> = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size
     canvas.width = 600;
     canvas.height = 300;
 
-    // Set drawing styles
     ctx.strokeStyle = "#000000";
     ctx.lineWidth = 2;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    // Clear canvas
     ctx.fillStyle = "#f8fafc";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
@@ -99,14 +96,11 @@ const SignatureModal: React.FC<SignatureModalProps> = ({
     if (!canvas || !hasSignature) return;
 
     try {
-      // Convert canvas to data URL (base64 encoded image)
       const signatureDataUrl = canvas.toDataURL("image/png");
 
-      // Call the onSubmit function passed from parent
       await onSubmit(signatureDataUrl);
     } catch (error) {
       console.error("Error submitting signature:", error);
-      // Handle error - you might want to show an error message here
     }
   };
 

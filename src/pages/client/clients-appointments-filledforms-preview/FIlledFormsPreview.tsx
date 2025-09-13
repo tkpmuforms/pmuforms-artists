@@ -215,7 +215,7 @@ const FilledFormsPreview = () => {
           <h2>{form?.title}</h2>
           <button
             className="view-pdf-button"
-            onClick={generatePDFWithPrint} // Using the advanced PDF generation method
+            onClick={generatePDFWithPrint}
             // onClick={generatePDFWithPrint} // Alternative: use browser print
           >
             View as PDF

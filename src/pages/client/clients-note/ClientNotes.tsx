@@ -142,7 +142,6 @@ const ClientNotesPage: React.FC = () => {
     if (!clientId) return;
 
     try {
-      // Add new note
       const response = await addCustomerNote(clientId, { note: content });
       setNotes([response.data.note, ...notes]);
       toast.success("Note added successfully");

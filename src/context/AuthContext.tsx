@@ -55,7 +55,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     if (TESTING_MODE) {
-      console.log("TESTING MODE: Setting authenticated to true");
       dispatch(setLoading(false));
       dispatch(setAuthenticated(true));
       dispatch(
@@ -73,16 +72,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       try {
         const token = getAccessToken();
-        console.log("Token found:", !!token);
 
         if (token && isValidToken(token)) {
-          console.log("Token is valid, setting authenticated to true");
           setAuthHeader(token);
           dispatch(setAuthenticated(true));
         } else {
-          console.log(
-            "Token is invalid or missing, setting authenticated to false"
-          );
           handleAuthFail();
         }
       } catch (error) {

@@ -70,7 +70,6 @@ const ClientDetailPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Load client data first (faster)
       const response = await getCustomerById(id);
       console.log("Client data fetched:", response.data);
 
@@ -87,14 +86,13 @@ const ClientDetailPage: React.FC = () => {
           email: customer.email || "No email provided",
           phone: customer?.info?.cell_phone || undefined,
         });
-        setLoading(false); // Main loading done
+        setLoading(false);
       } else {
         setError("Client not found");
         setLoading(false);
         return;
       }
 
-      // Load metrics separately (slower)
       const metricsResponse = await getCustomerMetrics(id);
       setClientMetricsMetadata(metricsResponse?.data?.metrics || null);
       setMetricsLoading(false);

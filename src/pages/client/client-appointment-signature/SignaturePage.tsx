@@ -55,7 +55,6 @@ const SignFormsPage: React.FC = () => {
     (appointment: Appointment) => appointment.id === appointmentId
   );
 
-  // Filter forms for this specific appointment
   const appointmentForms =
     forms?.filter(
       (form: FormTemplate) => form.appointmentId === appointmentId
@@ -88,16 +87,13 @@ const SignFormsPage: React.FC = () => {
     setSubmitError(null);
 
     try {
-      // Convert data URL to blob
       const response = await fetch(signatureDataUrl);
       const blob = await response.blob();
 
-      // Create a file from the blob
       const timestamp = Date.now();
       const fileName = `signature_${appointmentId}_${timestamp}.png`;
       const file = new File([blob], fileName, { type: "image/png" });
 
-      // Compress the image
       const options = {
         maxSizeMB: 0.4, // 400KB
         maxWidthOrHeight: 500,
@@ -106,22 +102,19 @@ const SignFormsPage: React.FC = () => {
 
       const compressedFile = await imageCompression(file, options);
 
-      // Upload to Firebase Storage
       const storageRef = ref(storage, `signatures/${user.id}/${fileName}`);
       const snapshot = await uploadBytes(storageRef, compressedFile);
       const downloadUrl = await getDownloadURL(snapshot.ref);
 
-      // Now submit to your API with the Firebase URL
       await signAppointment(appointmentId, {
-        signatureUrl: downloadUrl, // Use Firebase URL instead of data URL
+        signatureUrl: downloadUrl,
       });
 
-      // Update local appointment state to reflect signing
       if (currentAppointment) {
         currentAppointment.signed = true;
       }
 
-      setSignatureUrl(downloadUrl); // Store the Firebase URL
+      setSignatureUrl(downloadUrl);
       setShowSignModal(false);
 
       toast.success("Signature submitted successfully");
@@ -138,10 +131,7 @@ const SignFormsPage: React.FC = () => {
   const canSign =
     currentAppointment?.allFormsCompleted && !currentAppointment?.signed;
 
-  // Handle case where appointment is not found
   if (!currentAppointment) {
-    // Check if all forms are completed
-
     return (
       <div className="sign-forms-page">
         <div className="sign-forms-page__content">

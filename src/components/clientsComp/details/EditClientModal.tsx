@@ -48,7 +48,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
         setSuccess(true);
         setTimeout(() => {
           onClose();
-        }, 1000); // Close after showing success state for 1 second
+        }, 1000);
       })
       .catch((error) => {
         console.error("Error updating client:", error);

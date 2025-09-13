@@ -86,7 +86,6 @@ export const deleteFormSectionData = async (
     `/api/forms/${formTemplateId}/sections/${sectionId}/data/${dataId}`
   );
 
-//add and after for the data so the new one is after the old one
 export const addFormSectionData = async (
   formTemplateId: string | number,
   sectionId: string | number,
@@ -199,7 +198,6 @@ export const DeleteAppointment = async (appointmentId: string | number) =>
 export const getCustomerMetrics = async (customerId: number) =>
   axiosInstance.get(`/api/customers/my-customers/${customerId}/metrics`);
 
-// Reminder Services
 export const createReminder = async (data: {
   sendAt: string;
   type: string;
