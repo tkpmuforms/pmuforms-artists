@@ -107,7 +107,6 @@ const SignupPage: React.FC<SignupPageProps> = ({
   const handleBack = () => {
     const activeStep = propCurrentStep || currentStep;
 
-    // If on verification step, navigate to login
     if (activeStep === "verification") {
       if (onNavigateToLogin) {
         onNavigateToLogin();

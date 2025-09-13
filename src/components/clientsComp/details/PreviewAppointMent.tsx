@@ -107,9 +107,6 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
           process.env.REACT_APP_USER_WEBSITE_URL || "https://yourwebsite.com";
         const appointmentUrl = `${baseUrl}/appointment/${appointmentId}`;
 
-        console.log("Appointment booked successfully!");
-        console.log("Appointment URL:", appointmentUrl);
-
         // Call the success callback with the appointment URL
         onSuccess(appointmentUrl);
       } else {

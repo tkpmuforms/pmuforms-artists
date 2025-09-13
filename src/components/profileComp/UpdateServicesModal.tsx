@@ -36,8 +36,6 @@ const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
     setLoading(true);
     getServices()
       .then((response) => {
-        console.log("Fetched services:", response.data.services);
-
         const services: Service[] = response.data.services.map(
           (service: Service) => ({
             _id: service._id,
@@ -45,7 +43,6 @@ const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
             service: service.service,
           })
         );
-        console.log("Processed services:", services);
         setSelectedServices((prev) => {
           return services.filter((service) =>
             prev.some(
@@ -54,7 +51,6 @@ const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
             )
           );
         });
-
         setAllServices(services);
         setLoading(false);
       })
@@ -81,7 +77,6 @@ const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
     updateServices({ services: serviceIds })
       .then(() => {
         getAuthUser();
-        console.log("Services updated successfully");
         toast.success("Services updated successfully!");
         onGoBack();
       })
@@ -108,12 +103,10 @@ const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
         <button className="update-services-modal__close" onClick={onClose}>
           <X size={20} />
         </button>
-
         <div className="update-services-modal__header">
           <h2>Update your Services</h2>
           <p>Please select the services you'd like to offer.</p>
         </div>
-
         <div className="update-services-modal__body">
           <h3>Select services</h3>
           {loading ? (
@@ -138,7 +131,6 @@ const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
             </div>
           )}
         </div>
-
         <div className="update-services-modal__actions">
           <button className="update-services-modal__go-back" onClick={onGoBack}>
             Go Back

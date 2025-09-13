@@ -285,11 +285,9 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   const handleShowConfirmDeleteModal = (field: any) => {
     setEditingField(field);
     setShowConfirmDeleteModal(true);
-    console.log("Show confirm delete modal for field:", field);
   };
 
   const handleAddParagraph = (afterFieldId: string) => {
-    console.log("Add paragraph after field:", afterFieldId);
     setCurrentAfterFieldId(afterFieldId);
     setShowAddFieldModal(true);
   };

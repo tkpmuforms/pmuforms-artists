@@ -205,7 +205,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
       const cachedProfile = getCachedProfile();
 
       if (cachedProfile) {
-        console.log("Using cached profile data");
         setProfileData({
           firstName: cachedProfile.profile.firstName || user?.firstName || "",
           lastName: cachedProfile.profile.lastName || user?.lastName || "",
@@ -223,7 +222,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
       try {
         setIsLoading(true);
         setError(null);
-        console.log("Fetching fresh profile data from API");
+
         const response = await getMyProfile();
 
         const newProfileData = {
@@ -317,8 +316,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
       if (!updateData.phoneNumber) delete updateData.phoneNumber;
 
       const response = await updateMyProfile(updateData);
-
-      console.log("Profile updated successfully:", response);
 
       // Clear cache after successful update so fresh data is fetched next time
       clearProfileCache();
