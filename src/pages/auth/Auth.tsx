@@ -4,9 +4,11 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import {
+  AppleLoginSvg,
   FacebookLoginSvg,
   GoogleLoginSvg,
   LogoSvg,
+  MobileAppleLoginSvg,
   MobileFacebookLoginSvg,
   MobileGoogleLoginSvg,
 } from "../../assets/svgs/AuthSvg";
@@ -15,7 +17,11 @@ import SignupPage from "../../components/authComp/signup/SignUp";
 import Navbar from "../../components/layout/navbar/Navbar";
 import ImageSlider from "../../components/slider/ImageSlider";
 import useAuth from "../../context/useAuth";
-import { googleProvider } from "../../firebase/firebase";
+import {
+  appleProvider,
+  facebookProvider,
+  googleProvider,
+} from "../../firebase/firebase";
 import "./auth.scss";
 import { HandleSocialLogin } from "./authUtils";
 
@@ -150,7 +156,26 @@ const Auth: React.FC = () => {
                             )
                           }
                         />
-                        <MobileFacebookLoginSvg />
+                        <MobileFacebookLoginSvg
+                          onClick={() =>
+                            HandleSocialLogin(
+                              facebookProvider,
+                              navigate,
+                              handleAuthSuccess,
+                              showAlert
+                            )
+                          }
+                        />
+                        <MobileAppleLoginSvg
+                          onClick={() =>
+                            HandleSocialLogin(
+                              appleProvider,
+                              navigate,
+                              handleAuthSuccess,
+                              showAlert
+                            )
+                          }
+                        />
                       </div>
                     </>
                   )}
@@ -233,7 +258,26 @@ const Auth: React.FC = () => {
                       )
                     }
                   />
-                  <FacebookLoginSvg />
+                  <FacebookLoginSvg
+                    onClick={() =>
+                      HandleSocialLogin(
+                        facebookProvider,
+                        navigate,
+                        handleAuthSuccess,
+                        showAlert
+                      )
+                    }
+                  />
+                  <AppleLoginSvg
+                    onClick={() =>
+                      HandleSocialLogin(
+                        appleProvider,
+                        navigate,
+                        handleAuthSuccess,
+                        showAlert
+                      )
+                    }
+                  />
                 </div>
               </>
             )}

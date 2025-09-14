@@ -9,6 +9,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   FacebookAuthProvider,
+  OAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
   createUserWithEmailAndPassword,
@@ -41,6 +42,10 @@ const storage: FirebaseStorage = getStorage(app);
 
 const googleProvider: GoogleAuthProvider = new GoogleAuthProvider();
 const facebookProvider: FacebookAuthProvider = new FacebookAuthProvider();
+const appleProvider: OAuthProvider = new OAuthProvider("apple.com");
+
+appleProvider.addScope("email");
+appleProvider.addScope("name");
 
 export type {
   UserCredential,
@@ -49,6 +54,7 @@ export type {
   FirebaseStorage,
   GoogleAuthProvider,
   FacebookAuthProvider,
+  OAuthProvider,
 };
 
 export {
@@ -58,6 +64,7 @@ export {
   firestore,
   googleProvider,
   facebookProvider,
+  appleProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
   createUserWithEmailAndPassword,
