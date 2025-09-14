@@ -192,10 +192,10 @@ export const createClient = async (data: {
 export const getMyMetrics = async () =>
   axiosInstance.get("/api/artists/my-metrics");
 
-export const DeleteAppointment = async (appointmentId: string | number) =>
+export const DeleteAppointment = async (appointmentId: string) =>
   axiosInstance.delete(`/api/appointments/${appointmentId}`);
 
-export const getCustomerMetrics = async (customerId: number) =>
+export const getCustomerMetrics = async (customerId: string) =>
   axiosInstance.get(`/api/customers/my-customers/${customerId}/metrics`);
 
 export const createReminder = async (data: {
