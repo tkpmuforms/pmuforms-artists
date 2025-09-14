@@ -11,6 +11,7 @@ import {
 } from "../../../services/artistServices";
 import ClientFormsCard from "../../../components/clientsComp/filled-forms/ClientFormsCard";
 import "./appointment-forms-page.scss";
+import { LoadingSmall } from "../../../components/loading/Loading";
 
 const ClientsFormsForAppointments: React.FC = () => {
   const { id, appointmentId } = useParams();
@@ -69,14 +70,12 @@ const ClientsFormsForAppointments: React.FC = () => {
     fetchData();
   }, [appointmentId, id, location.state]);
 
+  const isAllformsCompleted = forms.every(
+    (form) => form.status === "complete" || form.status === "completed"
+  );
+
   if (loading) {
-    return (
-      <div className="appointment-forms-page">
-        <div className="container">
-          <div className="loading">Loading forms...</div>
-        </div>
-      </div>
-    );
+    return <LoadingSmall />;
   }
 
   return (
@@ -90,7 +89,11 @@ const ClientsFormsForAppointments: React.FC = () => {
               {clientName?.split(" ")[0]} right here!
             </p>
           </div>
-          <button onClick={onSignForms} className="sign-forms-btn">
+          <button
+            onClick={onSignForms}
+            className="sign-forms-btn"
+            disabled={forms.length === 0 || !isAllformsCompleted}
+          >
             <FileText size={16} />
             Sign Appointment Forms
           </button>

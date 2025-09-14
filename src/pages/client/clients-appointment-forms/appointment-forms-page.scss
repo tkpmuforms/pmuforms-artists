@@ -1,5 +1,6 @@
 .appointment-forms-page {
   padding: 24px;
+
   @media (max-width: 1024px) {
     padding: 20px 24px;
   }
@@ -9,7 +10,7 @@
   }
 
   @media (max-width: 480px) {
-    padding: 5px;
+    padding: 12px 16px;
   }
 
   .loading {
@@ -17,6 +18,11 @@
     padding: 48px 24px;
     color: #6b7280;
     font-size: 16px;
+
+    @media (max-width: 480px) {
+      padding: 32px 16px;
+      font-size: 14px;
+    }
   }
 
   .header {
@@ -25,18 +31,42 @@
     justify-content: space-between;
     margin-bottom: 32px;
 
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 480px) {
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
     .header-content {
       h1 {
         font-size: 30px;
         font-weight: bold;
         color: #111827;
         margin: 0 0 4px 0;
+
+        @media (max-width: 768px) {
+          font-size: 24px;
+        }
+
+        @media (max-width: 480px) {
+          font-size: 20px;
+        }
       }
 
       p {
         color: #6b7280;
         margin: 0;
         font-size: 14px;
+
+        @media (max-width: 480px) {
+          font-size: 13px;
+        }
       }
     }
 
@@ -52,10 +82,40 @@
       cursor: pointer;
       font-size: 14px;
       font-weight: 500;
-      transition: background-color 0.2s;
+      transition: all 0.2s ease;
+      min-width: 180px;
+      justify-content: center;
 
-      &:hover {
+      @media (max-width: 768px) {
+        align-self: stretch;
+        width: 100%;
+      }
+
+      @media (max-width: 480px) {
+        padding: 10px 20px;
+        font-size: 13px;
+        min-width: auto;
+      }
+
+      &:hover:not(:disabled) {
         background-color: var(--pmu--primary-background);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      &:disabled {
+        background-color: #e5e7eb;
+        color: #9ca3af;
+        cursor: not-allowed;
+        opacity: 0.6;
+        transform: none;
+        box-shadow: none;
+
+        &:hover {
+          background-color: #e5e7eb;
+          transform: none;
+          box-shadow: none;
+        }
       }
     }
   }
@@ -64,6 +124,15 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 24px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 480px) {
+      gap: 12px;
+    }
   }
 
   .no-forms {
@@ -72,15 +141,32 @@
     align-items: center;
     min-height: 400px;
 
+    @media (max-width: 480px) {
+      min-height: 300px;
+    }
+
     .empty-state {
       text-align: center;
       padding: 48px 24px;
+
+      @media (max-width: 480px) {
+        padding: 32px 16px;
+      }
 
       &__icon {
         display: flex;
         justify-content: center;
         margin-bottom: 16px;
         color: #9ca3af;
+
+        @media (max-width: 480px) {
+          margin-bottom: 12px;
+
+          svg {
+            width: 40px;
+            height: 40px;
+          }
+        }
       }
 
       h3 {
@@ -88,36 +174,21 @@
         font-weight: 600;
         color: #374151;
         margin: 0 0 8px 0;
+
+        @media (max-width: 480px) {
+          font-size: 16px;
+        }
       }
 
       p {
         color: #6b7280;
         margin: 0;
         font-size: 14px;
+
+        @media (max-width: 480px) {
+          font-size: 13px;
+        }
       }
-    }
-  }
-
-  @media (max-width: 768px) {
-    padding: 16px;
-
-    .header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-
-      .header-content h1 {
-        font-size: 24px;
-      }
-
-      .sign-forms-btn {
-        align-self: flex-end;
-      }
-    }
-
-    .forms-grid {
-      grid-template-columns: 1fr;
-      gap: 16px;
     }
   }
 }

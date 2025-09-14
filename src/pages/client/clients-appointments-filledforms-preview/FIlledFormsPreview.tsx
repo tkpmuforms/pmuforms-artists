@@ -106,11 +106,13 @@ const FilledFormsPreview = () => {
             .preview-info h5 { color: #FF9500; margin: 0 0 5px 0; }
             .preview-info p { color: #FF9500; margin: 0; font-size: 14px; }
             .view-pdf-button { display: none; }
+            .preview-header { display: none; }
             label { display: block; margin-bottom: 15px; font-weight: 500; }
             input, textarea { margin-top: 8px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
             @media print {
               body { margin: 0; }
               .no-print { display: none !important; }
+              .preview-header { display: none !important; }
             }
           </style>
         </head>
@@ -152,7 +154,7 @@ const FilledFormsPreview = () => {
           </button>
         </div>
 
-        <div className="preview-header">
+        <div className="preview-header no-print">
           <div className="preview-info">
             <div className="preview-text">
               <h5>Filled Form Data</h5>
