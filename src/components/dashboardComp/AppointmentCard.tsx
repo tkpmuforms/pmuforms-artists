@@ -26,7 +26,6 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
       <div className="appointment-card-dashboard__header">
         <div className="appointment-card-dashboard__avatar">
           <img src={avatar || "/placeholder.svg"} alt={`${name}'s avatar`} />
-          {/* <AppointmentCardIconSvg /> */}
         </div>
         <h3 className="appointment-card-dashboard__name">{name}</h3>
       </div>

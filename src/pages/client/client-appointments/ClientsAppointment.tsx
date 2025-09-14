@@ -9,7 +9,7 @@ import { ClientAppointmentData } from "../../../redux/types";
 import {
   DeleteAppointment,
   getAppointmentsForCustomer,
-  getCustomerById, // Add this import
+  getCustomerById,
 } from "../../../services/artistServices";
 import AppointmentCard from "../../../components/clientsComp/appointments/AppointmentCard";
 import { LoadingSmall } from "../../../components/loading/Loading";
@@ -61,10 +61,8 @@ const ClientAppointmentPage: React.FC = () => {
 
       setLoading(true);
       try {
-        // Try to get client name from location state first
         const stateClientName = location.state?.clientName;
 
-        // If no client name in state, fetch it from API
         if (!stateClientName) {
           const clientResponse = await getCustomerById(id);
           const fetchedClientName =
@@ -74,7 +72,6 @@ const ClientAppointmentPage: React.FC = () => {
           setClientName(stateClientName);
         }
 
-        // Fetch appointments
         const appointmentsResponse = await getAppointmentsForCustomer(id);
         console.log("Appointments data:", appointmentsResponse);
         setAppointments(appointmentsResponse?.data?.appointments || []);
@@ -99,7 +96,6 @@ const ClientAppointmentPage: React.FC = () => {
   return (
     <div className="client-appointment-page">
       <div className="container">
-        {/* Header */}
         <div className="header">
           <div className="header-content">
             <h1>{clientName}'s Appointment</h1>

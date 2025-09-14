@@ -37,11 +37,9 @@ const ClientsFormsForAppointments: React.FC = () => {
 
       setLoading(true);
       try {
-        // Try to get data from location state first
         const stateClientName = location.state?.clientName;
         const stateAppointments = location.state?.appointments;
 
-        // If no client name in state, fetch it from API
         if (!stateClientName) {
           const clientResponse = await getCustomerById(id);
           const fetchedClientName =
@@ -51,7 +49,6 @@ const ClientsFormsForAppointments: React.FC = () => {
           setClientName(stateClientName);
         }
 
-        // If no appointments in state, fetch them from API
         if (!stateAppointments) {
           const appointmentsResponse = await getAppointmentsForCustomer(id);
           setAppointments(appointmentsResponse?.data?.appointments || []);
@@ -59,7 +56,6 @@ const ClientsFormsForAppointments: React.FC = () => {
           setAppointments(stateAppointments);
         }
 
-        // Fetch forms for the appointment
         const formsResponse = await getFilledFormsByAppointment(appointmentId);
         setForms(formsResponse.data?.filledForms || []);
       } catch (error) {
@@ -86,7 +82,6 @@ const ClientsFormsForAppointments: React.FC = () => {
   return (
     <div className="appointment-forms-page">
       <div className="container">
-        {/* Header */}
         <div className="header">
           <div className="header-content">
             <h1>{clientName}'s Appointment Form</h1>

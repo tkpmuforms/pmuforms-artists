@@ -36,7 +36,6 @@ const FilledFormsPreview = () => {
       try {
         setLoading(true);
 
-        // Fetch both the form template and filled data
         const [formResponse, filledResponse] = await Promise.all([
           getFormById(templateId || ""),
           getFilledFormByAppointmentAndTemplate(
@@ -45,7 +44,6 @@ const FilledFormsPreview = () => {
           ),
         ]);
 
-        // Process form template
         if (formResponse?.data?.form) {
           const formData = formResponse.data.form;
           const transformedForm = {
@@ -59,7 +57,6 @@ const FilledFormsPreview = () => {
               })),
           };
 
-          // Replace business name placeholders
           const updatedForm = JSON.parse(
             JSON.stringify(transformedForm).replace(
               /\(?\{\{user\.businessName\}\}\)?/g,
@@ -70,7 +67,6 @@ const FilledFormsPreview = () => {
           setForm(updatedForm);
         }
 
-        // Process filled data
         if (filledResponse?.data?.filledForm?.data) {
           setFilledData(filledResponse.data.filledForm.data);
         }
@@ -87,68 +83,7 @@ const FilledFormsPreview = () => {
     }
   }, [appointmentId, templateId, user?.businessName]);
 
-  // const generatePDF = async () => {
-  //   try {
-  //     // Show loading state
-  //     toast.loading("Generating PDF...", { id: "pdf-generation" });
-
-  //     // Method 1: Using jsPDF (you'll need to install: npm install jspdf html2canvas)
-  //     // const { jsPDF } = await import("jspdf");
-  //     // const html2canvas = (await import("html2canvas")).default;
-
-  //     // Get the form content element
-  //     const element = document.querySelector(".form-content");
-  //     if (!element) {
-  //       throw new Error("Form content not found");
-  //     }
-
-  //     // Convert HTML to canvas
-  //     // const canvas = await html2canvas(element as HTMLElement, {
-  //     //   scale: 2,
-  //     //   useCORS: true,
-  //     //   allowTaint: true,
-  //     // });
-
-  //     // // Create PDF
-  //     // const imgData = canvas.toDataURL("image/png");
-  //     // const pdf = new jsPDF({
-  //     //   orientation: "portrait",
-  //     //   unit: "mm",
-  //     //   format: "a4",
-  //     // });
-
-  //     const imgWidth = 210;
-  //     const pageHeight = 295;
-  //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  //     let heightLeft = imgHeight;
-  //     let position = 0;
-
-  //     // Add first page
-  //     pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  //     heightLeft -= pageHeight;
-
-  //     // Add additional pages if needed
-  //     while (heightLeft >= 0) {
-  //       position = heightLeft - imgHeight;
-  //       pdf.addPage();
-  //       pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  //       heightLeft -= pageHeight;
-  //     }
-
-  //     // Save the PDF
-  //     const fileName = `${form?.title || "Form"}_${appointmentId}.pdf`;
-  //     pdf.save(fileName);
-
-  //     toast.success("PDF generated successfully!", { id: "pdf-generation" });
-  //   } catch (error) {
-  //     console.error("Error generating PDF:", error);
-  //     toast.error("Failed to generate PDF", { id: "pdf-generation" });
-  //   }
-  // };
-
-  // Alternative method using browser's print functionality
   const generatePDFWithPrint = () => {
-    // Create a new window with only the form content
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
       toast.error("Please allow pop-ups to generate PDF");
@@ -187,7 +122,6 @@ const FilledFormsPreview = () => {
 
     printWindow.document.close();
 
-    // Wait for content to load, then trigger print
     setTimeout(() => {
       printWindow.print();
       printWindow.close();
@@ -213,11 +147,7 @@ const FilledFormsPreview = () => {
       <div className="form-content">
         <div className="title-actions-row">
           <h2>{form?.title}</h2>
-          <button
-            className="view-pdf-button"
-            onClick={generatePDFWithPrint}
-            // onClick={generatePDFWithPrint} // Alternative: use browser print
-          >
+          <button className="view-pdf-button" onClick={generatePDFWithPrint}>
             View as PDF
           </button>
         </div>

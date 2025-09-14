@@ -53,7 +53,6 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
               })),
           };
 
-          // Replace business name placeholders
           const updatedForm = JSON.parse(
             JSON.stringify(transformedForm).replace(
               /\(?\{\{user\.businessName\}\}\)?/g,

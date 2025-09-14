@@ -84,10 +84,8 @@ const ConnectIntegrationModal: React.FC<ConnectIntegrationModalProps> = ({
     setIsLoading(true);
 
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Call the onConnect callback with credentials
       onConnect(integration.id, {
         apiKey: apiKey.trim(),
         token: apiKey.trim(),

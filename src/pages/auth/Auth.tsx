@@ -62,7 +62,6 @@ const Auth: React.FC = () => {
     setSignupStep("email");
   };
 
-  // New function to handle navigation to login from verification step
   const handleNavigateToLogin = () => {
     setPage("login");
     setSignupStep("email");

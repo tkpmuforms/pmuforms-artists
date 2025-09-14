@@ -30,41 +30,9 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
-      {/* Logo */}
       <div onClick={handleHomeNavigate} className="logo">
         <LogoSvg />
       </div>
-
-      {/* <div className="hamburger-menu" onClick={toggleMobileMenu}>
-        &#9776;
-      </div> */}
-
-      {/* Navigation Links */}
-      {/* <div
-        ref={mobileMenuRef}
-        className={`links ${mobileMenuVisible ? "visible" : ""}`}
-      >
-        <ul>
-          <li>
-            <a href={videolink} target="_blank" rel="noopener noreferrer">
-              [Watch Video] “How to use PMU Forms”
-            </a>
-          </li>
-          <li>
-            <Link to="/privacy-policy">Privacy Policy</Link>
-          </li>
-          <li>
-            <Link to="/support">Contact Support</Link>
-          </li>
-        </ul>
-      </div> */}
-
-      {/* Buttons (Hidden in Mobile) */}
-      {/* <div className="buttons">
-        <button onClick={CreatenewClick} className="create-an-account">
-          Create an Account
-        </button>
-      </div> */}
     </div>
   );
 };

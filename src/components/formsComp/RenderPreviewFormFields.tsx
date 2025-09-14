@@ -12,7 +12,6 @@ export const renderPreviewFormFields = (fields: any[]) =>
     if (!field || !field.id) return null;
     const isRequired = field?.required;
 
-    // Common styles for preview mode - disabled appearance
     const previewInputStyle = {
       backgroundColor: "#f9f9f9",
       border: "1px solid #ddd",

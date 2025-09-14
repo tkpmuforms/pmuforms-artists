@@ -95,7 +95,7 @@ const SignFormsPage: React.FC = () => {
       const file = new File([blob], fileName, { type: "image/png" });
 
       const options = {
-        maxSizeMB: 0.4, // 400KB
+        maxSizeMB: 0.4,
         maxWidthOrHeight: 500,
         useWebWorker: true,
       };
