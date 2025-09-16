@@ -126,7 +126,7 @@ export const deleteCustomer = async (customerId: string | number) =>
 
 export const addCustomerNote = async (
   customerId: string | number,
-  data: { note: string }
+  data: { note: string; imageUrl?: string }
 ) =>
   axiosInstance.post(`/api/customers/my-customers/${customerId}/notes`, data);
 
@@ -136,7 +136,7 @@ export const getCustomerNotes = async (customerId: string | number) =>
 export const updateCustomerNote = async (
   customerId: string | number,
   noteId: string | number,
-  data: { note: string }
+  data: { note: string; imageUrl?: string }
 ) =>
   axiosInstance.put(
     `/api/customers/my-customers/${customerId}/notes/${noteId}`,

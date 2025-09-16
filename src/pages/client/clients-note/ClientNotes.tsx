@@ -1,12 +1,18 @@
 "use client";
 
-import { Edit3, Plus, Save, Trash2 } from "lucide-react";
+import imageCompression from "browser-image-compression";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import type React from "react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useParams } from "react-router-dom";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
+import EditCard from "../../../components/clientsComp/notes/EditNoteCard";
+import NoteCard from "../../../components/clientsComp/notes/NoteCard";
 import NotesModal from "../../../components/clientsComp/notes/NotesModal";
+import useAuth from "../../../context/useAuth";
+import { storage } from "../../../firebase/firebase";
+import { Note } from "../../../redux/types";
 import {
   addCustomerNote,
   deleteCustomerNote,
@@ -15,19 +21,11 @@ import {
 } from "../../../services/artistServices";
 import { formatDate } from "../../../utils/utils";
 import "./client-notes.scss";
-
-interface Note {
-  id: string;
-  note: string;
-  createdAt?: string;
-  updatedAt?: string;
-  date: string;
-  artistId: string;
-  _id: string;
-}
+import { LoadingSmall } from "../../../components/loading/Loading";
 
 const ClientNotesPage: React.FC = () => {
   const location = useLocation();
+  const { user } = useAuth();
   const { clientName } = location.state || {};
   const { clientId } = useParams<{ clientId: string }>();
   const [showNotesModal, setShowNotesModal] = useState(false);
@@ -38,6 +36,8 @@ const ClientNotesPage: React.FC = () => {
   const [currentNote, setCurrentNote] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
+  const [editImageUrl, setEditImageUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (clientId) {
@@ -58,26 +58,32 @@ const ClientNotesPage: React.FC = () => {
     }
   };
 
-  const getDisplayDate = (note: Note, isUpdated: boolean = false) => {
-    if (
-      isUpdated &&
-      note.updatedAt &&
-      note.createdAt &&
-      note.updatedAt !== note.createdAt
-    ) {
-      return formatDate(note.updatedAt);
-    } else if (note.createdAt) {
-      return formatDate(note.createdAt);
-    } else {
-      return formatDate(note.date);
-    }
-  };
+  const handleImageUpload = async (file: File): Promise<void> => {
+    if (!file) return;
 
-  const getDateLabel = (note: Note) => {
-    if (note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt) {
-      return "Updated";
-    } else {
-      return "Created";
+    setIsUploading(true);
+    try {
+      const options = {
+        maxSizeMB: 0.4,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+      const storageRef = ref(
+        storage,
+        `images/${user._id}/${file.name}-${Date.now()}`
+      );
+      const snapshot = await uploadBytes(storageRef, compressedFile);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+
+      setEditImageUrl(downloadUrl);
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Error uploading image");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -90,12 +96,14 @@ const ClientNotesPage: React.FC = () => {
   const handleNoteClick = (note: Note) => {
     setSelectedNote(note);
     setEditContent(note.note);
+    setEditImageUrl(note.imageUrl || "");
     setIsEditing(false);
   };
 
   const handleEditClick = () => {
     if (selectedNote) {
       setEditContent(selectedNote.note);
+      setEditImageUrl(selectedNote.imageUrl || "");
       setIsEditing(true);
     }
   };
@@ -106,11 +114,13 @@ const ClientNotesPage: React.FC = () => {
     try {
       await updateCustomerNote(clientId, selectedNote.id, {
         note: editContent,
+        imageUrl: editImageUrl,
       });
 
       const updatedNote = {
         ...selectedNote,
         note: editContent,
+        imageUrl: editImageUrl,
         updatedAt: new Date().toISOString(),
       };
 
@@ -130,6 +140,7 @@ const ClientNotesPage: React.FC = () => {
   const handleCancelEdit = () => {
     if (selectedNote) {
       setEditContent(selectedNote.note);
+      setEditImageUrl(selectedNote.imageUrl || "");
     }
     setIsEditing(false);
   };
@@ -175,11 +186,7 @@ const ClientNotesPage: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="client-notes-page">
-        <div className="client-notes-page__loading">Loading notes...</div>
-      </div>
-    );
+    return <LoadingSmall />;
   }
 
   return (
@@ -205,108 +212,34 @@ const ClientNotesPage: React.FC = () => {
                 </div>
               ) : (
                 notes?.map((note) => (
-                  <div
+                  <NoteCard
                     key={note.id}
-                    className={`note-card ${
-                      selectedNote?.id === note.id ? "note-card--selected" : ""
-                    }`}
-                    onClick={() => handleNoteClick(note)}
-                  >
-                    <div className="note-card__content">
-                      <p className="note-card__text">{note.note}</p>
-                      <div className="note-card__actions">
-                        <button
-                          className="note-action-btn note-action-btn--delete"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteNote(note);
-                          }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="note-card__timestamp">
-                      {getDateLabel(note)}: {getDisplayDate(note)}
-                    </p>
-                  </div>
+                    note={note}
+                    isSelected={selectedNote?.id === note.id}
+                    onNoteClick={handleNoteClick}
+                    onDeleteNote={handleDeleteNote}
+                    formatDate={formatDate}
+                  />
                 ))
               )}
             </div>
           </div>
 
-          <div className="editor-column">
-            <div className="editor-card">
-              <div className="editor-card__header">
-                <h3 className="editor-card__title">Note </h3>
-                <button className="add-note-btn" onClick={handleAddNote}>
-                  <Plus size={16} />
-                  Add a Note
-                </button>
-
-                <div className="editor-card__actions">
-                  {selectedNote && (
-                    <>
-                      {isEditing ? (
-                        <>
-                          <button
-                            className="editor-action-btn editor-action-btn--cancel"
-                            onClick={handleCancelEdit}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="editor-action-btn editor-action-btn--save"
-                            onClick={handleSaveEdit}
-                          >
-                            <Save size={16} />
-                            Save
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          className="editor-action-btn editor-action-btn--edit"
-                          onClick={handleEditClick}
-                        >
-                          <Edit3 size={16} />
-                          Edit
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="editor-card__content">
-                {selectedNote ? (
-                  <div className="editor-preview">
-                    {isEditing ? (
-                      <textarea
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                        className="editor-preview__textarea"
-                        rows={8}
-                        placeholder="Enter your note here..."
-                      />
-                    ) : (
-                      <p className="editor-preview__text">
-                        {selectedNote.note}
-                      </p>
-                    )}
-                    <div className="editor-preview__meta">
-                      <p className="editor-preview__date">
-                        {getDateLabel(selectedNote)}:{" "}
-                        {getDisplayDate(selectedNote)}
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="editor-placeholder">
-                    <p>Select a note to view its content</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <EditCard
+            selectedNote={selectedNote}
+            isEditing={isEditing}
+            editContent={editContent}
+            setEditContent={setEditContent}
+            editImageUrl={editImageUrl}
+            setEditImageUrl={setEditImageUrl}
+            onAddNote={handleAddNote}
+            onEditClick={handleEditClick}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
+            onImageUpload={handleImageUpload}
+            formatDate={formatDate}
+            isUploading={isUploading}
+          />
         </div>
       </div>
 
