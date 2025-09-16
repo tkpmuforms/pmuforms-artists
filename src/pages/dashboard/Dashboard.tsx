@@ -240,10 +240,7 @@ const Dashboard: React.FC = () => {
 
   const renderAppointments = () => {
     if (appointments.length === 0) return <div>No appointments found</div>;
-    console.log(appointments);
-
     return appointments
-
       .slice(0, 4)
       .map((appointment) => (
         <AppointmentCard
@@ -257,6 +254,9 @@ const Dashboard: React.FC = () => {
           time={formatAppointmentTime(appointment.date)}
           service={
             appointment.serviceDetails[0]?.service || "Service not specified"
+          }
+          onClickViewFullSchedule={() =>
+            navigate(`/clients/${appointment.customerId}/appointments`)
           }
         />
       ));

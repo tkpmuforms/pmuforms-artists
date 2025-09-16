@@ -11,6 +11,7 @@ interface AppointmentCardProps {
   avatar?: string;
   time?: string;
   service?: string;
+  onClickViewFullSchedule?: () => void;
 }
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({
@@ -18,13 +19,13 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   avatar,
   time,
   service,
+  onClickViewFullSchedule,
 }) => {
   return (
     <div className="appointment-card-dashboard">
       <div className="appointment-card-dashboard__header">
         <div className="appointment-card-dashboard__avatar">
           <img src={avatar || "/placeholder.svg"} alt={`${name}'s avatar`} />
-          {/* <AppointmentCardIconSvg /> */}
         </div>
         <h3 className="appointment-card-dashboard__name">{name}</h3>
       </div>
@@ -45,7 +46,10 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         <span className="appointment-card-dashboard__time-text">{time}</span>
       </div>
 
-      <button className="appointment-card-dashboard__schedule-button">
+      <button
+        className="appointment-card-dashboard__schedule-button"
+        onClick={onClickViewFullSchedule}
+      >
         View Full Schedule
       </button>
     </div>

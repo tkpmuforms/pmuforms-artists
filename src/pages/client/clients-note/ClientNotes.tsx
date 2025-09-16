@@ -122,7 +122,6 @@ const ClientNotesPage: React.FC = () => {
         await deleteCustomerNote(clientId, selectedNote.id);
         setNotes(notes.filter((note) => note.id !== selectedNote.id));
 
-        // Clear selection if deleted note was selected
         if (selectedNote.id === selectedNote.id) {
           setSelectedNote(null);
           setIsEditing(false);
@@ -217,7 +216,6 @@ const ClientNotesPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column - Note Preview/Editor */}
           <div className="editor-column">
             <button className="add-note-btn" onClick={handleAddNote}>
               <Plus size={16} />

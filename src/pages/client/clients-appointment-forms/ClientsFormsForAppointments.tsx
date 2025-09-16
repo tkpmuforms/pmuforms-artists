@@ -11,6 +11,7 @@ import {
 } from "../../../services/artistServices";
 import ClientFormsCard from "../../../components/clientsComp/filled-forms/ClientFormsCard";
 import "./appointment-forms-page.scss";
+import { LoadingSmall } from "../../../components/loading/Loading";
 
 const ClientsFormsForAppointments: React.FC = () => {
   const { id, appointmentId } = useParams();
@@ -37,11 +38,9 @@ const ClientsFormsForAppointments: React.FC = () => {
 
       setLoading(true);
       try {
-        // Try to get data from location state first
         const stateClientName = location.state?.clientName;
         const stateAppointments = location.state?.appointments;
 
-        // If no client name in state, fetch it from API
         if (!stateClientName) {
           const clientResponse = await getCustomerById(id);
           const fetchedClientName =
@@ -51,7 +50,6 @@ const ClientsFormsForAppointments: React.FC = () => {
           setClientName(stateClientName);
         }
 
-        // If no appointments in state, fetch them from API
         if (!stateAppointments) {
           const appointmentsResponse = await getAppointmentsForCustomer(id);
           setAppointments(appointmentsResponse?.data?.appointments || []);
@@ -59,7 +57,6 @@ const ClientsFormsForAppointments: React.FC = () => {
           setAppointments(stateAppointments);
         }
 
-        // Fetch forms for the appointment
         const formsResponse = await getFilledFormsByAppointment(appointmentId);
         setForms(formsResponse.data?.filledForms || []);
       } catch (error) {
@@ -73,20 +70,17 @@ const ClientsFormsForAppointments: React.FC = () => {
     fetchData();
   }, [appointmentId, id, location.state]);
 
+  const isAllformsCompleted = forms.every(
+    (form) => form.status === "complete" || form.status === "completed"
+  );
+
   if (loading) {
-    return (
-      <div className="appointment-forms-page">
-        <div className="container">
-          <div className="loading">Loading forms...</div>
-        </div>
-      </div>
-    );
+    return <LoadingSmall />;
   }
 
   return (
     <div className="appointment-forms-page">
       <div className="container">
-        {/* Header */}
         <div className="header">
           <div className="header-content">
             <h1>{clientName}'s Appointment Form</h1>
@@ -95,7 +89,11 @@ const ClientsFormsForAppointments: React.FC = () => {
               {clientName?.split(" ")[0]} right here!
             </p>
           </div>
-          <button onClick={onSignForms} className="sign-forms-btn">
+          <button
+            onClick={onSignForms}
+            className="sign-forms-btn"
+            disabled={forms.length === 0 || !isAllformsCompleted}
+          >
             <FileText size={16} />
             Sign Appointment Forms
           </button>

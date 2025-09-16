@@ -92,7 +92,7 @@ const ClientDetailPage: React.FC = () => {
         return;
       }
 
-      const metricsResponse = await getCustomerMetrics(Number(id));
+      const metricsResponse = await getCustomerMetrics(id);
       setClientMetricsMetadata(metricsResponse?.data?.metrics || null);
       setMetricsLoading(false);
     } catch (err) {

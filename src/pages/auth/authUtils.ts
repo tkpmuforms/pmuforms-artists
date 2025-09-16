@@ -34,10 +34,8 @@ export const HandleSocialLogin = async (
     handleAuthSuccess(res?.data?.artist, res.data?.access_token ?? "");
 
     if (res.data.userCreated === true) {
-      // User was created successfully - navigate to profile with newUser state
       navigate("/profile", { state: { newUser: true } });
     } else {
-      // Existing user - navigate to dashboard
       navigate("/dashboard");
     }
   } catch (error: unknown) {
@@ -75,10 +73,8 @@ export const SignInSuccessWithAuthResult = async (
     handleAuthSuccess(res?.data?.artist, res.data?.access_token ?? "");
 
     if (res.data.userCreated === true) {
-      // User was created successfully - navigate to profile with newUser state
       navigate("/profile", { state: { newUser: true } });
     } else {
-      // Existing user - navigate to dashboard
       navigate("/dashboard");
     }
   } catch (error: unknown) {

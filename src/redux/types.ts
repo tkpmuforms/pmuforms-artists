@@ -190,7 +190,6 @@ export interface FilledForm {
     title: string;
     type: string;
     sections: any[];
-    // ... other template properties
   };
   id: string;
 }

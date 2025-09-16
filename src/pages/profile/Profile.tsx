@@ -35,7 +35,6 @@ const ProfilePage: React.FC = () => {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
 
-  // Track the onboarding flow for new users
   const [isNewUser] = useState(locationState?.newUser || false);
   const [onboardingStep, setOnboardingStep] = useState<
     "businessName" | "services" | "completed"
@@ -43,7 +42,6 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (isNewUser) {
-      // Start the onboarding flow for new users
       setOnboardingStep("businessName");
       setShowEditBusinessName(true);
     }
@@ -51,7 +49,7 @@ const ProfilePage: React.FC = () => {
 
   const handleBusinessNameSave = () => {
     setShowEditBusinessName(false);
-    // Move to next step: services
+
     setOnboardingStep("services");
     setShowUpdateServices(true);
   };
@@ -144,7 +142,6 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Onboarding Modals */}
       {isNewUser &&
         showEditBusinessName &&
         onboardingStep === "businessName" && (

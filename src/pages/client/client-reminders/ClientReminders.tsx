@@ -32,10 +32,9 @@ const RemindersPage: React.FC = () => {
   >(null);
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
   const [showDeleteReminder, setShowDeleteReminder] = useState(false);
-  // Add state to track which reminder to delete
+
   const [reminderToDelete, setReminderToDelete] = useState<string | null>(null);
 
-  // Fetch reminders on component mount
   useEffect(() => {
     if (id) {
       fetchReminders();
@@ -81,7 +80,6 @@ const RemindersPage: React.FC = () => {
     }
   };
 
-  // Updated delete handler to set the reminder ID and show modal
   const handleDeleteReminderClick = (reminderId: string) => {
     setReminderToDelete(reminderId);
     setShowDeleteReminder(true);
@@ -103,12 +101,11 @@ const RemindersPage: React.FC = () => {
 
     try {
       if (editingReminder) {
-        // Update existing reminder - include type and customerId
         const updateData = {
           sendAt: date,
           note: note || "",
-          type: selectedType, // Add this line
-          customerId: id, // Add this line
+          type: selectedType,
+          customerId: id,
         };
 
         await updateReminder(editingReminder.id, updateData);
@@ -122,7 +119,6 @@ const RemindersPage: React.FC = () => {
         );
         toast.success("Reminder updated successfully");
       } else {
-        // Create new reminder
         const reminderData = {
           sendAt: date,
           type: selectedType,
@@ -132,7 +128,6 @@ const RemindersPage: React.FC = () => {
 
         const response = await createReminder(reminderData);
 
-        // Add the new reminder to the list
         if (response.data) {
           setReminders([...reminders, response.data]);
         } else {
@@ -149,7 +144,6 @@ const RemindersPage: React.FC = () => {
       }
     }
 
-    // Reset modal states
     setShowSetReminder(false);
     setSelectedType(null);
     setEditingReminder(null);
@@ -162,7 +156,6 @@ const RemindersPage: React.FC = () => {
     setEditingReminder(null);
   };
 
-  // Updated close handler for delete modal
   const handleDeleteModalClose = () => {
     setShowDeleteReminder(false);
     setReminderToDelete(null);
@@ -200,7 +193,7 @@ const RemindersPage: React.FC = () => {
                 key={reminder.id}
                 reminder={reminder}
                 onEdit={handleEditReminder}
-                onDelete={handleDeleteReminderClick} // Updated to use the new handler
+                onDelete={handleDeleteReminderClick}
               />
             ))}
           </div>
@@ -227,7 +220,6 @@ const RemindersPage: React.FC = () => {
         )}
       </div>
 
-      {/* Modal Components */}
       {showSelectType && (
         <SelectReminderTypeModal
           onClose={handleModalClose}
@@ -248,10 +240,10 @@ const RemindersPage: React.FC = () => {
 
       {showDeleteReminder && (
         <DeleteModal
-          onClose={handleDeleteModalClose} // Updated to use the new close handler
+          onClose={handleDeleteModalClose}
           headerText="Delete Reminder"
           shorterText="Are you sure you want to delete this reminder?"
-          handleDelete={handleDeleteReminder} // This now uses the correct reminder ID
+          handleDelete={handleDeleteReminder}
         />
       )}
     </div>

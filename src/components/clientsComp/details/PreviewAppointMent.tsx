@@ -83,7 +83,6 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
     setIsBooking(true);
 
     try {
-      // Prepare the booking data
       const bookingData = {
         appointmentDate,
         customerId: clientId,
@@ -94,7 +93,6 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
 
       const response = await bookAppointment(bookingData);
 
-      // Extract the appointment ID from the response
       const appointmentId = response.data?.appointmentId || response.data?.id;
 
       if (appointmentId) {
