@@ -19,8 +19,8 @@ import "./client-notes.scss";
 interface Note {
   id: string;
   note: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   date: string;
   artistId: string;
   _id: string;
@@ -55,6 +55,29 @@ const ClientNotesPage: React.FC = () => {
       toast.error("Failed to load notes");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getDisplayDate = (note: Note, isUpdated: boolean = false) => {
+    if (
+      isUpdated &&
+      note.updatedAt &&
+      note.createdAt &&
+      note.updatedAt !== note.createdAt
+    ) {
+      return formatDate(note.updatedAt);
+    } else if (note.createdAt) {
+      return formatDate(note.createdAt);
+    } else {
+      return formatDate(note.date);
+    }
+  };
+
+  const getDateLabel = (note: Note) => {
+    if (note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt) {
+      return "Updated";
+    } else {
+      return "Created";
     }
   };
 
@@ -166,7 +189,9 @@ const ClientNotesPage: React.FC = () => {
           <div className="notes-column">
             <div className="notes-column__header">
               <div className="appointment-info">
-                <h2 className="appointment-info__title">{clientName}</h2>
+                <div className="appointment-info__header">
+                  <h2 className="appointment-info__title">{clientName}</h2>
+                </div>
                 <p className="appointment-info__subtitle">
                   Important notes for your client
                 </p>
@@ -177,10 +202,6 @@ const ClientNotesPage: React.FC = () => {
               {notes.length === 0 ? (
                 <div className="notes-list__empty">
                   <p>No notes added yet</p>
-                  <button className="add-note-btn" onClick={handleAddNote}>
-                    <Plus size={16} />
-                    Add Your First Note
-                  </button>
                 </div>
               ) : (
                 notes?.map((note) => (
@@ -206,9 +227,7 @@ const ClientNotesPage: React.FC = () => {
                       </div>
                     </div>
                     <p className="note-card__timestamp">
-                      {note?.updatedAt !== note?.createdAt
-                        ? `Updated: ${formatDate(note?.updatedAt)}`
-                        : `Created: ${formatDate(note?.createdAt)}`}
+                      {getDateLabel(note)}: {getDisplayDate(note)}
                     </p>
                   </div>
                 ))
@@ -217,13 +236,13 @@ const ClientNotesPage: React.FC = () => {
           </div>
 
           <div className="editor-column">
-            <button className="add-note-btn" onClick={handleAddNote}>
-              <Plus size={16} />
-              Add a Note
-            </button>
             <div className="editor-card">
               <div className="editor-card__header">
                 <h3 className="editor-card__title">Note </h3>
+                <button className="add-note-btn" onClick={handleAddNote}>
+                  <Plus size={16} />
+                  Add a Note
+                </button>
 
                 <div className="editor-card__actions">
                   {selectedNote && (
@@ -275,11 +294,8 @@ const ClientNotesPage: React.FC = () => {
                     )}
                     <div className="editor-preview__meta">
                       <p className="editor-preview__date">
-                        {selectedNote.updatedAt !== selectedNote.createdAt
-                          ? `Last updated: ${formatDate(
-                              selectedNote.updatedAt
-                            )}`
-                          : `Created: ${formatDate(selectedNote.createdAt)}`}
+                        {getDateLabel(selectedNote)}:{" "}
+                        {getDisplayDate(selectedNote)}
                       </p>
                     </div>
                   </div>
