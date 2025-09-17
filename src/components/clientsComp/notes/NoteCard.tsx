@@ -2,6 +2,7 @@
 
 import { Camera, Trash2 } from "lucide-react";
 import type React from "react";
+import "./noteCard.scss";
 
 interface Note {
   id: string;

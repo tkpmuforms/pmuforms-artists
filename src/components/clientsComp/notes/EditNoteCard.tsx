@@ -1,9 +1,10 @@
 "use client";
 
-import { Camera, Edit3, Plus, Save, Trash2, Upload } from "lucide-react";
+import { Camera, Edit3, Save, Trash2, Upload } from "lucide-react";
 import type React from "react";
 import { useRef } from "react";
 import { Note } from "../../../redux/types";
+import "./editNoteCard.scss";
 
 interface EditCardProps {
   selectedNote: Note | null;
@@ -12,7 +13,6 @@ interface EditCardProps {
   setEditContent: (content: string) => void;
   editImageUrl: string;
   setEditImageUrl: (url: string) => void;
-  onAddNote: () => void;
   onEditClick: () => void;
   onSaveEdit: () => void;
   onCancelEdit: () => void;
@@ -28,7 +28,6 @@ const EditCard: React.FC<EditCardProps> = ({
   setEditContent,
   editImageUrl,
   setEditImageUrl,
-  onAddNote,
   onEditClick,
   onSaveEdit,
   onCancelEdit,
@@ -82,10 +81,6 @@ const EditCard: React.FC<EditCardProps> = ({
       <div className="editor-card">
         <div className="editor-card__header">
           <h3 className="editor-card__title">Note</h3>
-          <button className="add-note-btn" onClick={onAddNote}>
-            <Plus size={16} />
-            Add a Note
-          </button>
 
           <div className="editor-card__actions">
             {selectedNote && (

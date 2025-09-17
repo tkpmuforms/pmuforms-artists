@@ -22,6 +22,7 @@ import {
 import { formatDate } from "../../../utils/utils";
 import "./client-notes.scss";
 import { LoadingSmall } from "../../../components/loading/Loading";
+import { Plus } from "lucide-react";
 
 const ClientNotesPage: React.FC = () => {
   const location = useLocation();
@@ -191,56 +192,55 @@ const ClientNotesPage: React.FC = () => {
 
   return (
     <div className="client-notes-page">
-      <div className="client-notes-page__content">
-        <div className="content-grid">
-          <div className="notes-column">
-            <div className="notes-column__header">
-              <div className="appointment-info">
-                <div className="appointment-info__header">
-                  <h2 className="appointment-info__title">{clientName}</h2>
-                </div>
-                <p className="appointment-info__subtitle">
-                  Important notes for your client
-                </p>
-              </div>
-            </div>
-
-            <div className="notes-list">
-              {notes.length === 0 ? (
-                <div className="notes-list__empty">
-                  <p>No notes added yet</p>
-                </div>
-              ) : (
-                notes?.map((note) => (
-                  <NoteCard
-                    key={note.id}
-                    note={note}
-                    isSelected={selectedNote?.id === note.id}
-                    onNoteClick={handleNoteClick}
-                    onDeleteNote={handleDeleteNote}
-                    formatDate={formatDate}
-                  />
-                ))
-              )}
-            </div>
-          </div>
-
-          <EditCard
-            selectedNote={selectedNote}
-            isEditing={isEditing}
-            editContent={editContent}
-            setEditContent={setEditContent}
-            editImageUrl={editImageUrl}
-            setEditImageUrl={setEditImageUrl}
-            onAddNote={handleAddNote}
-            onEditClick={handleEditClick}
-            onSaveEdit={handleSaveEdit}
-            onCancelEdit={handleCancelEdit}
-            onImageUpload={handleImageUpload}
-            formatDate={formatDate}
-            isUploading={isUploading}
-          />
+      <div className="client-notes-page__header">
+        <div className="appointment-info__header">
+          <h2 className="appointment-info__title">{clientName}</h2>
+          <p className="appointment-info__subtitle">
+            Important notes for your client
+          </p>
         </div>
+        <button className="add-note-btn" onClick={handleAddNote}>
+          <Plus size={16} />
+          Add a Note
+        </button>
+      </div>
+
+      <div className="content-grid">
+        <div className="notes-column">
+          <div className="notes-list">
+            {notes.length === 0 ? (
+              <div className="notes-list__empty">
+                <p>No notes added yet</p>
+              </div>
+            ) : (
+              notes?.map((note) => (
+                <NoteCard
+                  key={note.id}
+                  note={note}
+                  isSelected={selectedNote?.id === note.id}
+                  onNoteClick={handleNoteClick}
+                  onDeleteNote={handleDeleteNote}
+                  formatDate={formatDate}
+                />
+              ))
+            )}
+          </div>
+        </div>
+
+        <EditCard
+          selectedNote={selectedNote}
+          isEditing={isEditing}
+          editContent={editContent}
+          setEditContent={setEditContent}
+          editImageUrl={editImageUrl}
+          setEditImageUrl={setEditImageUrl}
+          onEditClick={handleEditClick}
+          onSaveEdit={handleSaveEdit}
+          onCancelEdit={handleCancelEdit}
+          onImageUpload={handleImageUpload}
+          formatDate={formatDate}
+          isUploading={isUploading}
+        />
       </div>
 
       {showNotesModal && (
