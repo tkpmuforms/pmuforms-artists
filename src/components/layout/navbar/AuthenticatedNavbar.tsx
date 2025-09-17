@@ -34,7 +34,11 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   const lastBreadcrumb =
