@@ -29,7 +29,7 @@ type AuthPage = "login" | "signup";
 type SignupStep = "email" | "password" | "verification";
 
 const Auth: React.FC = () => {
-  const [page, setPage] = useState<AuthPage>("signup");
+  const [page, setPage] = useState<AuthPage>("login");
   const [showMobileAuth, setShowMobileAuth] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [signupStep, setSignupStep] = useState<SignupStep>("email");

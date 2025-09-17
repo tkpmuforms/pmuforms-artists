@@ -40,6 +40,10 @@ const IntegrationsPage = lazy(
   () => import("../pages/profile/IntegrationsPage.tsx")
 );
 
+const AllAppointments = lazy(
+  () => import("../pages/appointments/Appointment.tsx")
+);
+
 interface RouteProps {
   path: string;
   element: ReactNode;
@@ -52,6 +56,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/dashboard",
     element: <Dashboard />,
     breadcrumbs: ["Dashboard"],
+  },
+  {
+    path: "/appointments",
+    element: <AllAppointments />,
+    breadcrumbs: ["Dashboard", "Appointments"],
   },
   {
     path: "/clients",
@@ -73,6 +82,7 @@ export const authorizedRoutes: RouteProps[] = [
     element: <ClientsAppointment />,
     breadcrumbs: ["Clients", "Client Details", "Appointments"],
   },
+
   {
     path: "/clients/:id/appointments/:appointmentId/forms",
     element: <ClientsFormsForAppointments />,
