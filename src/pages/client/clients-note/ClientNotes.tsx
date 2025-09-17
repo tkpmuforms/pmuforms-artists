@@ -1,12 +1,18 @@
 "use client";
 
-import { Edit3, Plus, Save, Trash2 } from "lucide-react";
+import imageCompression from "browser-image-compression";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import type React from "react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useParams } from "react-router-dom";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
+import EditCard from "../../../components/clientsComp/notes/EditNoteCard";
+import NoteCard from "../../../components/clientsComp/notes/NoteCard";
 import NotesModal from "../../../components/clientsComp/notes/NotesModal";
+import useAuth from "../../../context/useAuth";
+import { storage } from "../../../firebase/firebase";
+import { Note } from "../../../redux/types";
 import {
   addCustomerNote,
   deleteCustomerNote,
@@ -15,19 +21,12 @@ import {
 } from "../../../services/artistServices";
 import { formatDate } from "../../../utils/utils";
 import "./client-notes.scss";
-
-interface Note {
-  id: string;
-  note: string;
-  createdAt: string;
-  updatedAt: string;
-  date: string;
-  artistId: string;
-  _id: string;
-}
+import { LoadingSmall } from "../../../components/loading/Loading";
+import { Plus } from "lucide-react";
 
 const ClientNotesPage: React.FC = () => {
   const location = useLocation();
+  const { user } = useAuth();
   const { clientName } = location.state || {};
   const { clientId } = useParams<{ clientId: string }>();
   const [showNotesModal, setShowNotesModal] = useState(false);
@@ -38,6 +37,8 @@ const ClientNotesPage: React.FC = () => {
   const [currentNote, setCurrentNote] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
+  const [editImageUrl, setEditImageUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (clientId) {
@@ -58,6 +59,35 @@ const ClientNotesPage: React.FC = () => {
     }
   };
 
+  const handleImageUpload = async (file: File): Promise<void> => {
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const options = {
+        maxSizeMB: 0.4,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+      const storageRef = ref(
+        storage,
+        `images/${user._id}/${file.name}-${Date.now()}`
+      );
+      const snapshot = await uploadBytes(storageRef, compressedFile);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+
+      setEditImageUrl(downloadUrl);
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Error uploading image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleAddNote = () => {
     setSelectedNote(null);
     setCurrentNote("");
@@ -67,12 +97,14 @@ const ClientNotesPage: React.FC = () => {
   const handleNoteClick = (note: Note) => {
     setSelectedNote(note);
     setEditContent(note.note);
+    setEditImageUrl(note.imageUrl || "");
     setIsEditing(false);
   };
 
   const handleEditClick = () => {
     if (selectedNote) {
       setEditContent(selectedNote.note);
+      setEditImageUrl(selectedNote.imageUrl || "");
       setIsEditing(true);
     }
   };
@@ -83,11 +115,13 @@ const ClientNotesPage: React.FC = () => {
     try {
       await updateCustomerNote(clientId, selectedNote.id, {
         note: editContent,
+        imageUrl: editImageUrl,
       });
 
       const updatedNote = {
         ...selectedNote,
         note: editContent,
+        imageUrl: editImageUrl,
         updatedAt: new Date().toISOString(),
       };
 
@@ -107,6 +141,7 @@ const ClientNotesPage: React.FC = () => {
   const handleCancelEdit = () => {
     if (selectedNote) {
       setEditContent(selectedNote.note);
+      setEditImageUrl(selectedNote.imageUrl || "");
     }
     setIsEditing(false);
   };
@@ -152,146 +187,60 @@ const ClientNotesPage: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="client-notes-page">
-        <div className="client-notes-page__loading">Loading notes...</div>
-      </div>
-    );
+    return <LoadingSmall />;
   }
 
   return (
     <div className="client-notes-page">
-      <div className="client-notes-page__content">
-        <div className="content-grid">
-          <div className="notes-column">
-            <div className="notes-column__header">
-              <div className="appointment-info">
-                <h2 className="appointment-info__title">{clientName}</h2>
-                <p className="appointment-info__subtitle">
-                  Important notes for your client
-                </p>
-              </div>
-            </div>
+      <div className="client-notes-page__header">
+        <div className="appointment-info__header">
+          <h2 className="appointment-info__title">{clientName}</h2>
+          <p className="appointment-info__subtitle">
+            Important notes for your client
+          </p>
+        </div>
+        <button className="add-note-btn" onClick={handleAddNote}>
+          <Plus size={16} />
+          Add a Note
+        </button>
+      </div>
 
-            <div className="notes-list">
-              {notes.length === 0 ? (
-                <div className="notes-list__empty">
-                  <p>No notes added yet</p>
-                  <button className="add-note-btn" onClick={handleAddNote}>
-                    <Plus size={16} />
-                    Add Your First Note
-                  </button>
-                </div>
-              ) : (
-                notes?.map((note) => (
-                  <div
-                    key={note.id}
-                    className={`note-card ${
-                      selectedNote?.id === note.id ? "note-card--selected" : ""
-                    }`}
-                    onClick={() => handleNoteClick(note)}
-                  >
-                    <div className="note-card__content">
-                      <p className="note-card__text">{note.note}</p>
-                      <div className="note-card__actions">
-                        <button
-                          className="note-action-btn note-action-btn--delete"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteNote(note);
-                          }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="note-card__timestamp">
-                      {note?.updatedAt !== note?.createdAt
-                        ? `Updated: ${formatDate(note?.updatedAt)}`
-                        : `Created: ${formatDate(note?.createdAt)}`}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div className="editor-column">
-            <button className="add-note-btn" onClick={handleAddNote}>
-              <Plus size={16} />
-              Add a Note
-            </button>
-            <div className="editor-card">
-              <div className="editor-card__header">
-                <h3 className="editor-card__title">Note </h3>
-
-                <div className="editor-card__actions">
-                  {selectedNote && (
-                    <>
-                      {isEditing ? (
-                        <>
-                          <button
-                            className="editor-action-btn editor-action-btn--cancel"
-                            onClick={handleCancelEdit}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="editor-action-btn editor-action-btn--save"
-                            onClick={handleSaveEdit}
-                          >
-                            <Save size={16} />
-                            Save
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          className="editor-action-btn editor-action-btn--edit"
-                          onClick={handleEditClick}
-                        >
-                          <Edit3 size={16} />
-                          Edit
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
+      <div className="content-grid">
+        <div className="notes-column">
+          <div className="notes-list">
+            {notes.length === 0 ? (
+              <div className="notes-list__empty">
+                <p>No notes added yet</p>
               </div>
-              <div className="editor-card__content">
-                {selectedNote ? (
-                  <div className="editor-preview">
-                    {isEditing ? (
-                      <textarea
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                        className="editor-preview__textarea"
-                        rows={8}
-                        placeholder="Enter your note here..."
-                      />
-                    ) : (
-                      <p className="editor-preview__text">
-                        {selectedNote.note}
-                      </p>
-                    )}
-                    <div className="editor-preview__meta">
-                      <p className="editor-preview__date">
-                        {selectedNote.updatedAt !== selectedNote.createdAt
-                          ? `Last updated: ${formatDate(
-                              selectedNote.updatedAt
-                            )}`
-                          : `Created: ${formatDate(selectedNote.createdAt)}`}
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="editor-placeholder">
-                    <p>Select a note to view its content</p>
-                  </div>
-                )}
-              </div>
-            </div>
+            ) : (
+              notes?.map((note) => (
+                <NoteCard
+                  key={note.id}
+                  note={note}
+                  isSelected={selectedNote?.id === note.id}
+                  onNoteClick={handleNoteClick}
+                  onDeleteNote={handleDeleteNote}
+                  formatDate={formatDate}
+                />
+              ))
+            )}
           </div>
         </div>
+
+        <EditCard
+          selectedNote={selectedNote}
+          isEditing={isEditing}
+          editContent={editContent}
+          setEditContent={setEditContent}
+          editImageUrl={editImageUrl}
+          setEditImageUrl={setEditImageUrl}
+          onEditClick={handleEditClick}
+          onSaveEdit={handleSaveEdit}
+          onCancelEdit={handleCancelEdit}
+          onImageUpload={handleImageUpload}
+          formatDate={formatDate}
+          isUploading={isUploading}
+        />
       </div>
 
       {showNotesModal && (

@@ -104,7 +104,7 @@ export interface CustomerResponse {
       home_address?: string;
       referred?: string;
     };
-    notes: Array<any>;
+    notes: Array<Note>;
     createdAt: string;
     updatedAt: string;
   }>;
@@ -203,4 +203,15 @@ export interface ApiResponse {
     firstPage: number;
   };
   filledForms: FilledForm[];
+}
+
+export interface Note {
+  id: string;
+  note: string;
+  createdAt?: string;
+  updatedAt?: string;
+  date: string;
+  artistId: string;
+  _id: string;
+  imageUrl?: string;
 }
