@@ -98,7 +98,7 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
       if (appointmentId) {
         const baseUrl =
           process.env.REACT_APP_USER_WEBSITE_URL ||
-          "https://pmu-beauty-forms.web.app/#/${businessUri}";
+          "https://business.pmuforms.com/#/${businessUri}";
         const appointmentUrl = `${baseUrl}/appointment/${appointmentId}`;
 
         onSuccess(appointmentUrl);

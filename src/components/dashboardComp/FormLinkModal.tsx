@@ -13,7 +13,7 @@ const FormLinkModal: React.FC<FormLinkModalProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  const formLink = `https://pmu-beauty-forms.web.app/#/${businessUri}`;
+  const formLink = `https://business.pmuforms.com/#/${businessUri}`;
 
   const handleCopyLink = async () => {
     try {
