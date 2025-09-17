@@ -353,6 +353,19 @@ const Dashboard: React.FC = () => {
       {renderHeader()}
 
       <div className="dashboard__content">
+        <section className="dashboard__quick-actions">
+          <h2 className="dashboard__section-title">QUICK ACTIONS</h2>
+          <div className="dashboard__actions-grid">
+            {quickActions.map((action, index) => (
+              <QuickActionCard
+                key={index}
+                {...action}
+                onClick={action.onClick}
+              />
+            ))}
+          </div>
+        </section>
+        
         <section className="dashboard__metrics">
           <div className="dashboard__metrics-header">
             <h2 className="dashboard__section-title">KEY METRICS</h2>
@@ -368,19 +381,6 @@ const Dashboard: React.FC = () => {
             ) : (
               <div>No metrics available</div>
             )}
-          </div>
-        </section>
-
-        <section className="dashboard__quick-actions">
-          <h2 className="dashboard__section-title">QUICK ACTIONS</h2>
-          <div className="dashboard__actions-grid">
-            {quickActions.map((action, index) => (
-              <QuickActionCard
-                key={index}
-                {...action}
-                onClick={action.onClick}
-              />
-            ))}
           </div>
         </section>
 
