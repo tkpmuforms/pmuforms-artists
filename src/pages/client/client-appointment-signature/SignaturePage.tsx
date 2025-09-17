@@ -262,9 +262,9 @@ const SignFormsPage: React.FC = () => {
               <div className="warning-box__content">
                 <h3 className="warning-box__title">Warning</h3>
                 <p className="warning-box__text">
-                  Once you sign below, neither you nor the artist can make
+                  Once you sign the forms, neither you nor the artist can make
                   changes. To change your answers after signing, you must create
-                  a new set of forms for this appointment.
+                  a new set of forms for the appointment.
                 </p>
               </div>
             </div>
