@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
       onClick: () => setShowAddClient(true),
     },
     {
-      title: "Create Form",
+      title: "Manage Forms",
       icon: CreateNewFormIcon,
       onClick: () => navigate("/forms"),
     },
@@ -365,7 +365,7 @@ const Dashboard: React.FC = () => {
             ))}
           </div>
         </section>
-        
+
         <section className="dashboard__metrics">
           <div className="dashboard__metrics-header">
             <h2 className="dashboard__section-title">KEY METRICS</h2>
