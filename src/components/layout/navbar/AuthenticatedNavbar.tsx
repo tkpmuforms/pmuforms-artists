@@ -9,6 +9,7 @@ interface AuthenticatedNavbarProps {
   onSearch?: (query: string) => void;
   onNotificationClick?: () => void;
   onAvatarClick?: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
@@ -16,6 +17,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
   onSearch,
   onNotificationClick,
   onAvatarClick,
+  onMobileMenuToggle,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useAuth();
@@ -32,7 +34,11 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   const lastBreadcrumb =
@@ -42,35 +48,47 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
   return (
     <nav className="authenticated-navbar">
       <div className="navbar-container">
-        <div className="navbar-breadcrumbs">
-          {showBackButton && (
-            <button
-              className="back-button"
-              onClick={handleBackClick}
-              aria-label="Go back"
-            >
-              <svg
-                className="back-arrow"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
+        <div className="navbar-left">
+          <button
+            className="mobile-menu-toggle"
+            onClick={onMobileMenuToggle}
+            aria-label="Toggle Menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
+          <div className="navbar-breadcrumbs">
+            {showBackButton && (
+              <button
+                className="back-button"
+                onClick={handleBackClick}
+                aria-label="Go back"
               >
-                <path
-                  d="M12.5 15l-5-5 5-5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
-          {lastBreadcrumb && (
-            <div className="breadcrumb-item">
-              <span className="breadcrumb-text">{lastBreadcrumb}</span>
-            </div>
-          )}
+                <svg
+                  className="back-arrow"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                >
+                  <path
+                    d="M12.5 15l-5-5 5-5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            )}
+            {lastBreadcrumb && (
+              <div className="breadcrumb-item">
+                <span className="breadcrumb-text">{lastBreadcrumb}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="navbar-search">
@@ -124,9 +142,6 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-            {/* {user?.notifications > 0 && (
-              <span className="notification-badge">{user?.notifications}</span>
-            )} */}
           </button>
 
           <button

@@ -88,6 +88,7 @@ const Dashboard: React.FC = () => {
       value: metricsData?.totalClients?.toString() || "0",
       icon: PeopleIcon,
       color: "var(--pmu-primary)",
+      onClick: () => navigate("/clients"),
     },
     {
       title: "Forms Shared",
@@ -386,7 +387,10 @@ const Dashboard: React.FC = () => {
         <section className="dashboard__appointments">
           <div className="dashboard__appointments-header">
             <h2 className="dashboard__section-title">NEXT APPOINTMENT</h2>
-            <button className="dashboard__view-all-btn">
+            <button
+              className="dashboard__view-all-btn"
+              onClick={() => navigate("/appointments")}
+            >
               View all <ChevronDown size={16} />
             </button>
           </div>

@@ -24,6 +24,14 @@ export const getAppointmentsForCustomer = async (customerId: string) =>
 
 export const getArtistAppointments = async () =>
   axiosInstance.get("/api/appointments/artist");
+export const getArtistAppointmentsPaginated = async (
+  page: number = 1,
+  perPage: number = 10
+) => {
+  return axiosInstance.get(
+    `/api/appointments/artist?page=${page}&perPage=${perPage}`
+  );
+};
 
 export const bookAppointment = async (data: {
   appointmentDate: string;

@@ -17,8 +17,52 @@
     padding: 0 10px;
     max-width: 1440px;
     margin: 0 auto;
-    min-width: 0; /* Allow flex items to shrink */
-    overflow: hidden; /* Prevent container overflow */
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .mobile-menu-toggle {
+    display: none;
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+
+    @media (max-width: 768px) {
+      display: flex;
+    }
+
+    span {
+      width: 16px;
+      height: 2px;
+      background: #374151;
+      border-radius: 1px;
+      transition: all 0.2s ease;
+    }
+
+    &:hover {
+      background: #f3f4f6;
+    }
+
+    &:active {
+      background: #e5e7eb;
+    }
   }
 
   .navbar-breadcrumbs {
@@ -26,8 +70,8 @@
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
-    min-width: 0; /* Allow breadcrumbs to shrink */
-    overflow: hidden; /* Prevent overflow */
+    min-width: 0;
+    overflow: hidden;
 
     .breadcrumb-item {
       display: flex;
@@ -35,7 +79,7 @@
       gap: 8px;
       font-size: 14px;
       color: #6b7280;
-      min-width: 0; /* Allow shrinking */
+      min-width: 0;
 
       .breadcrumb-link {
         color: #6b7280;
@@ -52,10 +96,10 @@
         font-weight: 700;
         line-height: 140%;
         font-size: 20px;
-        white-space: nowrap; /* Prevent text wrapping */
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 200px; /* Limit breadcrumb width */
+        max-width: 200px;
       }
 
       .breadcrumb-separator {
@@ -69,7 +113,7 @@
     flex: 1;
     max-width: 480px;
     margin: 0 32px;
-    min-width: 0; /* Allow search to shrink */
+    min-width: 0;
 
     .search-form {
       width: 100%;
@@ -198,16 +242,16 @@
         font-size: 14px;
         font-weight: 500;
         color: #111827;
-        white-space: nowrap; /* Prevent wrapping */
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 120px; /* Limit user name width */
+        max-width: 120px;
       }
 
       .dropdown-icon {
         color: #6b7280;
         transition: transform 0.2s ease;
-        flex-shrink: 0; /* Don't let icon shrink */
+        flex-shrink: 0;
       }
 
       &:hover .dropdown-icon {
@@ -216,50 +260,48 @@
     }
   }
 
-  /* Mobile optimizations */
   @media (max-width: 768px) {
-    padding: 0 12px; /* Reduce padding */
+    padding: 0 12px;
 
     .navbar-container {
-      padding: 0 4px; /* Reduce container padding */
+      padding: 0 4px;
     }
 
-    /* Hide search completely on mobile */
     .navbar-search {
       display: none;
     }
 
     .navbar-breadcrumbs {
-      flex: 1; /* Allow breadcrumbs to take available space */
+      flex: 1;
       min-width: 0;
 
       .breadcrumb-item .breadcrumb-text {
-        font-size: 16px; /* Smaller breadcrumb text */
-        max-width: none; /* Remove max-width to use available space */
+        font-size: 16px;
+        max-width: none;
       }
     }
 
     .navbar-actions {
-      gap: 8px; /* Reduce gap between actions */
+      gap: 8px;
 
       .avatar-button {
-        padding: 6px 8px; /* Reduce padding */
+        padding: 6px 8px;
         gap: 6px;
       }
 
       .notification-button {
-        padding: 6px; /* Reduce padding */
+        padding: 6px;
       }
     }
 
     .user-name {
-      display: none; /* Hide user name on mobile */
+      display: none;
     }
   }
 
   @media (max-width: 640px) {
-    padding: 0 8px; /* Further reduce padding */
-    height: 56px; /* Slightly reduce height on small screens */
+    padding: 0 8px;
+    height: 56px;
 
     .navbar-container {
       padding: 0 2px;
@@ -267,13 +309,13 @@
 
     .navbar-breadcrumbs {
       .breadcrumb-item .breadcrumb-text {
-        font-size: 14px; /* Smaller text for very small screens */
-        max-width: 150px; /* Add back max-width for very small screens */
+        font-size: 14px;
+        max-width: 150px;
       }
     }
 
     .navbar-actions {
-      gap: 4px; /* Minimal gap */
+      gap: 4px;
 
       .avatar-button {
         padding: 4px 6px;
@@ -290,7 +332,6 @@
     }
   }
 
-  /* Extra small screens */
   @media (max-width: 480px) {
     .navbar-breadcrumbs {
       .breadcrumb-item .breadcrumb-text {
@@ -301,7 +342,7 @@
 
     .navbar-actions {
       .avatar-button .dropdown-icon {
-        display: none; /* Hide dropdown icon on very small screens */
+        display: none;
       }
 
       .avatar-button {
@@ -323,9 +364,9 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  padding: 4px; /* Add padding */
+  padding: 4px;
   border-radius: 4px;
-  flex-shrink: 0; /* Don't let back button shrink */
+  flex-shrink: 0;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);
@@ -336,10 +377,10 @@
   }
 
   @media (max-width: 640px) {
-    padding: 2px; /* Smaller on mobile */
+    padding: 2px;
   }
 
   @media (max-width: 480px) {
-    padding: 1px; /* Even smaller on very small screens */
+    padding: 1px;
   }
 }

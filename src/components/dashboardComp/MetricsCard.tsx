@@ -8,6 +8,7 @@ export interface MetricsCardProps {
   value: string;
   icon: React.ElementType;
   color: string;
+  onClick?: () => void;
 }
 
 const MetricsCard: React.FC<MetricsCardProps> = ({
@@ -15,11 +16,16 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
   value,
   icon,
   color,
+  onClick,
 }) => {
   const isLoading = value === "loading";
 
   return (
-    <div className="metrics-card">
+    <div
+      className="metrics-card"
+      onClick={onClick}
+      style={{ cursor: onClick ? "pointer" : "default" }}
+    >
       <div className="metrics-card__header">
         <div className="metrics-card__icon" style={{ color }}>
           {React.createElement(icon, { size: 24 })}

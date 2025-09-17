@@ -49,9 +49,13 @@ const ProfilePage: React.FC = () => {
 
   const handleBusinessNameSave = () => {
     setShowEditBusinessName(false);
-
     setOnboardingStep("services");
     setShowUpdateServices(true);
+  };
+
+  const handleServicesComplete = () => {
+    setShowUpdateServices(false);
+    setOnboardingStep("completed");
   };
 
   const profileMenuItems = [
@@ -160,6 +164,7 @@ const ProfilePage: React.FC = () => {
             setShowUpdateServices(false);
             setOnboardingStep("completed");
           }}
+          onSave={handleServicesComplete}
           onGoBack={() => {
             setShowUpdateServices(false);
             setOnboardingStep("businessName");

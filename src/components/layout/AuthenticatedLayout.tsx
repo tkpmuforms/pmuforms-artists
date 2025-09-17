@@ -1,9 +1,9 @@
 "use client";
 
 import type React from "react";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState, useRef } from "react";
 import "./authenticatedLayout.scss";
-import Sidebar from "./sidebar/Sidebar";
+import Sidebar, { type SidebarRef } from "./sidebar/Sidebar";
 import AuthenticatedNavbar from "./navbar/AuthenticatedNavbar";
 
 interface AuthenticatedLayoutProps {
@@ -23,6 +23,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
   onAvatarClick,
 }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const sidebarRef = useRef<SidebarRef>(null);
 
   useEffect(() => {
     const handleSidebarToggle = () => {
@@ -47,19 +48,24 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
     return () => observer.disconnect();
   }, []);
 
+  const handleMobileMenuToggle = () => {
+    sidebarRef.current?.toggleMobileMenu();
+  };
+
   return (
     <div
       className={`authenticated-layout ${
         isSidebarCollapsed ? "authenticated-layout--sidebar-collapsed" : ""
       }`}
     >
-      <Sidebar />
+      <Sidebar ref={sidebarRef} />
       <div className="authenticated-layout__content">
         <AuthenticatedNavbar
           breadcrumbs={breadcrumbs}
           onSearch={onSearch}
           onNotificationClick={onNotificationClick}
           onAvatarClick={onAvatarClick}
+          onMobileMenuToggle={handleMobileMenuToggle}
         />
         <main className="authenticated-layout__main">{children}</main>
       </div>
