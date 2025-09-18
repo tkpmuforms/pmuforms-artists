@@ -66,7 +66,7 @@ const FormsPage: React.FC = () => {
           </div>
           <button
             className="forms-page__create-btn"
-            onClick={() => {}}
+            onClick={() => setShowAddMoreServicesModal(true)}
           >
             <Plus size={16} />
             Unlock More Forms
@@ -110,7 +110,7 @@ const FormsPage: React.FC = () => {
                 onClick={() => setShowAddMoreServicesModal(true)}
               >
                 <Plus size={16} />
-                Create a New{" "}
+                Unlock Your Forms
                 {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Form
               </button>
             </div>

@@ -64,7 +64,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
           breadcrumbs={breadcrumbs}
           onSearch={onSearch}
           onNotificationClick={onNotificationClick}
-          onAvatarClick={onAvatarClick}
+          // onAvatarClick={onAvatarClick}
           onMobileMenuToggle={handleMobileMenuToggle}
         />
         <main className="authenticated-layout__main">{children}</main>

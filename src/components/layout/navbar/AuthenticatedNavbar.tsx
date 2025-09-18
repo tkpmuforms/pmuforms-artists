@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import "./AuthenticatedNavbar.scss";
-import useAuth from "../../../context/useAuth";
-import { Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import "./AuthenticatedNavbar.scss";
 
 interface AuthenticatedNavbarProps {
   breadcrumbs?: string[];
   onSearch?: (query: string) => void;
   onNotificationClick?: () => void;
-  onAvatarClick?: () => void;
   onMobileMenuToggle?: () => void;
 }
 
@@ -16,11 +13,11 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
   breadcrumbs = [],
   onSearch,
   onNotificationClick,
-  onAvatarClick,
+
   onMobileMenuToggle,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { user } = useAuth();
+
   const navigate = useNavigate();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +141,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
             </svg>
           </button>
 
-          <button
+          {/* <button
             className="avatar-button"
             onClick={onAvatarClick}
             aria-label="User menu"
@@ -172,7 +169,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+          </button> */}
         </div>
       </div>
     </nav>
