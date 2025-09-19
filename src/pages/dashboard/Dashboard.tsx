@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
       onClick: () => setShowAddClient(true),
     },
     {
-      title: "Create Form",
+      title: "Manage Forms",
       icon: CreateNewFormIcon,
       onClick: () => navigate("/forms"),
     },
@@ -333,7 +333,7 @@ const Dashboard: React.FC = () => {
 
         <section className="dashboard__appointments">
           <div className="dashboard__appointments-header">
-            <h2 className="dashboard__section-title">NEXT APPOINTMENT</h2>
+            <h2 className="dashboard__section-title">RECENT APPOINTMENTS</h2>
             <button className="dashboard__view-all-btn">
               View all <ChevronDown size={16} />
             </button>
@@ -353,6 +353,19 @@ const Dashboard: React.FC = () => {
       {renderHeader()}
 
       <div className="dashboard__content">
+        <section className="dashboard__quick-actions">
+          <h2 className="dashboard__section-title">QUICK ACTIONS</h2>
+          <div className="dashboard__actions-grid">
+            {quickActions.map((action, index) => (
+              <QuickActionCard
+                key={index}
+                {...action}
+                onClick={action.onClick}
+              />
+            ))}
+          </div>
+        </section>
+
         <section className="dashboard__metrics">
           <div className="dashboard__metrics-header">
             <h2 className="dashboard__section-title">KEY METRICS</h2>
@@ -371,22 +384,9 @@ const Dashboard: React.FC = () => {
           </div>
         </section>
 
-        <section className="dashboard__quick-actions">
-          <h2 className="dashboard__section-title">QUICK ACTIONS</h2>
-          <div className="dashboard__actions-grid">
-            {quickActions.map((action, index) => (
-              <QuickActionCard
-                key={index}
-                {...action}
-                onClick={action.onClick}
-              />
-            ))}
-          </div>
-        </section>
-
         <section className="dashboard__appointments">
           <div className="dashboard__appointments-header">
-            <h2 className="dashboard__section-title">NEXT APPOINTMENT</h2>
+            <h2 className="dashboard__section-title">RECENT APPOINTMENTS</h2>
             <button
               className="dashboard__view-all-btn"
               onClick={() => navigate("/appointments")}

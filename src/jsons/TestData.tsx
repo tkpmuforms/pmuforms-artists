@@ -6,7 +6,7 @@ export const quickActions = [
     onClick: (navigate: any) => navigate("/clients"),
   },
   {
-    title: "Create Form",
+    title: "Manage Forms",
     icon: "📋",
     color: "#f59e0b",
     onClick: (navigate: any) => navigate("/forms"),
