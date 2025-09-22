@@ -7,6 +7,8 @@ export interface User {
   documentPath?: string;
   documentId?: string;
   userId?: string;
+  address?: string;
+  website?: string;
   email?: string;
   businessName?: string;
   businessUri?: string;
@@ -19,10 +21,8 @@ export interface User {
   __v?: number;
   services?: Service[];
   lastLoggedIn?: Date | null;
-  info?: {
-    avatar_url?: string;
-  };
   notifications?: number;
+  signature_url?: string;
 }
 
 export interface Service {

@@ -44,6 +44,15 @@ const AllAppointments = lazy(
   () => import("../pages/appointments/Appointment.tsx")
 );
 
+const EditProfilePage = lazy(
+  () => import("../pages/profile/edit-profile/EditProfilePage.tsx")
+);
+
+const BusinessInformationPage = lazy(
+  () =>
+    import("../pages/profile/business-information/BusinessInformationPage.tsx")
+);
+
 interface RouteProps {
   path: string;
   element: ReactNode;
@@ -128,6 +137,16 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/profile",
     element: <Profile />,
     breadcrumbs: ["Profile"],
+  },
+  {
+    path: "/profile/edit",
+    element: <EditProfilePage />,
+    breadcrumbs: ["Profile", "Edit Profile"],
+  },
+  {
+    path: "/profile/business-information",
+    element: <BusinessInformationPage />,
+    breadcrumbs: ["Profile", "Business Information"],
   },
   {
     path: "/profile/integrations",

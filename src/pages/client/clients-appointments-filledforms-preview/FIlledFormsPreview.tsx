@@ -6,6 +6,7 @@ import useAuth from "../../../context/useAuth";
 import {
   getFilledFormByAppointmentAndTemplate,
   getFormById,
+  getAppointmentById,
 } from "../../../services/artistServices";
 import "./FIlledFormsPreview.scss";
 import RenderFilledFormFields from "../../../components/clientsComp/filled-forms/RenderformsPreview";
@@ -30,19 +31,29 @@ const FilledFormsPreview = () => {
   const [form, setForm] = useState<Form | null>(null);
   const [filledData, setFilledData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        const [formResponse, filledResponse, appointmentResponse] =
+          await Promise.all([
+            getFormById(templateId || ""),
+            getFilledFormByAppointmentAndTemplate(
+              appointmentId || "",
+              templateId || ""
+            ),
+            getAppointmentById(appointmentId || ""),
+          ]);
 
-        const [formResponse, filledResponse] = await Promise.all([
-          getFormById(templateId || ""),
-          getFilledFormByAppointmentAndTemplate(
-            appointmentId || "",
-            templateId || ""
-          ),
-        ]);
+        if (appointmentResponse?.data?.appointment) {
+          const appointment = appointmentResponse.data.appointment;
+          if (appointment.signed === true && appointment.signature_url) {
+            console.log("Appointment is signed");
+            setSignatureUrl(appointment.signature_url);
+          }
+        }
 
         if (formResponse?.data?.form) {
           const formData = formResponse.data.form;
@@ -93,6 +104,18 @@ const FilledFormsPreview = () => {
     const formContent =
       document.querySelector(".form-content")?.innerHTML || "";
 
+    // Signature HTML section that will be added if there's a signature URL
+    const signatureSection = signatureUrl
+      ? `
+      <div class="signature-section">
+        <h3>Customer Signature</h3>
+        <div class="signature-container">
+          <img src="${signatureUrl}" alt="Customer Signature" style="max-width: 300px; max-height: 150px; border-bottom: 1px solid #999;" />
+        </div>
+      </div>
+    `
+      : "";
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -109,6 +132,8 @@ const FilledFormsPreview = () => {
             .preview-header { display: none; }
             label { display: block; margin-bottom: 15px; font-weight: 500; }
             input, textarea { margin-top: 8px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+            .signature-section { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; }
+            .signature-container { margin-top: 15px; }
             @media print {
               body { margin: 0; }
               .no-print { display: none !important; }
@@ -118,6 +143,7 @@ const FilledFormsPreview = () => {
         </head>
         <body>
           ${formContent}
+          ${signatureSection}
         </body>
       </html>
     `);

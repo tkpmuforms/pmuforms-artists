@@ -126,10 +126,10 @@ export const getMyCustomers = async (page?: number) => {
   return axiosInstance.get(`/api/customers/my-customers${params}`);
 };
 
-export const getCustomerById = async (customerId: string | number) =>
+export const getCustomerById = async (customerId: string) =>
   axiosInstance.get(`/api/customers/my-customers/${customerId}`);
 
-export const deleteCustomer = async (customerId: string | number) =>
+export const deleteCustomer = async (customerId: string) =>
   axiosInstance.delete(`/api/customers/my-customers/${customerId}`);
 
 export const addCustomerNote = async (
@@ -138,7 +138,7 @@ export const addCustomerNote = async (
 ) =>
   axiosInstance.post(`/api/customers/my-customers/${customerId}/notes`, data);
 
-export const getCustomerNotes = async (customerId: string | number) =>
+export const getCustomerNotes = async (customerId: string) =>
   axiosInstance.get(`/api/customers/my-customers/${customerId}/notes`);
 
 export const updateCustomerNote = async (
@@ -216,7 +216,7 @@ export const createReminder = async (data: {
 export const getAllReminders = async () =>
   axiosInstance.get("/api/reminders/all-reminders");
 
-export const getRemindersByCustomer = async (customerId: string | number) =>
+export const getRemindersByCustomer = async (customerId: string) =>
   axiosInstance.get(`/api/reminders/customer/${customerId}`);
 
 export const updateReminder = async (
@@ -246,3 +246,9 @@ export const updateMyProfile = async (data: {
 
 export const getMyProfile = async () =>
   axiosInstance.get("/api/artists/my-profile");
+
+export const getAppointmentById = async (appointmentId: string) =>
+  axiosInstance.get(`/api/appointments/${appointmentId}`);
+
+export const updateMySignature = async (data: { signature_url: string }) =>
+  axiosInstance.patch("/api/artists/update-signature", data);

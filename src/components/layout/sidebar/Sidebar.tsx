@@ -111,7 +111,7 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
               {!isCollapsed && (
                 <div className="sidebar__avatar">
                   <Avatar
-                    src={user?.info?.avatar_url ?? ""}
+                    src={user?.avatarUrl ?? ""}
                     alt={user?.businessName ?? ""}
                     sx={{ width: 40, height: 40 }}
                   />
