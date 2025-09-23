@@ -1,16 +1,24 @@
 "use client";
 
 import { Avatar, CircularProgress } from "@mui/material";
-import { X } from "lucide-react";
+import { Camera, ArrowLeft, Edit3 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import useAuth from "../../context/useAuth";
-import { getMyProfile, updateMyProfile } from "../../services/artistServices";
-import "./edit-profile-modal.scss";
-
-interface EditProfileModalProps {
-  onClose: () => void;
-}
+import "./edit-profile-page.scss";
+import useAuth from "../../../context/useAuth";
+import {
+  getAuthMe,
+  getMyProfile,
+  updateMyProfile,
+  updateMySignature,
+} from "../../../services/artistServices";
+import SignatureModal from "../../../components/clientsComp/signature/SignatureModal";
+import toast from "react-hot-toast";
+import imageCompression from "browser-image-compression";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../../firebase/firebase";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../../redux/auth";
 
 interface ProfileData {
   firstName: string;
@@ -29,8 +37,9 @@ interface ValidationErrors {
 const PROFILE_CACHE_KEY = "user_profile_cache";
 const CACHE_EXPIRY_TIME = 30 * 60 * 1000;
 
-const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
+const EditProfilePage: React.FC = () => {
   const { user } = useAuth();
+  const dispatch = useDispatch();
   const [profileData, setProfileData] = useState<ProfileData>({
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
@@ -45,6 +54,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {}
   );
+  const [showSignModal, setShowSignModal] = useState(false);
 
   const getCachedProfile = () => {
     try {
@@ -300,8 +310,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
       await updateMyProfile(updateData);
 
       clearProfileCache();
-
-      onClose();
     } catch (err: any) {
       console.error("Failed to update profile:", err);
       setError(
@@ -312,6 +320,44 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleSignatureSubmit = async (signatureDataUrl: string) => {
+    try {
+      const response = await fetch(signatureDataUrl);
+      const blob = await response.blob();
+
+      const timestamp = Date.now();
+      const fileName = `signature_${user?._id}_${timestamp}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      const options = {
+        maxSizeMB: 0.4,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+      };
+      const compressedFile = await imageCompression(file, options);
+      const storageRef = ref(storage, `signatures/artists/${user?._id}`);
+      const snapshot = await uploadBytes(storageRef, compressedFile);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+      await updateMySignature({ signature_url: downloadUrl });
+      getAuthUser();
+      setShowSignModal(false);
+      toast.success("Signature updated successfully");
+    } catch (error) {
+      console.error("Failed to update signature:", error);
+      toast.error("Failed to update signature. Please try again.");
+    }
+  };
+
+  const getAuthUser = () => {
+    getAuthMe()
+      .then((response) => {
+        dispatch(setUser(response?.data?.user));
+      })
+      .catch((error) => {
+        console.error("Error fetching auth user:", error);
+      });
   };
 
   const isFormValid = () => {
@@ -325,9 +371,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
 
   if (isLoading) {
     return (
-      <div className="edit-profile-modal">
-        <div className="edit-profile-modal__overlay" onClick={onClose} />
-        <div className="edit-profile-modal__content">
+      <div className="edit-profile-page">
+        <div className="edit-profile-page__container">
           <div
             style={{
               display: "flex",
@@ -344,25 +389,22 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
   }
 
   return (
-    <div className="edit-profile-modal">
-      <div className="edit-profile-modal__overlay" onClick={onClose} />
-      <div className="edit-profile-modal__content">
-        <button
-          className="edit-profile-modal__close"
-          onClick={onClose}
-          disabled={isSaving}
-        >
-          <X size={20} />
-        </button>
-
-        <div className="edit-profile-modal__header">
-          <h2>Edit Your Profile</h2>
-          <p>Enhance your profile information</p>
+    <div className="edit-profile-page">
+      <div className="edit-profile-page__container">
+        <div className="edit-profile-page__header">
+          <h1>Edit Your Profile</h1>
+          <button
+            className="signature-btn"
+            onClick={() => setShowSignModal(true)}
+          >
+            <Edit3 size={16} />
+            Add Signature
+          </button>
         </div>
 
         {error && (
           <div
-            className="edit-profile-modal__error"
+            className="edit-profile-page__error"
             style={{
               backgroundColor: "#fee",
               border: "1px solid #fcc",
@@ -376,12 +418,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
           </div>
         )}
 
-        <div className="edit-profile-modal__avatar">
+        <div className="edit-profile-page__avatar">
           <div className="avatar-section">
-            <label
-              htmlFor="avatar-upload"
-              style={{ cursor: "pointer", position: "relative" }}
-            >
+            <label htmlFor="avatar-upload" className="avatar-upload-label">
               {uploadingAvatar ? (
                 <div
                   style={{
@@ -393,7 +432,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
                   <Avatar
                     src={avatarUrl || ""}
                     alt="Profile Avatar"
-                    sx={{ width: 100, height: 100, opacity: 0.5 }}
+                    sx={{
+                      width: 100,
+                      height: 100,
+                      opacity: 0.5,
+                      backgroundColor: !avatarUrl ? "#8E2D8E1A" : undefined,
+                    }}
                   >
                     {user?.firstName && user?.lastName
                       ? (user.firstName + user.lastName)
@@ -419,17 +463,26 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
                   </div>
                 </div>
               ) : (
-                <Avatar
-                  src={avatarUrl || ""}
-                  alt="Profile Avatar"
-                  sx={{ width: 100, height: 100 }}
-                >
-                  {user?.businessName
-                    ? user.businessName.slice(0, 2).toUpperCase()
-                    : (profileData.firstName + profileData.lastName)
-                        .slice(0, 2)
-                        .toUpperCase()}
-                </Avatar>
+                <div className="avatar-container">
+                  <Avatar
+                    src={avatarUrl || ""}
+                    alt="Profile Avatar"
+                    sx={{
+                      width: 100,
+                      height: 100,
+                      backgroundColor: !avatarUrl ? "#8E2D8E1A" : undefined,
+                    }}
+                  >
+                    {user?.businessName
+                      ? user.businessName.slice(0, 2).toUpperCase()
+                      : (profileData.firstName + profileData.lastName)
+                          .slice(0, 2)
+                          .toUpperCase()}
+                  </Avatar>
+                  <div className="camera-icon">
+                    <Camera size={16} />
+                  </div>
+                </div>
               )}
             </label>
             <input
@@ -440,129 +493,168 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ onClose }) => {
               style={{ display: "none" }}
               disabled={uploadingAvatar || isSaving}
             />
+            <p className="upload-hint">Click to upload photo</p>
           </div>
         </div>
 
-        <div className="edit-profile-modal__form">
-          <div className="form-group">
-            <label htmlFor="firstName">First Name *</label>
-            <input
-              id="firstName"
-              type="text"
-              value={profileData.firstName}
-              onChange={(e) => handleInputChange("firstName", e.target.value)}
-              className={`form-input ${
-                validationErrors.firstName ? "error" : ""
-              }`}
-              required
-              disabled={isSaving}
-              style={{
-                borderColor: validationErrors.firstName ? "#f56565" : undefined,
-              }}
-            />
-            {validationErrors.firstName && (
-              <div
-                style={{ color: "#f56565", fontSize: "12px", marginTop: "4px" }}
-              >
-                {validationErrors.firstName}
-              </div>
-            )}
+        <div className="edit-profile-page__form">
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="firstName">First Name *</label>
+              <input
+                id="firstName"
+                type="text"
+                value={profileData.firstName}
+                onChange={(e) => handleInputChange("firstName", e.target.value)}
+                className={`form-input ${
+                  validationErrors.firstName ? "error" : ""
+                }`}
+                required
+                disabled={isSaving}
+                style={{
+                  borderColor: validationErrors.firstName
+                    ? "#f56565"
+                    : undefined,
+                }}
+              />
+              {validationErrors.firstName && (
+                <div
+                  style={{
+                    color: "#f56565",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}
+                >
+                  {validationErrors.firstName}
+                </div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="lastName">Last Name *</label>
+              <input
+                id="lastName"
+                type="text"
+                value={profileData.lastName}
+                onChange={(e) => handleInputChange("lastName", e.target.value)}
+                className={`form-input ${
+                  validationErrors.lastName ? "error" : ""
+                }`}
+                required
+                disabled={isSaving}
+                style={{
+                  borderColor: validationErrors.lastName
+                    ? "#f56565"
+                    : undefined,
+                }}
+              />
+              {validationErrors.lastName && (
+                <div
+                  style={{
+                    color: "#f56565",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}
+                >
+                  {validationErrors.lastName}
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="lastName">Last Name *</label>
-            <input
-              id="lastName"
-              type="text"
-              value={profileData.lastName}
-              onChange={(e) => handleInputChange("lastName", e.target.value)}
-              className={`form-input ${
-                validationErrors.lastName ? "error" : ""
-              }`}
-              required
-              disabled={isSaving}
-              style={{
-                borderColor: validationErrors.lastName ? "#f56565" : undefined,
-              }}
-            />
-            {validationErrors.lastName && (
-              <div
-                style={{ color: "#f56565", fontSize: "12px", marginTop: "4px" }}
-              >
-                {validationErrors.lastName}
-              </div>
-            )}
-          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="phoneNumber">Phone Number (USA)</label>
+              <input
+                id="phoneNumber"
+                type="tel"
+                value={profileData.phoneNumber}
+                onChange={(e) =>
+                  handleInputChange("phoneNumber", e.target.value)
+                }
+                className={`form-input ${
+                  validationErrors.phoneNumber ? "error" : ""
+                }`}
+                disabled={isSaving}
+                placeholder="(123) 456-7890"
+                style={{
+                  borderColor: validationErrors.phoneNumber
+                    ? "#f56565"
+                    : undefined,
+                }}
+              />
+              {validationErrors.phoneNumber && (
+                <div
+                  style={{
+                    color: "#f56565",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}
+                >
+                  {validationErrors.phoneNumber}
+                </div>
+              )}
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={profileData.email}
-              onChange={(e) => handleInputChange("email", e.target.value)}
-              className={`form-input ${validationErrors.email ? "error" : ""}`}
-              disabled={isSaving}
-              style={{
-                borderColor: validationErrors.email ? "#f56565" : undefined,
-              }}
-            />
-            {validationErrors.email && (
-              <div
-                style={{ color: "#f56565", fontSize: "12px", marginTop: "4px" }}
-              >
-                {validationErrors.email}
-              </div>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="phoneNumber">Phone Number (USA)</label>
-            <input
-              id="phoneNumber"
-              type="tel"
-              value={profileData.phoneNumber}
-              onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-              className={`form-input ${
-                validationErrors.phoneNumber ? "error" : ""
-              }`}
-              disabled={isSaving}
-              placeholder="(123) 456-7890"
-              style={{
-                borderColor: validationErrors.phoneNumber
-                  ? "#f56565"
-                  : undefined,
-              }}
-            />
-            {validationErrors.phoneNumber && (
-              <div
-                style={{ color: "#f56565", fontSize: "12px", marginTop: "4px" }}
-              >
-                {validationErrors.phoneNumber}
-              </div>
-            )}
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={profileData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                className={`form-input ${
+                  validationErrors.email ? "error" : ""
+                }`}
+                disabled={isSaving}
+                style={{
+                  borderColor: validationErrors.email ? "#f56565" : undefined,
+                }}
+              />
+              {validationErrors.email && (
+                <div
+                  style={{
+                    color: "#f56565",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  }}
+                >
+                  {validationErrors.email}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        <button
-          className="edit-profile-modal__save"
-          onClick={handleSaveProfile}
-          disabled={!isFormValid() || isSaving}
-          style={{
-            opacity: !isFormValid() || isSaving ? 0.6 : 1,
-            cursor: !isFormValid() || isSaving ? "not-allowed" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-          }}
-        >
-          {isSaving && <CircularProgress size={16} sx={{ color: "white" }} />}
-          {isSaving ? "Saving..." : "Save Profile"}
-        </button>
+        <div className="edit-profile-page__save-container">
+          <button
+            className="edit-profile-page__save"
+            onClick={handleSaveProfile}
+            disabled={!isFormValid() || isSaving}
+            style={{
+              opacity: !isFormValid() || isSaving ? 0.6 : 1,
+              cursor: !isFormValid() || isSaving ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+            }}
+          >
+            {isSaving && <CircularProgress size={16} sx={{ color: "white" }} />}
+            {isSaving ? "Saving..." : "Save Profile"}
+          </button>
+        </div>
       </div>
+      {showSignModal && (
+        <SignatureModal
+          onClose={() => setShowSignModal(false)}
+          onSubmit={handleSignatureSubmit}
+          title="Add Your Signature"
+          existingSignature={user?.signature_url}
+        />
+      )}
     </div>
   );
 };
 
-export default EditProfileModal;
+export default EditProfilePage;

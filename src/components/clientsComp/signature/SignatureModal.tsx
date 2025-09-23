@@ -10,6 +10,7 @@ interface SignatureModalProps {
   onSubmit: (signatureDataUrl: string) => Promise<void>;
   title: string;
   isSubmitting?: boolean;
+  existingSignature?: string;
 }
 
 const SignatureModal: React.FC<SignatureModalProps> = ({
@@ -17,6 +18,7 @@ const SignatureModal: React.FC<SignatureModalProps> = ({
   onSubmit,
   title,
   isSubmitting = false,
+  existingSignature,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -39,7 +41,23 @@ const SignatureModal: React.FC<SignatureModalProps> = ({
 
     ctx.fillStyle = "#f8fafc";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }, []);
+
+    if (existingSignature) {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(
+          canvas.width / img.width,
+          canvas.height / img.height
+        );
+        const x = (canvas.width - img.width * scale) / 2;
+        const y = (canvas.height - img.height * scale) / 2;
+
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        setHasSignature(true);
+      };
+      img.src = existingSignature;
+    }
+  }, [existingSignature]);
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;

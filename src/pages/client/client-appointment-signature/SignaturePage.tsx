@@ -102,7 +102,10 @@ const SignFormsPage: React.FC = () => {
 
       const compressedFile = await imageCompression(file, options);
 
-      const storageRef = ref(storage, `signatures/${user?._id}/${fileName}`);
+      const storageRef = ref(
+        storage,
+        `6signatures/${user?._id}/${appointmentId}/${fileName}`
+      );
       const snapshot = await uploadBytes(storageRef, compressedFile);
       const downloadUrl = await getDownloadURL(snapshot.ref);
 
@@ -118,7 +121,6 @@ const SignFormsPage: React.FC = () => {
       setShowSignModal(false);
 
       toast.success("Signature submitted successfully");
-      console.log("Signature submitted successfully");
     } catch (error) {
       console.error("Error submitting signature:", error);
       setSubmitError("Failed to submit signature. Please try again.");

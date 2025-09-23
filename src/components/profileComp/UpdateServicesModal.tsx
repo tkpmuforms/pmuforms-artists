@@ -18,11 +18,13 @@ import { Service } from "../../redux/types";
 interface UpdateServicesModalProps {
   onClose: () => void;
   onGoBack: () => void;
+  noGoBack?: boolean;
 }
 
 const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
   onClose,
   onGoBack,
+  noGoBack = false,
 }) => {
   const { user } = useAuth();
   const [selectedServices, setSelectedServices] = useState<Service[]>([
@@ -131,13 +133,24 @@ const UpdateServicesModal: React.FC<UpdateServicesModalProps> = ({
             </div>
           )}
         </div>
+
         <div className="update-services-modal__actions">
-          <button className="update-services-modal__go-back" onClick={onGoBack}>
-            Go Back
-          </button>
+          {!noGoBack && (
+            <button
+              className="update-services-modal__go-back"
+              onClick={onGoBack}
+            >
+              Go Back
+            </button>
+          )}
           <button
             className="update-services-modal__save"
             onClick={handleSave}
+            style={{
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? "not-allowed" : "pointer",
+              // width: noGoBack ? "20%" : "auto",
+            }}
             disabled={loading}
           >
             Save Changes

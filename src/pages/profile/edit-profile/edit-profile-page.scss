@@ -1,0 +1,237 @@
+.edit-profile-page {
+  min-height: 90vh;
+  padding: 20px;
+  background: #f8fafc;
+
+  &__container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0;
+      text-align: left;
+    }
+
+    .signature-btn {
+      background: linear-gradient(to right, #7b2a7b, #9449b4);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &:hover:not(:disabled) {
+        filter: brightness(0.9);
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+  }
+
+  &__avatar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+
+    .avatar-section {
+      text-align: center;
+
+      .avatar-upload-label {
+        cursor: pointer;
+        display: inline-block;
+      }
+
+      .avatar-container {
+        position: relative;
+        display: inline-block;
+
+        .camera-icon {
+          position: absolute;
+          bottom: 4px;
+          right: 4px;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: var(--pmu-primary);
+          color: white;
+          border: 3px solid white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+
+          &:hover {
+            filter: brightness(0.9);
+            transform: scale(1.05);
+          }
+        }
+      }
+
+      .upload-hint {
+        margin-top: 12px;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+  }
+
+  &__form {
+    margin-bottom: 40px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 44px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+  }
+
+  .form-input {
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #1e293b;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--pmu-primary);
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+      background: white;
+    }
+
+    &.error {
+      border-color: #f56565;
+      box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.1);
+    }
+  }
+
+  &__save-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &__save {
+    width: 50%;
+    background: linear-gradient(to right, #7b2a7b, #9449b4);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.9);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+
+  &__error {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    color: #c33;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px;
+
+    &__container {
+      padding: 20px;
+    }
+
+    &__header {
+      flex-direction: column;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 30px;
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .signature-btn {
+        align-self: flex-end;
+      }
+    }
+
+    &__avatar {
+      margin-bottom: 30px;
+    }
+
+    &__form {
+      margin-bottom: 30px;
+    }
+
+    .form-row {
+      margin-bottom: 20px;
+    }
+
+    .form-input {
+      padding: 12px 14px;
+      font-size: 16px;
+    }
+
+    &__save {
+      width: 80%;
+    }
+  }
+}

@@ -2,7 +2,8 @@
 
 import type React from "react";
 import { useState } from "react";
-import { X, Eye, EyeOff } from "lucide-react";
+import { X } from "lucide-react";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import "./change-password-modal.scss";
 
 interface ChangePasswordModalProps {
@@ -12,30 +13,26 @@ interface ChangePasswordModalProps {
 const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   onClose,
 }) => {
-  const [passwords, setPasswords] = useState({
-    old: "",
-    new: "",
-    confirm: "",
-  });
-  const [showPasswords, setShowPasswords] = useState({
-    old: false,
-    new: false,
-    confirm: false,
-  });
+  const [email, setEmail] = useState("");
+  const auth = getAuth();
 
-  const handlePasswordChange = (
-    field: keyof typeof passwords,
-    value: string
-  ) => {
-    setPasswords((prev) => ({ ...prev, [field]: value }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
   };
 
-  const togglePasswordVisibility = (field: keyof typeof showPasswords) => {
-    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
-  };
-
-  const handleSave = () => {
-    onClose();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert(`Reset link sent to: ${email}`);
+      onClose();
+    } catch (error) {
+      console.error(
+        "Error sending password reset email:",
+        (error as Error).message
+      );
+      alert("Failed to send reset link. Please try again.");
+    }
   };
 
   return (
@@ -45,86 +42,29 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         <button className="change-password-modal__close" onClick={onClose}>
           <X size={20} />
         </button>
-
         <h2>Change Password</h2>
-
-        <div className="change-password-modal__form">
+        <p className="subtext">
+          Provide us with your registered email so we can send you reset
+          instructions.
+        </p>
+        <form onSubmit={handleSubmit} className="change-password-modal__form">
           <div className="form-group">
-            <label htmlFor="oldPassword">Old Password</label>
-            <div className="input-wrapper">
-              <input
-                id="oldPassword"
-                type={showPasswords.old ? "text" : "password"}
-                value={passwords.old}
-                onChange={(e) => handlePasswordChange("old", e.target.value)}
-                className="form-input"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                className="input-icon"
-                onClick={() => togglePasswordVisibility("old")}
-                aria-label="Toggle password visibility"
-              >
-                {showPasswords.old ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
+            <label htmlFor="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="Enter registered email address"
+              required
+            />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="newPassword">New Password</label>
-            <div className="input-wrapper">
-              <input
-                id="newPassword"
-                type={showPasswords.new ? "text" : "password"}
-                value={passwords.new}
-                onChange={(e) => handlePasswordChange("new", e.target.value)}
-                className="form-input"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                className="input-icon"
-                onClick={() => togglePasswordVisibility("new")}
-                aria-label="Toggle password visibility"
-              >
-                {showPasswords.new ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm New Password</label>
-            <div className="input-wrapper">
-              <input
-                id="confirmPassword"
-                type={showPasswords.confirm ? "text" : "password"}
-                value={passwords.confirm}
-                onChange={(e) =>
-                  handlePasswordChange("confirm", e.target.value)
-                }
-                className="form-input"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                className="input-icon"
-                onClick={() => togglePasswordVisibility("confirm")}
-                aria-label="Toggle password visibility"
-              >
-                {showPasswords.confirm ? (
-                  <EyeOff size={16} />
-                ) : (
-                  <Eye size={16} />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <button className="change-password-modal__save" onClick={handleSave}>
-          Save Changes
-        </button>
+          <button type="submit" className="change-password-modal__save">
+            Send Reset Link
+          </button>
+        </form>
       </div>
     </div>
   );

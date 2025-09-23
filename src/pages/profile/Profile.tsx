@@ -12,12 +12,11 @@ import {
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import BusinessInformationModal from "../../components/profileComp/BusinessInformationModal";
 import ChangePasswordModal from "../../components/profileComp/ChangePasswordModal";
 import EditBusinessNameModal from "../../components/profileComp/EditBusinessNameModal";
-import EditProfileModal from "../../components/profileComp/EditProfileModal";
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
 import useAuth from "../../context/useAuth";
+import { getAuthMe, getMyProfile } from "../../services/artistServices";
 import "./profile.scss";
 
 interface LocationState {
@@ -25,16 +24,13 @@ interface LocationState {
 }
 
 const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as LocationState;
   const [showEditBusinessName, setShowEditBusinessName] = useState(false);
-  const [showBusinessInfo, setShowBusinessInfo] = useState(false);
   const [showUpdateServices, setShowUpdateServices] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const [showEditProfile, setShowEditProfile] = useState(false);
-
   const [isNewUser] = useState(locationState?.newUser || false);
   const [onboardingStep, setOnboardingStep] = useState<
     "businessName" | "services" | "completed"
@@ -46,6 +42,16 @@ const ProfilePage: React.FC = () => {
       setShowEditBusinessName(true);
     }
   }, [isNewUser]);
+  useEffect(() => {
+    getAuthMe().then((response) => {
+      console.log("Fetched auth user:", response?.data?.user);
+      // You can handle the response if needed
+    });
+    getMyProfile().then((response) => {
+      console.log("Fetched profile:", response?.data?.profile);
+      // You can handle the response if needed
+    });
+  }, []);
 
   const handleBusinessNameSave = () => {
     setShowEditBusinessName(false);
@@ -62,12 +68,17 @@ const ProfilePage: React.FC = () => {
     {
       icon: <Building2 size={10} />,
       title: "Business Information",
-      onClick: () => setShowBusinessInfo(true),
+      onClick: () => navigate("/profile/business-information"),
     },
     {
       icon: <Key size={10} />,
       title: "Change Password",
       onClick: () => setShowChangePassword(true),
+    },
+    {
+      icon: <FileText size={10} />,
+      title: "Payment & Subscriptions",
+      onClick: () => navigate("/profile/payment"),
     },
     {
       icon: <FileText size={10} />,
@@ -87,7 +98,7 @@ const ProfilePage: React.FC = () => {
     {
       icon: <LogOut size={10} />,
       title: "Log Out",
-      onClick: () => console.log("Log Out"),
+      onClick: () => logout(),
       variant: "danger" as const,
     },
   ];
@@ -110,7 +121,7 @@ const ProfilePage: React.FC = () => {
           <div className="profile-page__user">
             <div className="profile-page__avatar">
               <Avatar
-                src={user?.info?.avatar_url ?? ""}
+                src={user?.avatarUrl ?? ""}
                 alt={user?.businessName ?? ""}
                 sx={{ width: 60, height: 60 }}
               />
@@ -119,7 +130,7 @@ const ProfilePage: React.FC = () => {
               <h1>{user?.businessName}</h1>
               <button
                 className="profile-page__edit-btn"
-                onClick={() => setShowEditProfile(true)}
+                onClick={() => navigate("/profile/edit")}
               >
                 <Edit size={20} />
                 Edit Profile
@@ -180,36 +191,17 @@ const ProfilePage: React.FC = () => {
         />
       )}
 
-      {showBusinessInfo && (
-        <BusinessInformationModal
-          onClose={() => setShowBusinessInfo(false)}
-          onEditServices={() => {
-            setShowBusinessInfo(false);
-            setShowUpdateServices(true);
-          }}
-          onEditBusinessName={() => {
-            setShowBusinessInfo(false);
-            setShowEditBusinessName(true);
-          }}
-        />
-      )}
-
       {!isNewUser && showUpdateServices && (
         <UpdateServicesModal
           onClose={() => setShowUpdateServices(false)}
           onGoBack={() => {
             setShowUpdateServices(false);
-            setShowBusinessInfo(true);
           }}
         />
       )}
 
       {showChangePassword && (
         <ChangePasswordModal onClose={() => setShowChangePassword(false)} />
-      )}
-
-      {showEditProfile && (
-        <EditProfileModal onClose={() => setShowEditProfile(false)} />
       )}
     </div>
   );

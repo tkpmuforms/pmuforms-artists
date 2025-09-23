@@ -72,7 +72,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
               <input
                 id="firstName"
                 type="text"
-                placeholder="Enter client's first name"
+                placeholder="First Name"
                 value={formData.firstName}
                 onChange={(e) => handleInputChange("firstName", e.target.value)}
                 className="form-input"
@@ -83,7 +83,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
               <input
                 id="lastName"
                 type="text"
-                placeholder="Enter client's last name"
+                placeholder="Last Name"
                 value={formData.lastName}
                 onChange={(e) => handleInputChange("lastName", e.target.value)}
                 className="form-input"
@@ -97,7 +97,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
               <input
                 id="email"
                 type="email"
-                placeholder="Enter client's email address"
+                placeholder="Email Address"
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 className="form-input"
@@ -108,7 +108,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
               <input
                 id="phone"
                 type="tel"
-                placeholder="Enter Client's phone number"
+                placeholder="Phone number"
                 value={formData.phone}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
                 className="form-input"
