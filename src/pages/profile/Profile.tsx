@@ -24,7 +24,7 @@ interface LocationState {
 }
 
 const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as LocationState;
@@ -98,7 +98,7 @@ const ProfilePage: React.FC = () => {
     {
       icon: <LogOut size={10} />,
       title: "Log Out",
-      onClick: () => console.log("Log Out"),
+      onClick: () => logout(),
       variant: "danger" as const,
     },
   ];

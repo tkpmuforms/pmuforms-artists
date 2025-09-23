@@ -2,14 +2,15 @@
 
 import type React from "react";
 import { useState } from "react";
-import { X, Upload } from "lucide-react";
-import "./edit-business-name-modal.scss";
+import { X } from "lucide-react";
+import "./edit-business-information-modal.scss";
 import useAuth from "../../context/useAuth";
 import toast from "react-hot-toast";
 import { getAuthMe, updateBusinessName } from "../../services/artistServices";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/auth";
 import { Avatar } from "@mui/material";
+import { EditBusinessLogoSvg } from "../../assets/svgs/ProfileSvg";
 
 interface EditBusinessInformationModalProps {
   onClose: () => void;
@@ -38,6 +39,10 @@ const EditBusinessInformationModal: React.FC<
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleEditLogoClick = () => {
+    document.getElementById("logo-upload")?.click();
   };
 
   const handleSave = () => {
@@ -76,43 +81,59 @@ const EditBusinessInformationModal: React.FC<
   };
 
   return (
-    <div className="edit-business-name-modal">
-      <div className="edit-business-name-modal__overlay" onClick={onClose} />
-      <div className="edit-business-name-modal__content">
-        <button className="edit-business-name-modal__close" onClick={onClose}>
+    <div className="edit-business-information-modal">
+      <div
+        className="edit-business-information-modal__overlay"
+        onClick={onClose}
+      />
+      <div className="edit-business-information-modal__content">
+        <button
+          className="edit-business-information-modal__close"
+          onClick={onClose}
+        >
           <X size={20} />
         </button>
 
         <h2>Edit Business Information</h2>
 
-        <div className="edit-business-name-modal__form">
+        <div className="edit-business-information-modal__form">
           <div className="logo-upload-section">
             <div className="logo-preview">
-              <Avatar
-                src={logoPreview}
-                alt="Business Logo"
-                sx={{
-                  width: 80,
-                  height: 80,
-                  backgroundColor: !logoPreview ? "#8E2D8E1A" : undefined,
-                }}
-              >
-                <Upload size={24} />
-              </Avatar>
+              <div className="logo-container">
+                <Avatar
+                  src={logoPreview}
+                  alt="Business Logo"
+                  sx={{
+                    width: 100,
+                    height: 100,
+                    backgroundColor: !logoPreview ? "#8E2D8E1A" : undefined,
+                  }}
+                >
+                  <p
+                    style={{
+                      color: "#7D7D7D",
+                      fontWeight: "20px",
+                    }}
+                  >
+                    Upload Business Logo
+                  </p>
+                </Avatar>
+                <button
+                  className="edit-logo-btn"
+                  onClick={handleEditLogoClick}
+                  type="button"
+                >
+                  <EditBusinessLogoSvg />
+                </button>
+              </div>
             </div>
-            <div className="logo-upload-text">
-              <p>Upload Business Logo</p>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-                className="logo-input"
-                id="logo-upload"
-              />
-              <label htmlFor="logo-upload" className="upload-label">
-                Choose File
-              </label>
-            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleLogoChange}
+              className="logo-input"
+              id="logo-upload"
+            />
           </div>
 
           <div className="form-row">
@@ -124,7 +145,7 @@ const EditBusinessInformationModal: React.FC<
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
                 className="form-input"
-                placeholder="Enter business name"
+                placeholder="Business Name"
               />
             </div>
 
@@ -136,7 +157,7 @@ const EditBusinessInformationModal: React.FC<
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 className="form-input"
-                placeholder="Enter phone number"
+                placeholder="Business Phone Number"
               />
             </div>
           </div>
@@ -150,7 +171,7 @@ const EditBusinessInformationModal: React.FC<
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 className="form-input"
-                placeholder="Enter business address"
+                placeholder="Business Address"
               />
             </div>
 
@@ -162,13 +183,16 @@ const EditBusinessInformationModal: React.FC<
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 className="form-input"
-                placeholder="Enter website URL"
+                placeholder="Business Website"
               />
             </div>
           </div>
         </div>
 
-        <button className="edit-business-name-modal__save" onClick={handleSave}>
+        <button
+          className="edit-business-information-modal__save"
+          onClick={handleSave}
+        >
           Save Changes
         </button>
       </div>

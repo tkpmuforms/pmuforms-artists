@@ -1,0 +1,237 @@
+.edit-business-information-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  &__content {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 1000px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 0 32px 0;
+      text-align: center;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .logo-upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 8px;
+
+    .logo-preview {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+
+      .logo-container {
+        position: relative;
+
+        .edit-logo-btn {
+          position: absolute;
+          bottom: -4px;
+          right: -4px;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            filter: brightness(0.9);
+            transform: scale(1.1);
+          }
+        }
+      }
+
+      p {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin: 0;
+        text-align: center;
+      }
+    }
+
+    .logo-input {
+      display: none;
+    }
+  }
+
+  .form-row {
+    display: flex;
+    gap: 20px;
+
+    .form-group {
+      flex: 1;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 16px;
+      color: #1e293b;
+      background: #fff;
+      transition: all 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #8e2d8e;
+        box-shadow: 0 0 0 3px rgba(142, 45, 142, 0.1);
+      }
+
+      &::placeholder {
+        color: #9ca3af;
+      }
+    }
+  }
+
+  &__save {
+    background: linear-gradient(to right, #8e2d8e, #a654cd);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 16px auto 0;
+    width: 50%;
+    display: block;
+
+    &:hover {
+      filter: brightness(0.9);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    &__content {
+      padding: 24px;
+      margin: 20px;
+      width: calc(100% - 40px);
+
+      h2 {
+        font-size: 24px;
+        margin-bottom: 24px;
+      }
+    }
+
+    .form-row {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .logo-upload-section {
+      padding: 20px;
+    }
+
+    &__form {
+      gap: 20px;
+    }
+
+    &__save {
+      width: 70%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    &__content {
+      padding: 20px;
+      margin: 10px;
+      width: calc(100% - 20px);
+    }
+
+    .logo-upload-section {
+      padding: 16px;
+    }
+
+    &__save {
+      padding: 12px 24px;
+      font-size: 14px;
+      width: 100%;
+    }
+  }
+}

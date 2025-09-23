@@ -1,6 +1,9 @@
 import { Calendar, Clock } from "lucide-react";
 import type React from "react";
-import { AppointmentSvg } from "../../../assets/svgs/ClientsSvg";
+import {
+  AppointmentSvg,
+  AppointmentTimeFormSvg,
+} from "../../../assets/svgs/ClientsSvg";
 import { FilledForm } from "../../../redux/types";
 import { formatAppointmentTime } from "../../../utils/utils";
 import "./client-forms-card.scss";
@@ -28,32 +31,36 @@ const ClientFormsCard: React.FC<ClientFormsCardProps> = ({
           <div className="form-content">
             <h3>{form.title}</h3>
           </div>
-          <div className="status-badge">
-            <span className={`badge ${form.status.toLowerCase()}`}>
-              {form.status === "completed" ? "Forms Completed" : form.status}
-            </span>
-          </div>
         </div>
+      </div>
+
+      <div className="status-section">
+        <div className="divider"></div>
+        <div className="status-badge">
+          <span className={`badge ${form.status.toLowerCase()}`}>
+            {form.status === "completed" ? "Forms Completed" : form.status}
+          </span>
+        </div>
+        <div className="divider"></div>
       </div>
 
       <div className="form-details">
         <div className="detail-row">
           <div className="detail-item">
             <div className="detail-header">
-              <Calendar size={16} />
               <span className="detail-label">Appointment Date</span>
             </div>
             <span className="detail-value">
-              {formatAppointmentTime(form.createdAt)}
+              <AppointmentTimeFormSvg /> {formatAppointmentTime(form.createdAt)}
             </span>
           </div>
 
           <div className="detail-item">
             <div className="detail-header">
-              <Clock size={16} />
               <span className="detail-label">Form Filled</span>
             </div>
             <span className="detail-value">
+              <AppointmentTimeFormSvg />
               {formatAppointmentTime(form.updatedAt)}
             </span>
           </div>

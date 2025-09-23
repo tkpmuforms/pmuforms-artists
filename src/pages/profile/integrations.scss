@@ -11,36 +11,6 @@
     padding: 16px 20px;
   }
 
-  &__header {
-    margin-bottom: 32px;
-
-    @media (max-width: 768px) {
-      margin-bottom: 24px;
-    }
-  }
-
-  &__back-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    color: #64748b;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 8px 0;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: #334155;
-    }
-
-    @media (max-width: 768px) {
-      font-size: 15px;
-    }
-  }
-
   &__content {
     max-width: 1200px;
     margin: 0 auto;

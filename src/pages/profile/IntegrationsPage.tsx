@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowLeft } from "lucide-react";
-
-import "./integrations.scss";
 import ConnectIntegrationModal from "../../components/profileComp/integrationsComp/ConnectIntegrationModal";
+import "./integrations.scss";
 
 interface Integration {
   id: string;
@@ -64,13 +62,6 @@ const IntegrationsPage: React.FC = () => {
 
   return (
     <div className="integrations-page">
-      <div className="integrations-page__header">
-        <button className="integrations-page__back-btn">
-          <ArrowLeft size={20} />
-          Profile
-        </button>
-      </div>
-
       <div className="integrations-page__content">
         <h1 className="integrations-page__title">Integrations</h1>
 

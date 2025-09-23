@@ -9,6 +9,7 @@ import { Service } from "../../../redux/types";
 import EditBusinessNameModal from "../../../components/profileComp/EditBusinessNameModal";
 import UpdateServicesModal from "../../../components/profileComp/UpdateServicesModal";
 import { Avatar } from "@mui/material";
+import EditBusinessInformationModal from "../../../components/profileComp/EditBusinessInformationModal";
 
 const BusinessInformationPage: React.FC = () => {
   const [showEditBusinessName, setShowEditBusinessName] = useState(false);
@@ -110,7 +111,7 @@ const BusinessInformationPage: React.FC = () => {
       </div>
 
       {showEditBusinessName && (
-        <EditBusinessNameModal
+        <EditBusinessInformationModal
           onClose={handleCloseEditBusinessName}
           onSave={handleSaveBusinessName}
         />
