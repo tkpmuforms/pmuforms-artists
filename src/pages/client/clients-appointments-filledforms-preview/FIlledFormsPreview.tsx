@@ -94,23 +94,77 @@ const FilledFormsPreview = () => {
     }
   }, [appointmentId, templateId, user?.businessName]);
 
-  const generatePDFWithPrint = () => {
+  const convertImageToBase64 = (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        const dataURL = canvas.toDataURL("image/png");
+        resolve(dataURL);
+      };
+      img.onerror = () => {
+        console.error("Failed to load image:", url);
+        resolve(url);
+      };
+      img.src = url;
+    });
+  };
+
+  const generatePDFWithPrint = async () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
       toast.error("Please allow pop-ups to generate PDF");
       return;
     }
 
+    console.log("Generating PDF...");
+    console.log("Customer Signature URL:", signatureUrl);
+    console.log("Artist Signature URL:", user?.signature_url);
+
     const formContent =
       document.querySelector(".form-content")?.innerHTML || "";
 
-    // Signature HTML section that will be added if there's a signature URL
+    let customerSignatureBase64 = signatureUrl;
+    let artistSignatureBase64 = user?.signature_url;
+
+    try {
+      if (signatureUrl) {
+        customerSignatureBase64 = await convertImageToBase64(signatureUrl);
+      }
+      if (user?.signature_url) {
+        artistSignatureBase64 = await convertImageToBase64(user.signature_url);
+      }
+    } catch (error) {
+      console.error("Error converting images to base64:", error);
+    }
+
     const signatureSection = signatureUrl
       ? `
       <div class="signature-section">
-        <h3>Customer Signature</h3>
-        <div class="signature-container">
-          <img src="${signatureUrl}" alt="Customer Signature" style="max-width: 300px; max-height: 150px; border-bottom: 1px solid #999;" />
+        <div class="signatures-container">
+          <div class="signature-item">
+            <h4>Customer Signature</h4>
+            <div class="signature-container">
+              <img src="${customerSignatureBase64}" alt="Customer Signature" style="max-width: 300px; max-height: 150px; border-bottom: 1px solid #999; display: block;" />
+            </div>
+          </div>
+          ${
+            user?.signature_url
+              ? `
+          <div class="signature-item">
+            <h4>Artist Signature</h4>
+            <div class="signature-container">
+              <img src="${artistSignatureBase64}" alt="Artist Signature" style="max-width: 300px; max-height: 150px; border-bottom: 1px solid #999; display: block;" />
+            </div>
+          </div>
+          `
+              : ""
+          }
         </div>
       </div>
     `
@@ -125,6 +179,7 @@ const FilledFormsPreview = () => {
             body { font-family: Arial, sans-serif; margin: 20px; }
             h2 { color: #333; margin-bottom: 20px; }
             h3 { color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px; }
+            h4 { color: #555; margin: 20px 0 10px 0; font-size: 16px; }
             .preview-info { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
             .preview-info h5 { color: #FF9500; margin: 0 0 5px 0; }
             .preview-info p { color: #FF9500; margin: 0; font-size: 14px; }
@@ -133,11 +188,15 @@ const FilledFormsPreview = () => {
             label { display: block; margin-bottom: 15px; font-weight: 500; }
             input, textarea { margin-top: 8px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
             .signature-section { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; }
-            .signature-container { margin-top: 15px; }
+            .signatures-container { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 15px; }
+            .signature-item { flex: 1; min-width: 250px; }
+            .signature-container { margin-top: 10px; }
+            img { max-width: 100%; height: auto; }
             @media print {
               body { margin: 0; }
               .no-print { display: none !important; }
               .preview-header { display: none !important; }
+              .signatures-container { flex-direction: column; gap: 20px; }
             }
           </style>
         </head>
@@ -153,7 +212,7 @@ const FilledFormsPreview = () => {
     setTimeout(() => {
       printWindow.print();
       printWindow.close();
-    }, 500);
+    }, 1000);
   };
 
   if (loading) {
