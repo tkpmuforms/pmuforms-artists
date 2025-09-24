@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -19,9 +19,16 @@ const FormsPage: React.FC = () => {
     useState(false);
   const [forms, setForms] = useState<Form[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
-  const filteredForms = forms.filter((form) => form.type === activeTab);
+  const filteredForms = forms.filter((form) => {
+    const matchesTab = form.type === activeTab;
+    const matchesSearch =
+      searchTerm === "" ||
+      form.title?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesTab && matchesSearch;
+  });
 
   useEffect(() => {
     const fetchForms = async () => {
@@ -73,6 +80,18 @@ const FormsPage: React.FC = () => {
           </button>
         </div>
 
+        <div className="forms-page__search">
+          <div className="forms-page__search-input">
+            <Search size={20} />
+            <input
+              type="text"
+              placeholder="Search forms by title..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
         <div className="forms-page__tabs">
           <button
             className={`forms-page__tab ${
@@ -104,7 +123,10 @@ const FormsPage: React.FC = () => {
             ))
           ) : (
             <div className="forms-page__empty">
-              <p>No {activeTab} forms found.</p>
+              <p>
+                No {activeTab} forms found
+                {searchTerm ? ` matching "${searchTerm}"` : ""}.
+              </p>
               <button
                 className="forms-page__create-btn"
                 onClick={() => setShowAddMoreServicesModal(true)}
