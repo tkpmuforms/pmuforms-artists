@@ -108,7 +108,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
               </svg>
               <input
                 type="text"
-                placeholder="Search name, email, phone number..."
+                placeholder="Find a client by name, email or phone"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="search-input"
