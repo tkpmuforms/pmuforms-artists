@@ -28,7 +28,18 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
     : "Not completed yet";
 
   return (
-    <div className="appointment-card">
+    <div
+      className="appointment-card"
+      onClick={() => onViewForms(appointment.id)}
+      role="button"
+      style={{ cursor: "pointer" }}
+      tabIndex={0}
+      onKeyPress={(e) => {
+        if (e.key === "Enter") {
+          onViewForms(appointment.id);
+        }
+      }}
+    >
       <div className="card-header">
         <div className="service-info">
           <div className="service-icon">

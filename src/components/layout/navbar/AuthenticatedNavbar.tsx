@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AuthenticatedNavbar.scss";
+import ClientSearchModal from "../../clientsComp/ClientSearchModal";
 
 interface AuthenticatedNavbarProps {
   breadcrumbs?: string[];
@@ -17,7 +18,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
   onMobileMenuToggle,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [showSearch, setShowSearch] = useState(false);
   const navigate = useNavigate();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,6 +29,10 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch?.(searchQuery);
+  };
+
+  const handleSearchFocus = () => {
+    setShowSearch(true);
   };
 
   const handleBackClick = () => {
@@ -108,8 +113,9 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
               </svg>
               <input
                 type="text"
-                placeholder="Search name, email, phone number..."
+                placeholder="Find a client by name, email or phone"
                 value={searchQuery}
+                onFocus={handleSearchFocus}
                 onChange={handleSearchChange}
                 className="search-input"
               />
@@ -140,6 +146,9 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
               />
             </svg>
           </button>
+          {showSearch && (
+            <ClientSearchModal onClose={() => setShowSearch(false)} />
+          )}
 
           {/* <button
             className="avatar-button"

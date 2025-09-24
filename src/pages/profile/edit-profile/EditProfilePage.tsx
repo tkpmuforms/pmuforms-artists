@@ -606,7 +606,7 @@ const EditProfilePage: React.FC = () => {
                 className={`form-input ${
                   validationErrors.email ? "error" : ""
                 }`}
-                disabled={isSaving}
+                disabled={true}
                 style={{
                   borderColor: validationErrors.email ? "#f56565" : undefined,
                 }}
