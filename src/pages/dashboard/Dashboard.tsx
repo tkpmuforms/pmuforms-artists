@@ -27,6 +27,7 @@ import useAuth from "../../context/useAuth";
 import { Appointment } from "../../redux/types";
 import {
   getArtistAppointments,
+  getArtistAppointmentsPaginated,
   getArtistForms,
   getCustomerById,
   getMyMetrics,
@@ -43,7 +44,6 @@ interface Metrics {
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  console.log("User in Dashboard:", user);
   const navigate = useNavigate();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
@@ -141,7 +141,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchAppointmentsAndCustomers = async () => {
       try {
-        const appointmentsResponse = await getArtistAppointments();
+        const appointmentsResponse = await getArtistAppointmentsPaginated();
         const appointments = appointmentsResponse.data?.appointments || [];
         setAppointments(appointments);
 
