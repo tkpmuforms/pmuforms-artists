@@ -30,27 +30,20 @@ const NoteCard: React.FC<NoteCardProps> = ({
   onDeleteNote,
   formatDate,
 }) => {
-  const getDisplayDate = (note: Note, isUpdated: boolean = false) => {
-    if (
-      isUpdated &&
-      note.updatedAt &&
-      note.createdAt &&
-      note.updatedAt !== note.createdAt
-    ) {
-      return formatDate(note.updatedAt);
-    } else if (note.createdAt) {
-      return formatDate(note.createdAt);
-    } else {
-      return formatDate(note.date);
-    }
+  const getDisplayDate = (note: Note) => {
+    const isUpdated =
+      note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt;
+    return isUpdated
+      ? formatDate(note.updatedAt ?? note.date)
+      : note.createdAt
+      ? formatDate(note.createdAt ?? note.date)
+      : formatDate(note.date);
   };
 
   const getDateLabel = (note: Note) => {
-    if (note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt) {
-      return "Updated";
-    } else {
-      return "Created";
-    }
+    return note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt
+      ? "Updated"
+      : "Created";
   };
 
   return (

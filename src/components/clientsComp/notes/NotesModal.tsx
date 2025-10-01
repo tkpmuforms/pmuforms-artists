@@ -1,14 +1,16 @@
 "use client";
-import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { X, Upload, Trash2 } from "lucide-react";
 import type React from "react";
 import "./NotesModal.scss";
 
 interface NotesModalProps {
   onClose: () => void;
-  onSave: (content: string) => void;
+  onSave: (content: string, imageUrl?: string) => void;
   initialContent?: string;
   title: string;
+  onImageUpload?: (file: File) => Promise<string>;
+  isUploading?: boolean;
 }
 
 const NotesModal: React.FC<NotesModalProps> = ({
@@ -16,23 +18,46 @@ const NotesModal: React.FC<NotesModalProps> = ({
   onSave,
   initialContent = "",
   title,
+  onImageUpload,
+  isUploading = false,
 }) => {
   const [content, setContent] = useState(initialContent);
+  const [imageUrl, setImageUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setContent(initialContent);
   }, [initialContent]);
 
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file && onImageUpload) {
+      const url = await onImageUpload(file);
+      setImageUrl(url);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageUrl("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleSave = () => {
     if (content.trim()) {
-      onSave(content.trim());
+      onSave(content.trim(), imageUrl);
       setContent("");
+      setImageUrl("");
       onClose();
     }
   };
 
   const handleClose = () => {
     setContent("");
+    setImageUrl("");
     onClose();
   };
 
@@ -50,6 +75,53 @@ const NotesModal: React.FC<NotesModalProps> = ({
         </div>
 
         <div className="notes-modal__form">
+          {onImageUpload && (
+            <div className="form-group">
+              <label>Image Attachment (Optional)</label>
+              <div className="image-upload-section">
+                {imageUrl && (
+                  <div className="image-preview">
+                    <img
+                      src={imageUrl}
+                      alt="Note attachment"
+                      className="image-preview__img"
+                    />
+                    <button
+                      type="button"
+                      className="image-preview__remove"
+                      onClick={handleRemoveImage}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="image-upload-input"
+                  disabled={isUploading}
+                />
+                <button
+                  type="button"
+                  className="image-upload-btn"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                >
+                  {isUploading ? (
+                    <>Uploading...</>
+                  ) : (
+                    <>
+                      <Upload size={16} />
+                      {imageUrl ? "Change Image" : "Add Image"}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="form-group">
             <label htmlFor="note-content">Note Content</label>
             <textarea
@@ -71,9 +143,9 @@ const NotesModal: React.FC<NotesModalProps> = ({
           <button
             className="notes-modal__save"
             onClick={handleSave}
-            disabled={!content.trim()}
+            disabled={!content.trim() || isUploading}
           >
-            Save Note
+            {isUploading ? "Uploading..." : "Save Note"}
           </button>
         </div>
       </div>

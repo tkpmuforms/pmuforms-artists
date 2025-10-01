@@ -59,8 +59,8 @@ const ClientNotesPage: React.FC = () => {
     }
   };
 
-  const handleImageUpload = async (file: File): Promise<void> => {
-    if (!file) return;
+  const handleImageUpload = async (file: File): Promise<string> => {
+    if (!file) return "";
 
     setIsUploading(true);
     try {
@@ -78,11 +78,12 @@ const ClientNotesPage: React.FC = () => {
       const snapshot = await uploadBytes(storageRef, compressedFile);
       const downloadUrl = await getDownloadURL(snapshot.ref);
 
-      setEditImageUrl(downloadUrl);
       toast.success("Image uploaded successfully");
+      return downloadUrl;
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.error("Error uploading image");
+      return "";
     } finally {
       setIsUploading(false);
     }
@@ -172,11 +173,14 @@ const ClientNotesPage: React.FC = () => {
     setSelectedNote(null);
   };
 
-  const handleSaveNote = async (content: string) => {
+  const handleSaveNote = async (content: string, imageUrl?: string) => {
     if (!clientId) return;
 
     try {
-      const response = await addCustomerNote(clientId, { note: content });
+      const response = await addCustomerNote(clientId, {
+        note: content,
+        imageUrl: imageUrl || undefined,
+      });
       setNotes([response.data.note, ...notes]);
       toast.success("Note added successfully");
       setShowNotesModal(false);
@@ -208,7 +212,7 @@ const ClientNotesPage: React.FC = () => {
       <div className="content-grid">
         <div className="notes-column">
           <div className="notes-list">
-            {notes.length === 0 ? (
+            {notes?.length === 0 ? (
               <div className="notes-list__empty">
                 <p>No notes added yet</p>
               </div>
@@ -249,6 +253,8 @@ const ClientNotesPage: React.FC = () => {
           onSave={handleSaveNote}
           initialContent={currentNote}
           title="Add a Note"
+          onImageUpload={handleImageUpload}
+          isUploading={isUploading}
         />
       )}
 
