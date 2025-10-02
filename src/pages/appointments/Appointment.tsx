@@ -34,39 +34,27 @@ const Appointment: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalAppointments, setTotalAppointments] = useState(0);
-  const [filteredAppointments, setFilteredAppointments] = useState<
-    AppointmentType[]
-  >([]);
+  const [metadata, setMetadata] = useState({
+    total: 0,
+    lastPage: 1,
+  });
 
   const perPage = 10;
 
-  const fetchAllAppointments = async () => {
+  const fetchPageAppointments = async (page: number) => {
     try {
       setLoading(true);
-      let allAppointments: AppointmentType[] = [];
-      let currentPageData = 1;
-      let hasMorePages = true;
+      const response = await getArtistAppointmentsPaginated(page, perPage);
+      const data: AppointmentsResponse = response.data;
 
-      while (hasMorePages) {
-        const response = await getArtistAppointmentsPaginated(
-          currentPageData,
-          perPage
-        );
-        const data: AppointmentsResponse = response.data;
-
-        if (data && data.appointments) {
-          allAppointments = [...allAppointments, ...data.appointments];
-          hasMorePages = currentPageData < data.metadata.lastPage;
-          currentPageData++;
-        } else {
-          hasMorePages = false;
-        }
+      if (data && data.appointments) {
+        setAppointments(data.appointments);
+        setMetadata({
+          total: data.metadata.total,
+          lastPage: data.metadata.lastPage,
+        });
+        await fetchCustomersData(data.appointments);
       }
-
-      setAppointments(allAppointments);
-      setTotalAppointments(allAppointments.length);
-      await fetchCustomersData(allAppointments);
     } catch (error) {
       console.error("Error fetching appointments:", error);
       toast.error("Failed to fetch appointments");
@@ -110,38 +98,11 @@ const Appointment: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchAllAppointments();
-  }, []);
-
-  useEffect(() => {
-    const filtered = appointments.filter((appointment) => {
-      const customerName = customers[appointment.customerId]?.name || "";
-      const searchLower = searchTerm.toLowerCase();
-
-      return (
-        customerName.toLowerCase().includes(searchLower) ||
-        appointment._id.toLowerCase().includes(searchLower) ||
-        formatAppointmentTime(appointment.date)
-          .toLowerCase()
-          .includes(searchLower)
-      );
-    });
-
-    setFilteredAppointments(filtered);
-    setCurrentPage(1);
-  }, [appointments, customers, searchTerm]);
-
-  const getTotalPages = () => Math.ceil(filteredAppointments.length / perPage);
-
-  const getCurrentPageAppointments = () => {
-    const startIndex = (currentPage - 1) * perPage;
-    const endIndex = startIndex + perPage;
-    return filteredAppointments.slice(startIndex, endIndex);
-  };
+    fetchPageAppointments(currentPage);
+  }, [currentPage]);
 
   const handlePageChange = (page: number) => {
-    const totalPages = getTotalPages();
-    if (page >= 1 && page <= totalPages) {
+    if (page >= 1 && page <= metadata.lastPage) {
       setCurrentPage(page);
     }
   };
@@ -160,8 +121,7 @@ const Appointment: React.FC = () => {
   };
 
   const renderPagination = () => {
-    const totalPages = getTotalPages();
-    if (totalPages <= 1) return null;
+    if (metadata.lastPage <= 1) return null;
 
     return (
       <div className="pagination-controls">
@@ -179,15 +139,16 @@ const Appointment: React.FC = () => {
           </svg>
         </div>
         <span className="pagination-text">
-          Page {currentPage} of {totalPages}
+          Page {currentPage} of {metadata.lastPage}
         </span>
         <div
           className="pagination-arrow"
           onClick={() => handlePageChange(currentPage + 1)}
           style={{
-            cursor: currentPage === totalPages ? "not-allowed" : "pointer",
-            color: currentPage === totalPages ? "#ddd" : "#000",
-            opacity: currentPage === totalPages ? 0.5 : 1,
+            cursor:
+              currentPage === metadata.lastPage ? "not-allowed" : "pointer",
+            color: currentPage === metadata.lastPage ? "#ddd" : "#000",
+            opacity: currentPage === metadata.lastPage ? 0.5 : 1,
           }}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -199,11 +160,9 @@ const Appointment: React.FC = () => {
   };
 
   const renderAppointments = () => {
-    const currentPageAppointments = getCurrentPageAppointments();
-    if (currentPageAppointments.length === 0)
-      return <div>No appointments found</div>;
+    if (appointments.length === 0) return <div>No appointments found</div>;
 
-    return currentPageAppointments.map((appointment) => (
+    return appointments.map((appointment) => (
       <AppointmentCard
         key={appointment.id}
         name={
@@ -241,11 +200,7 @@ const Appointment: React.FC = () => {
       <div className="appointments__header">
         <div className="appointments__title-section">
           <h1>All Appointments</h1>
-          <p>
-            {searchTerm
-              ? `Showing ${filteredAppointments.length} of ${totalAppointments} appointments`
-              : `Total: ${totalAppointments} appointments`}
-          </p>
+          <p>Total: {metadata.total} appointments</p>
         </div>
 
         <div className="appointments__actions">
@@ -262,15 +217,11 @@ const Appointment: React.FC = () => {
       </div>
 
       <div className="appointments__content">
-        {filteredAppointments.length === 0 ? (
+        {appointments.length === 0 ? (
           <div className="appointments__empty">
             <Calendar size={48} />
             <h3>No appointments found</h3>
-            <p>
-              {searchTerm
-                ? "Try adjusting your search terms"
-                : "You haven't scheduled any appointments yet"}
-            </p>
+            <p>You haven't scheduled any appointments yet</p>
           </div>
         ) : (
           <>

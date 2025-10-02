@@ -44,7 +44,10 @@ const SignFormsPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { appointmentId } = useParams<{ appointmentId: string }>();
+  const { appointmentId, id } = useParams<{
+    appointmentId: string;
+    id: string;
+  }>();
   const { forms, clientName, appointments } = location.state || {};
   const [showSignModal, setShowSignModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -119,8 +122,10 @@ const SignFormsPage: React.FC = () => {
 
       setSignatureUrl(downloadUrl);
       setShowSignModal(false);
-
       toast.success("Signature submitted successfully");
+      navigate(
+        `/clients/${id}/appointments/${appointmentId}/forms/${forms[0]?.formTemplateId}`
+      );
     } catch (error) {
       console.error("Error submitting signature:", error);
       setSubmitError("Failed to submit signature. Please try again.");

@@ -59,11 +59,6 @@ const ProfilePage: React.FC = () => {
     setShowUpdateServices(true);
   };
 
-  const handleServicesComplete = () => {
-    setShowUpdateServices(false);
-    setOnboardingStep("completed");
-  };
-
   const profileMenuItems = [
     {
       icon: <Building2 size={10} />,
@@ -75,25 +70,25 @@ const ProfilePage: React.FC = () => {
       title: "Change Password",
       onClick: () => setShowChangePassword(true),
     },
-    {
-      icon: <FileText size={10} />,
-      title: "Payment & Subscriptions",
-      onClick: () => navigate("/profile/payment"),
-    },
-    {
-      icon: <FileText size={10} />,
-      title: "Integrations ",
-      onClick: () => navigate("/profile/integrations"),
-    },
+    // {
+    //   icon: <FileText size={10} />,
+    //   title: "Payment & Subscriptions",
+    //   onClick: () => navigate("/profile/payment"),
+    // },
+    // {
+    //   icon: <FileText size={10} />,
+    //   title: "Integrations ",
+    //   onClick: () => navigate("/profile/integrations"),
+    // },
     {
       icon: <HelpCircle size={10} />,
       title: "Help & Support",
-      onClick: () => console.log("Help & Support"),
+      onClick: () => navigate("/contact-us"),
     },
     {
       icon: <FileText size={10} />,
       title: "Privacy Policy",
-      onClick: () => console.log("Privacy Policy"),
+      onClick: () => navigate("/privacy-policy"),
     },
     {
       icon: <LogOut size={10} />,
@@ -175,11 +170,9 @@ const ProfilePage: React.FC = () => {
             setShowUpdateServices(false);
             setOnboardingStep("completed");
           }}
-          onSave={handleServicesComplete}
           onGoBack={() => {
             setShowUpdateServices(false);
-            setOnboardingStep("businessName");
-            setShowEditBusinessName(true);
+            setOnboardingStep("completed");
           }}
         />
       )}

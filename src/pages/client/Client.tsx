@@ -100,7 +100,7 @@ const ClientsPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="clients-page__search">
+      {/* <div className="clients-page__search">
         <div className="search-input-wrapper">
           <Search size={20} className="search-icon" />
           <input
@@ -112,16 +112,16 @@ const ClientsPage: React.FC = () => {
             className="search-input"
           />
         </div>
-      </div>
+      </div> */}
 
       <div className="clients-page__stats">
         <span>Total Clients: {totalClients}</span>
-        {searchQuery && (
+        {/* {searchQuery && (
           <span>
             {" "}
             • Showing {clients.length} results for "{searchQuery}"
           </span>
-        )}
+        )} */}
       </div>
 
       {error && (
