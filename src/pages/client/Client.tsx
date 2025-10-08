@@ -24,12 +24,13 @@ const ClientsPage: React.FC = () => {
   const convertToClient = (
     customer: CustomerResponse["customers"][0]
   ): Client => {
+    const clientName = customer?.name ?? customer?.info?.client_name ?? "";
     return {
-      id: customer.id,
-      name: customer.name,
-      email: customer.email || "No email provided",
-      initials: generateInitials(customer.name),
-      color: generateColor(customer.name),
+      id: customer?.id,
+      name: clientName || "No name provided",
+      email: customer?.email || "No email provided",
+      initials: generateInitials(clientName),
+      color: generateColor(clientName),
     };
   };
 
@@ -38,9 +39,10 @@ const ClientsPage: React.FC = () => {
       setLoading(true);
       setError(null);
       const response = await searchCustomers(searchName, 1, 30);
-      const data: CustomerResponse = response.data;
+      console.log(response.data);
+      const data: CustomerResponse = response?.data;
 
-      const convertedClients = data.customers.map(convertToClient);
+      const convertedClients = data.customers?.map(convertToClient);
       setClients(convertedClients);
       setTotalClients(data.metadata.total);
     } catch (err) {

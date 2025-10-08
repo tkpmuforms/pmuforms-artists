@@ -12,13 +12,22 @@ export const generateColor = (name: string): string => {
     "#f97316",
   ];
 
+  if (!name || name.length === 0) {
+    return colors[0];
+  }
+
   const index = (name.length + name.charCodeAt(0)) % colors.length;
   return colors[index];
 };
 
 export const generateInitials = (name: string): string => {
+  if (!name || name.trim().length === 0) {
+    return "N/A";
+  }
+
   return name
     .split(" ")
+    .filter((word) => word.length > 0)
     .map((word) => word.charAt(0).toUpperCase())
     .slice(0, 2)
     .join("");
