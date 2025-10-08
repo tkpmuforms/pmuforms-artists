@@ -42,16 +42,14 @@ const ProfilePage: React.FC = () => {
       setShowEditBusinessName(true);
     }
   }, [isNewUser]);
-  useEffect(() => {
-    getAuthMe().then((response) => {
-      console.log("Fetched auth user:", response?.data?.user);
-      // You can handle the response if needed
-    });
-    getMyProfile().then((response) => {
-      console.log("Fetched profile:", response?.data?.profile);
-      // You can handle the response if needed
-    });
-  }, []);
+  // useEffect(() => {
+  //   getAuthMe().then((response) => {
+  //     // You can handle the response if needed
+  //   });
+  //   getMyProfile().then((response) => {
+  //     // You can handle the response if needed
+  //   });
+  // }, []);
 
   const handleBusinessNameSave = () => {
     setShowEditBusinessName(false);

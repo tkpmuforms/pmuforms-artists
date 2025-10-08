@@ -50,7 +50,6 @@ const FilledFormsPreview = () => {
         if (appointmentResponse?.data?.appointment) {
           const appointment = appointmentResponse.data.appointment;
           if (appointment.signed === true && appointment.signature_url) {
-            console.log("Appointment is signed");
             setSignatureUrl(appointment.signature_url);
           }
         }
@@ -121,10 +120,6 @@ const FilledFormsPreview = () => {
       toast.error("Please allow pop-ups to generate PDF");
       return;
     }
-
-    console.log("Generating PDF...");
-    console.log("Customer Signature URL:", signatureUrl);
-    console.log("Artist Signature URL:", user?.signature_url);
 
     const formContent =
       document.querySelector(".form-content")?.innerHTML || "";

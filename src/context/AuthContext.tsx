@@ -93,7 +93,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = () => {
     if (TESTING_MODE) {
-      console.log("TESTING MODE: Logout called but not actually logging out");
       return;
     }
 

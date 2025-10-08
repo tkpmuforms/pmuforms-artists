@@ -65,7 +65,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
       try {
         setServicesLoading(true);
         const response = await getServices();
-        console.log("Fetched services:", response.data.services);
 
         const services: Service[] = response.data.services.map(
           (service: Service) => ({
@@ -75,11 +74,9 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
           })
         );
 
-        console.log("Processed services:", services);
         setAllServices(services);
       } catch (error) {
         toast.error("Failed to fetch services. Please try again.");
-        console.error("Error fetching services:", error);
       } finally {
         setServicesLoading(false);
       }
@@ -96,7 +93,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
         setLoading(true);
 
         const response = await getFormById(formTemplateId);
-        console.log("API Response:", response);
 
         if (response?.data?.form) {
           const formData = response?.data?.form;
@@ -210,8 +206,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
       title: updatedContent,
       required: isRequired !== undefined ? isRequired : editingField.required,
     };
-
-    console.log("Updating field data:", updatedField);
 
     updateFormSectionData(
       form.id,
@@ -378,7 +372,6 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
   };
 
   const handleSaveForm = () => {
-    console.log("Save form:", form);
     toast.success("Form saved successfully");
   };
 
