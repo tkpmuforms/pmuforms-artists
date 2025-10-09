@@ -39,7 +39,7 @@ const ClientsPage: React.FC = () => {
       setLoading(true);
       setError(null);
       const response = await searchCustomers(searchName, 1, 30);
-      console.log(response.data);
+
       const data: CustomerResponse = response?.data;
 
       const convertedClients = data.customers?.map(convertToClient);

@@ -73,7 +73,7 @@ const ClientAppointmentPage: React.FC = () => {
         }
 
         const appointmentsResponse = await getAppointmentsForCustomer(id);
-        console.log("Appointments data:", appointmentsResponse);
+
         setAppointments(appointmentsResponse?.data?.appointments || []);
       } catch (error) {
         console.error("Error fetching data:", error);

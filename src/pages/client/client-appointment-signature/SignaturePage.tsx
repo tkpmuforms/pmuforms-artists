@@ -75,9 +75,7 @@ const SignFormsPage: React.FC = () => {
   };
 
   const handleSignClick = () => {
-    console.log("Sign button clicked");
     setShowSignModal(true);
-    console.log(showSignModal);
   };
 
   const handleSignatureSubmit = async (signatureDataUrl: string) => {

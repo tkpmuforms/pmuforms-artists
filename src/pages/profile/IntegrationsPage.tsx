@@ -55,7 +55,6 @@ const IntegrationsPage: React.FC = () => {
   };
 
   const handleConnectionSuccess = (integrationId: string) => {
-    console.log(`Successfully connected ${integrationId}`);
     setShowConnectModal(false);
     setSelectedIntegration(null);
   };

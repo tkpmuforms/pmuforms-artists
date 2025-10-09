@@ -14,12 +14,6 @@ interface DisplayElementProps {
 
 const RouteGuard = () => {
   const { isAuthenticated, loading } = useAuth();
-  console.log(
-    "Auth Status - isAuthenticated:",
-    isAuthenticated,
-    "loading:",
-    loading
-  );
 
   if (loading) {
     return (
