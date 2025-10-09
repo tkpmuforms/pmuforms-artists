@@ -14,7 +14,6 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
   breadcrumbs = [],
   onSearch,
   onNotificationClick,
-
   onMobileMenuToggle,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -125,6 +124,22 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
 
         <div className="navbar-actions">
           <button
+            className="mobile-search-button"
+            onClick={() => setShowSearch(!showSearch)}
+            aria-label="Search"
+          >
+            <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+              <path
+                d="M17.5 17.5l-5.5-5.5m0 0a7 7 0 1 0-9.899-9.899A7 7 0 0 0 12 12z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          <button
             className="notification-button"
             onClick={onNotificationClick}
             aria-label="Notifications"
@@ -149,38 +164,57 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
           {showSearch && (
             <ClientSearchModal onClose={() => setShowSearch(false)} />
           )}
-
-          {/* <button
-            className="avatar-button"
-            onClick={onAvatarClick}
-            aria-label="User menu"
-          >
-            <div className="avatar-container">
-              <Avatar
-                src={user?.info?.avatar_url ?? ""}
-                alt={user?.businessName ?? ""}
-                sx={{ width: 40, height: 40 }}
-              />
-            </div>
-            <span className="user-name">{user?.businessName}</span>
-            <svg
-              className="dropdown-icon"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-            >
-              <path
-                d="M4 6l4 4 4-4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button> */}
         </div>
       </div>
+
+      {/* {showMobileSearch && (
+        <div className="mobile-search-overlay">
+          <form onSubmit={handleSearchSubmit} className="mobile-search-form">
+            <div className="mobile-search-input-container">
+              <svg
+                className="search-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+              >
+                <path
+                  d="M17.5 17.5l-5.5-5.5m0 0a7 7 0 1 0-9.899-9.899A7 7 0 0 0 12 12z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <input
+                type="text"
+                placeholder="Find a client by name, email or phone"
+                value={searchQuery}
+                onFocus={handleSearchFocus}
+                onChange={handleSearchChange}
+                className="mobile-search-input"
+                autoFocus
+              />
+              <button
+                type="button"
+                className="mobile-search-close"
+                onClick={() => setShowMobileSearch(false)}
+                aria-label="Close search"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M15 5L5 15M5 5l10 10"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      )} */}
     </nav>
   );
 };
