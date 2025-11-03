@@ -60,7 +60,9 @@ const ContactUsPage = lazy(
 const PrivacyPolicyPage = lazy(
   () => import("../pages/privacy-policy/PrivacyPolicy.tsx")
 );
-
+const PaymentPage = lazy(
+  () => import("../pages/profile/payment-page/PaymentPage.tsx")
+);
 interface RouteProps {
   path: string;
   element: ReactNode;
@@ -160,6 +162,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/profile/integrations",
     element: <IntegrationsPage />,
     breadcrumbs: ["Profile", "Integrations"],
+  },
+  {
+    path: "/profile/payment",
+    element: <PaymentPage />,
+    breadcrumbs: ["Profile", "Payment"],
   },
   {
     path: "/contact-us",

@@ -16,7 +16,6 @@ import ChangePasswordModal from "../../components/profileComp/ChangePasswordModa
 import EditBusinessNameModal from "../../components/profileComp/EditBusinessNameModal";
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
 import useAuth from "../../context/useAuth";
-import { getAuthMe, getMyProfile } from "../../services/artistServices";
 import "./profile.scss";
 
 interface LocationState {
@@ -68,11 +67,11 @@ const ProfilePage: React.FC = () => {
       title: "Change Password",
       onClick: () => setShowChangePassword(true),
     },
-    // {
-    //   icon: <FileText size={10} />,
-    //   title: "Payment & Subscriptions",
-    //   onClick: () => navigate("/profile/payment"),
-    // },
+    {
+      icon: <FileText size={10} />,
+      title: "Payment & Subscriptions",
+      onClick: () => navigate("/profile/payment"),
+    },
     // {
     //   icon: <FileText size={10} />,
     //   title: "Integrations ",
