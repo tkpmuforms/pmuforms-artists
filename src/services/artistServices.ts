@@ -263,6 +263,10 @@ export const createSubscription = async (
   });
 };
 
+export const cancelSubscription = async () => {
+  return axiosInstance.post("/api/subscriptions/stripe/cancel-subscription");
+};
+
 export const changeSubscriptionPlan = async (
   priceId: string,
   paymentMethodId: string

@@ -47,8 +47,9 @@ const NotesModal: React.FC<NotesModalProps> = ({
   };
 
   const handleSave = () => {
-    if (content.trim()) {
-      onSave(content.trim(), imageUrl);
+    const noteContent = content.trim() || (imageUrl ? "Image Only" : "");
+    if (noteContent || imageUrl) {
+      onSave(noteContent, imageUrl);
       setContent("");
       setImageUrl("");
       onClose();
@@ -143,7 +144,7 @@ const NotesModal: React.FC<NotesModalProps> = ({
           <button
             className="notes-modal__save"
             onClick={handleSave}
-            disabled={!content.trim() || isUploading}
+            disabled={(!content.trim() && !imageUrl) || isUploading}
           >
             {isUploading ? "Uploading..." : "Save Note"}
           </button>

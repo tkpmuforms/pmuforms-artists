@@ -6,6 +6,7 @@ import "./addCardModal.scss";
 import {
   createSubscription,
   listPaymentMethods,
+  changeSubscriptionPlan,
 } from "../../services/artistServices";
 import AddCardModal from "./AddCardModal";
 import toast from "react-hot-toast";
@@ -14,7 +15,7 @@ interface Card {
   id: string;
   name: string;
   lastFour: string;
-  brand: "mastercard" | "visa" | "amex";
+  brand: "mastercard" | "visa" | "amex" | "unionpay";
   isDefault: boolean;
   color: string;
 }
@@ -95,7 +96,7 @@ const SelectPaymentMethodModal = ({
     setError("");
 
     try {
-      await createSubscription(priceId, selectedCard);
+      await changeSubscriptionPlan(priceId, selectedCard);
       toast.success("Payment successful! Subscription activated.");
       if (onPaymentSuccess) {
         onPaymentSuccess();
