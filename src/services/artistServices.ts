@@ -252,3 +252,50 @@ export const getAppointmentById = async (appointmentId: string) =>
 
 export const updateMySignature = async (data: { signature_url: string }) =>
   axiosInstance.patch("/api/artists/update-signature", data);
+
+export const createSubscription = async (
+  priceId: string,
+  paymentMethodId: string
+) => {
+  return axiosInstance.post("/api/subscriptions/stripe/create-subscription", {
+    priceId,
+    paymentMethodId,
+  });
+};
+
+export const cancelSubscription = async () => {
+  return axiosInstance.post("/api/subscriptions/stripe/cancel-subscription");
+};
+
+export const changeSubscriptionPlan = async (
+  priceId: string,
+  paymentMethodId: string
+) => {
+  return axiosInstance.post(
+    "/api/subscriptions/stripe/change-subscription-plan",
+    {
+      priceId,
+      paymentMethodId,
+    }
+  );
+};
+
+export const listPaymentMethods = async () => {
+  return axiosInstance.get("/api/subscriptions/stripe/list-payment-methods");
+};
+
+export const addPaymentMethod = async (paymentMethodId: string) => {
+  return axiosInstance.post("/api/subscriptions/stripe/add-payment-method", {
+    paymentMethodId,
+  });
+};
+
+export const detachPaymentMethod = async (paymentMethodId: string) => {
+  return axiosInstance.post("/api/subscriptions/stripe/detach-payment-method", {
+    paymentMethodId,
+  });
+};
+
+export const listTransactions = async () => {
+  return axiosInstance.get("/api/subscriptions/stripe/list-transactions");
+};

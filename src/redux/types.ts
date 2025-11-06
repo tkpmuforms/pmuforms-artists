@@ -215,3 +215,20 @@ export interface Note {
   _id: string;
   imageUrl?: string;
 }
+
+export interface Card {
+  id: string;
+  name: string;
+  lastFour: string;
+  brand: "mastercard" | "visa" | "amex" | "unionpay";
+  isDefault: boolean;
+  color: string;
+}
+
+export interface SubscriptionHistory {
+  date: string;
+  description: string;
+  cardUsed: string;
+  amount: number;
+  status: "Successful" | "Failed" | "Pending";
+}
