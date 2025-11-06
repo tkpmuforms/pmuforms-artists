@@ -264,17 +264,21 @@ export const createSubscription = async (
 };
 
 export const cancelSubscription = async () => {
-  return axiosInstance.post("/api/subscriptions/stripe/cancel-subscription");
+  return axiosInstance.get("/api/subscriptions/stripe/cancel-subscription");
+};
+
+export const getSubscription = async () => {
+  return axiosInstance.get("/api/subscriptions/stripe/subscription-details");
 };
 
 export const changeSubscriptionPlan = async (
-  priceId: string,
+  newPriceId: string,
   paymentMethodId: string
 ) => {
   return axiosInstance.post(
     "/api/subscriptions/stripe/change-subscription-plan",
     {
-      priceId,
+      newPriceId,
       paymentMethodId,
     }
   );

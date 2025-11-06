@@ -17,6 +17,7 @@ import EditBusinessNameModal from "../../components/profileComp/EditBusinessName
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
 import useAuth from "../../context/useAuth";
 import "./profile.scss";
+import { getAuthMe } from "../../services/artistServices";
 
 interface LocationState {
   newUser?: boolean;
@@ -41,14 +42,12 @@ const ProfilePage: React.FC = () => {
       setShowEditBusinessName(true);
     }
   }, [isNewUser]);
-  // useEffect(() => {
-  //   getAuthMe().then((response) => {
-  //     // You can handle the response if needed
-  //   });
-  //   getMyProfile().then((response) => {
-  //     // You can handle the response if needed
-  //   });
-  // }, []);
+  useEffect(() => {
+    getAuthMe().then((response) => {
+      // You can handle the response if needed
+      console.log(response);
+    });
+  }, []);
 
   const handleBusinessNameSave = () => {
     setShowEditBusinessName(false);
@@ -67,11 +66,11 @@ const ProfilePage: React.FC = () => {
       title: "Change Password",
       onClick: () => setShowChangePassword(true),
     },
-    // {
-    //   icon: <FileText size={10} />,
-    //   title: "Payment & Subscriptions",
-    //   onClick: () => navigate("/profile/payment"),
-    // },
+    {
+      icon: <FileText size={10} />,
+      title: "Payment & Subscriptions",
+      onClick: () => navigate("/profile/payment"),
+    },
     // {
     //   icon: <FileText size={10} />,
     //   title: "Integrations ",

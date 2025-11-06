@@ -11,11 +11,21 @@ import {
   listTransactions,
   detachPaymentMethod,
   cancelSubscription,
+  getSubscription,
 } from "../../../services/artistServices";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
 import { Card, SubscriptionHistory } from "../../../redux/types";
 import useAuth from "../../../context/useAuth";
+import {
+  saveSubscriptionToStorage,
+  getSubscriptionFromStorage,
+  formatNextBillingDate,
+  getPlanName,
+  isSubscriptionActive,
+  clearSubscriptionFromStorage,
+  SubscriptionData,
+} from "../../../utils/subscriptionUtils";
 
 const PaymentPage = () => {
   const { user } = useAuth();
@@ -30,11 +40,27 @@ const PaymentPage = () => {
   const [deleteModal, setShowDeleteModal] = useState(false);
   const [cardToDelete, setCardToDelete] = useState<string | null>(null);
   const [cancelPlans, setShowCancelPlans] = useState(false);
+  const [subscriptionData, setSubscriptionData] =
+    useState<SubscriptionData | null>(null);
 
   useEffect(() => {
     fetchPaymentMethods();
     fetchTransactionHistory();
+    fetchSubscriptionData();
   }, []);
+
+  const fetchSubscriptionData = async () => {
+    try {
+      const response = await getSubscription();
+      const subData = response.data;
+      saveSubscriptionToStorage(subData);
+      setSubscriptionData(getSubscriptionFromStorage());
+    } catch (error) {
+      console.error("Error fetching subscription:", error);
+      const storedData = getSubscriptionFromStorage();
+      setSubscriptionData(storedData);
+    }
+  };
 
   const fetchPaymentMethods = async () => {
     try {
@@ -81,7 +107,7 @@ const PaymentPage = () => {
             cards[0]?.lastFour ||
             "0000"
           }`,
-          amount: invoice.amount / 100,
+          amount: invoice.amount,
           status: getTransactionStatus(invoice.status),
         })
       );
@@ -97,7 +123,10 @@ const PaymentPage = () => {
   const handleCancelSubscription = async () => {
     try {
       await cancelSubscription();
+      clearSubscriptionFromStorage();
+      setSubscriptionData(null);
       fetchTransactionHistory();
+      setShowCancelPlans(false);
     } catch (error) {
       console.error("Error cancelling subscription:", error);
     }
@@ -108,6 +137,7 @@ const PaymentPage = () => {
       try {
         await detachPaymentMethod(cardToDelete);
         await fetchPaymentMethods();
+        setShowDeleteModal(false);
       } catch (error) {
         console.error("Error deleting card:", error);
       }
@@ -163,7 +193,21 @@ const PaymentPage = () => {
 
   const handleSubscriptionSuccess = () => {
     fetchTransactionHistory();
+    fetchSubscriptionData();
+    setShowUpgradeSubscription(false);
   };
+
+  const isActive = subscriptionData
+    ? isSubscriptionActive(subscriptionData.status)
+    : user?.stripeSubscriptionActive;
+
+  const currentPlan = subscriptionData
+    ? getPlanName(subscriptionData.interval, subscriptionData.intervalCount)
+    : "No Active Plan";
+
+  const nextBillingDate = subscriptionData?.currentPeriodEnd
+    ? formatNextBillingDate(subscriptionData.currentPeriodEnd)
+    : "N/A";
 
   return (
     <div className="payment-page">
@@ -173,30 +217,37 @@ const PaymentPage = () => {
           <div className="payment-page__subscription-info">
             <div className="payment-page__subscription-item">
               <span className="payment-page__label">Current Plan</span>
-              <span className="payment-page__value">6-Month Plan</span>
+              <span className="payment-page__value">{currentPlan}</span>
             </div>
             <div className="payment-page__subscription-item">
               <span className="payment-page__label">Next Billing Date</span>
-              <span className="payment-page__value">Nov 28, 2025</span>
+              <span className="payment-page__value">{nextBillingDate}</span>
             </div>
             <div className="payment-page__subscription-item">
               <span className="payment-page__label">Status</span>
-              <span className="payment-page__status payment-page__status--active">
-                • Active
+              <span
+                className={`payment-page__status payment-page__status--${
+                  isActive ? "active" : "inactive"
+                }`}
+              >
+                {isActive ? "Active" : "Inactive"}
               </span>
             </div>
+
             <div className="payment-page__subscription-actions">
-              <button
-                className="payment-page__btn payment-page__btn--secondary"
-                onClick={() => setShowCancelPlans(true)}
-              >
-                Cancel Subscription
-              </button>
+              {isActive && (
+                <button
+                  className="payment-page__btn payment-page__btn--secondary"
+                  onClick={() => setShowCancelPlans(true)}
+                >
+                  Cancel Subscription
+                </button>
+              )}
               <button
                 className="payment-page__btn payment-page__btn--primary"
                 onClick={() => setShowUpgradeSubscription(true)}
               >
-                Upgrade Plan
+                {isActive ? "Change Plan" : "Upgrade Subscription"}
               </button>
             </div>
           </div>
@@ -335,6 +386,7 @@ const PaymentPage = () => {
         <SubscriptionModal
           onClose={() => setShowUpgradeSubscription(false)}
           onSubscribe={handleSubscriptionSuccess}
+          currentPriceId={subscriptionData?.priceId}
         />
       )}
 
