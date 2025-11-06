@@ -14,25 +14,11 @@ import {
 } from "../../../services/artistServices";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
-
-interface Card {
-  id: string;
-  name: string;
-  lastFour: string;
-  brand: "mastercard" | "visa" | "amex" | "unionpay";
-  isDefault: boolean;
-  color: string;
-}
-
-interface SubscriptionHistory {
-  date: string;
-  description: string;
-  cardUsed: string;
-  amount: number;
-  status: "Successful" | "Failed" | "Pending";
-}
+import { Card, SubscriptionHistory } from "../../../redux/types";
+import useAuth from "../../../context/useAuth";
 
 const PaymentPage = () => {
+  const { user } = useAuth();
   const [showAddCard, setShowAddCard] = useState(false);
   const [showSelectPayment, setShowSelectPayment] = useState(false);
   const [showUpgradeSubscription, setShowUpgradeSubscription] = useState(false);
