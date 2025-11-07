@@ -37,7 +37,11 @@ export const bookAppointment = async (data: {
   appointmentDate: string;
   customerId: string;
   services: number[];
-}) => axiosInstance.post("/api/appointments/book-appointment", data);
+}) =>
+  axiosInstance.post(
+    "/api/appointments/artist/book-appointment?notify_customer=1",
+    data
+  );
 
 export const sendMessage = async (data: {
   email: string;
