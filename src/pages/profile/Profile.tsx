@@ -66,11 +66,11 @@ const ProfilePage: React.FC = () => {
       title: "Change Password",
       onClick: () => setShowChangePassword(true),
     },
-    {
-      icon: <FileText size={10} />,
-      title: "Payment & Subscriptions",
-      onClick: () => navigate("/profile/payment"),
-    },
+    // {
+    //   icon: <FileText size={10} />,
+    //   title: "Payment & Subscriptions",
+    //   onClick: () => navigate("/profile/payment"),
+    // },
     // {
     //   icon: <FileText size={10} />,
     //   title: "Integrations ",
