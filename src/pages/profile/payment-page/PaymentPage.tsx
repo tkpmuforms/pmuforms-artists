@@ -32,6 +32,7 @@ import {
   getTransactionStatus,
 } from "../../../utils/utils";
 import "./payment.scss";
+import toast from "react-hot-toast";
 
 const PaymentPage = () => {
   const { user } = useAuth();
@@ -130,12 +131,16 @@ const PaymentPage = () => {
   const handleCancelSubscription = async () => {
     try {
       await cancelSubscription();
-      clearSubscriptionFromStorage();
-      setSubscriptionData(null);
       fetchTransactionHistory();
+      const response = await getSubscription();
+      const subData = response.data;
+      saveSubscriptionToStorage(subData);
+      setSubscriptionData(getSubscriptionFromStorage());
       setShowCancelPlans(false);
+      toast.success("Subscription cancelled successfully.");
     } catch (error) {
       console.error("Error cancelling subscription:", error);
+      toast.error("Failed to cancel subscription. Please try again.");
     }
   };
 
@@ -169,7 +174,13 @@ const PaymentPage = () => {
     ? getPlanName(subscriptionData.interval, subscriptionData.intervalCount)
     : "No Active Plan";
 
-  const nextBillingDate = subscriptionData?.currentPeriodEnd
+  const isCancelled = !!subscriptionData?.cancelAt;
+
+  const billingDateLabel = isCancelled ? "Subscription Ends" : "Next Billing Date";
+
+  const billingDateValue = isCancelled
+    ? formatNextBillingDate(subscriptionData.cancelAt!)
+    : subscriptionData?.currentPeriodEnd
     ? formatNextBillingDate(subscriptionData.currentPeriodEnd)
     : "N/A";
 
@@ -184,8 +195,8 @@ const PaymentPage = () => {
               <span className="payment-page__value">{currentPlan}</span>
             </div>
             <div className="payment-page__subscription-item">
-              <span className="payment-page__label">Next Billing Date</span>
-              <span className="payment-page__value">{nextBillingDate}</span>
+              <span className="payment-page__label">{billingDateLabel}</span>
+              <span className="payment-page__value">{billingDateValue}</span>
             </div>
             <div className="payment-page__subscription-item">
               <span className="payment-page__label">Status</span>
@@ -203,6 +214,7 @@ const PaymentPage = () => {
                 <button
                   className="payment-page__btn payment-page__btn--secondary"
                   onClick={() => setShowCancelPlans(true)}
+                  disabled={isCancelled}
                 >
                   Cancel Subscription
                 </button>

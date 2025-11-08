@@ -8,6 +8,7 @@ export interface SubscriptionData {
   intervalCount: number;
   amount: number;
   currency: string;
+  cancelAt?: number;
 }
 
 const SUBSCRIPTION_KEY = "pmu_subscription_data";
@@ -38,6 +39,7 @@ export const saveSubscriptionToStorage = (subscriptionData: any): void => {
       currency:
         subscriptionData.items.data[0]?.price.currency ||
         subscriptionData.currency,
+      cancelAt: subscriptionData.cancel_at,
     };
 
     localStorage.setItem(SUBSCRIPTION_KEY, JSON.stringify(data));
