@@ -2,6 +2,7 @@
 
 import { CreditCard, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
 import SubscriptionModal from "../../../components/dashboardComp/SubScriptionModal";
 import { LoadingSmall } from "../../../components/loading/Loading";
@@ -17,7 +18,6 @@ import {
   listTransactions,
 } from "../../../services/artistServices";
 import {
-  clearSubscriptionFromStorage,
   formatNextBillingDate,
   getPlanName,
   getSubscriptionFromStorage,
@@ -32,10 +32,10 @@ import {
   getTransactionStatus,
 } from "../../../utils/utils";
 import "./payment.scss";
-import toast from "react-hot-toast";
 
 const PaymentPage = () => {
   const { user } = useAuth();
+  console.log("User data in PaymentPage:", user);
   const defaultCardId = user?.defaultStripePaymentMethod || "";
   const [showAddCard, setShowAddCard] = useState(false);
   const [showSelectPayment, setShowSelectPayment] = useState(false);
@@ -166,19 +166,30 @@ const PaymentPage = () => {
     setShowUpgradeSubscription(false);
   };
 
-  const isActive = subscriptionData
+  const isMobileSub = user?.appStorePurchaseActive;
+
+  const isActive = isMobileSub
+    ? true
+    : subscriptionData
     ? isSubscriptionActive(subscriptionData.status)
     : user?.stripeSubscriptionActive;
 
-  const currentPlan = subscriptionData
+  const currentPlan = isMobileSub
+    ? null
+    : subscriptionData
     ? getPlanName(subscriptionData.interval, subscriptionData.intervalCount)
     : "No Active Plan";
 
-  const isCancelled = !!subscriptionData?.cancelAt;
+  const isCancelled = !isMobileSub && !!subscriptionData?.cancelAt;
 
-  const billingDateLabel = isCancelled ? "Subscription Ends" : "Next Billing Date";
+  const billingDateLabel = isCancelled
+    ? "Subscription Ends"
+    : "Next Billing Date";
 
-  const billingDateValue = isCancelled
+  // Hide billing date for Mobile Sub
+  const billingDateValue = isMobileSub
+    ? "—"
+    : isCancelled
     ? formatNextBillingDate(subscriptionData.cancelAt!)
     : subscriptionData?.currentPeriodEnd
     ? formatNextBillingDate(subscriptionData.currentPeriodEnd)
@@ -189,44 +200,61 @@ const PaymentPage = () => {
       <div className="payment-page__content">
         <section className="payment-page__section payment-page__section--full">
           <h2 className="payment-page__section-title">Your Subscription</h2>
-          <div className="payment-page__subscription-info">
-            <div className="payment-page__subscription-item">
-              <span className="payment-page__label">Current Plan</span>
-              <span className="payment-page__value">{currentPlan}</span>
+          {isMobileSub ? (
+            <div className="payment-page__mobile-sub-container">
+              <div className="payment-page__mobile-sub-info">
+                <span className="payment-page__mobile-sub-title">
+                  You already have an active mobile subscription.
+                </span>
+                <span className="payment-page__mobile-sub-text">
+                  Your current plan is still valid and managed through the
+                  mobile app.
+                </span>
+                <span className="payment-page__mobile-sub-text">
+                  When it expires, you'll be able to switch to a web
+                  subscription directly from this site.
+                </span>
+              </div>
             </div>
-            <div className="payment-page__subscription-item">
-              <span className="payment-page__label">{billingDateLabel}</span>
-              <span className="payment-page__value">{billingDateValue}</span>
-            </div>
-            <div className="payment-page__subscription-item">
-              <span className="payment-page__label">Status</span>
-              <span
-                className={`payment-page__status payment-page__status--${
-                  isActive ? "active" : "inactive"
-                }`}
-              >
-                {isActive ? "Active" : "Inactive"}
-              </span>
-            </div>
-
-            <div className="payment-page__subscription-actions">
-              {isActive && (
-                <button
-                  className="payment-page__btn payment-page__btn--secondary"
-                  onClick={() => setShowCancelPlans(true)}
-                  disabled={isCancelled}
+          ) : (
+            <div className="payment-page__subscription-info">
+              <div className="payment-page__subscription-item">
+                <span className="payment-page__label">Current Plan</span>
+                <span className="payment-page__value">{currentPlan}</span>
+              </div>
+              <div className="payment-page__subscription-item">
+                <span className="payment-page__label">{billingDateLabel}</span>
+                <span className="payment-page__value">{billingDateValue}</span>
+              </div>
+              <div className="payment-page__subscription-item">
+                <span className="payment-page__label">Status</span>
+                <span
+                  className={`payment-page__status payment-page__status--${
+                    isActive ? "active" : "inactive"
+                  }`}
                 >
-                  Cancel Subscription
+                  {isActive ? "Active" : "Inactive"}
+                </span>
+              </div>
+              <div className="payment-page__subscription-actions">
+                {isActive && (
+                  <button
+                    className="payment-page__btn payment-page__btn--secondary"
+                    onClick={() => setShowCancelPlans(true)}
+                    disabled={isCancelled}
+                  >
+                    Cancel Subscription
+                  </button>
+                )}
+                <button
+                  className="payment-page__btn payment-page__btn--primary"
+                  onClick={() => setShowUpgradeSubscription(true)}
+                >
+                  {isActive ? "Change Plan" : "Upgrade Subscription"}
                 </button>
-              )}
-              <button
-                className="payment-page__btn payment-page__btn--primary"
-                onClick={() => setShowUpgradeSubscription(true)}
-              >
-                {isActive ? "Change Plan" : "Upgrade Subscription"}
-              </button>
+              </div>
             </div>
-          </div>
+          )}
         </section>
 
         <div className="payment-page__two-column">
@@ -296,51 +324,55 @@ const PaymentPage = () => {
             </div>
           </section>
 
-          <section className="payment-page__section payment-page__section--right">
-            <h2 className="payment-page__section-title">
-              Payment & Subscription History
-            </h2>
-            {loading ? (
-              <LoadingSmall />
-            ) : (
-              <div className="payment-page__history-table">
-                <div className="payment-page__table-header">
-                  <div className="payment-page__table-cell">Date</div>
-                  <div className="payment-page__table-cell">Description</div>
-                  <div className="payment-page__table-cell">Card Used</div>
-                  <div className="payment-page__table-cell">Amount</div>
-                  <div className="payment-page__table-cell">Status</div>
-                  <div className="payment-page__table-cell"></div>
-                </div>
-
-                {subscriptionHistory.map((item, index) => (
-                  <div key={index} className="payment-page__table-row">
-                    <div className="payment-page__table-cell">{item.date}</div>
-                    <div className="payment-page__table-cell">
-                      {item.description}
-                    </div>
-                    <div className="payment-page__table-cell">
-                      {item.cardUsed}
-                    </div>
-                    <div className="payment-page__table-cell">
-                      ${item.amount}
-                    </div>
-                    <div className="payment-page__table-cell">
-                      <span
-                        className="payment-page__status-badge"
-                        style={{ color: getStatusColor(item.status) }}
-                      >
-                        • {item.status}
-                      </span>
-                    </div>
-                    <div className="payment-page__table-cell">
-                      <button className="payment-page__action-btn">⋮</button>
-                    </div>
+          {!isMobileSub && (
+            <section className="payment-page__section payment-page__section--right">
+              <h2 className="payment-page__section-title">
+                Payment & Subscription History
+              </h2>
+              {loading ? (
+                <LoadingSmall />
+              ) : (
+                <div className="payment-page__history-table">
+                  <div className="payment-page__table-header">
+                    <div className="payment-page__table-cell">Date</div>
+                    <div className="payment-page__table-cell">Description</div>
+                    <div className="payment-page__table-cell">Card Used</div>
+                    <div className="payment-page__table-cell">Amount</div>
+                    <div className="payment-page__table-cell">Status</div>
+                    <div className="payment-page__table-cell"></div>
                   </div>
-                ))}
-              </div>
-            )}
-          </section>
+
+                  {subscriptionHistory.map((item, index) => (
+                    <div key={index} className="payment-page__table-row">
+                      <div className="payment-page__table-cell">
+                        {item.date}
+                      </div>
+                      <div className="payment-page__table-cell">
+                        {item.description}
+                      </div>
+                      <div className="payment-page__table-cell">
+                        {item.cardUsed}
+                      </div>
+                      <div className="payment-page__table-cell">
+                        ${item.amount}
+                      </div>
+                      <div className="payment-page__table-cell">
+                        <span
+                          className="payment-page__status-badge"
+                          style={{ color: getStatusColor(item.status) }}
+                        >
+                          • {item.status}
+                        </span>
+                      </div>
+                      <div className="payment-page__table-cell">
+                        <button className="payment-page__action-btn">⋮</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
         </div>
       </div>
 
