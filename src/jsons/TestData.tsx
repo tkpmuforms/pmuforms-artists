@@ -1,24 +1,3 @@
-export const quickActions = [
-  {
-    title: "Add New Client",
-    icon: "👤",
-    color: "var(--pmu-primary)",
-    onClick: (navigate: any) => navigate("/clients"),
-  },
-  {
-    title: "Manage Forms",
-    icon: "📋",
-    color: "#f59e0b",
-    onClick: (navigate: any) => navigate("/forms"),
-  },
-  {
-    title: "Send Form",
-    icon: "📤",
-    color: "#10b981",
-    onClick: () => console.log("Send form"),
-  },
-];
-
 export const appointments = [
   {
     name: "Evelyn Carter",

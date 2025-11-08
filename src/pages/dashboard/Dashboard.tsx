@@ -26,7 +26,6 @@ import { LoadingSmall } from "../../components/loading/Loading";
 import useAuth from "../../context/useAuth";
 import { Appointment } from "../../redux/types";
 import {
-  getArtistAppointments,
   getArtistAppointmentsPaginated,
   getArtistForms,
   getCustomerById,
@@ -58,6 +57,9 @@ const Dashboard: React.FC = () => {
   >({});
   const [recentForms, setRecentForms] = useState<any[]>([]);
 
+  const hasActiveSubscription =
+    user?.appStorePurchaseActive || user?.stripeSubscriptionActive;
+
   const quickActions = [
     {
       title: "Add New Client",
@@ -73,7 +75,7 @@ const Dashboard: React.FC = () => {
       title: "Send Form",
       icon: SendFormIcon,
       onClick: () => {
-        if (user?.appStorePurchaseActive === false) {
+        if (!hasActiveSubscription) {
           setShowSubscriptionModal(true);
         } else {
           setShowFormLinkModal(true);

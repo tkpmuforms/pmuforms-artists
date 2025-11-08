@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ChangePasswordModal from "../../components/profileComp/ChangePasswordModal";
 import EditBusinessNameModal from "../../components/profileComp/EditBusinessNameModal";
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
+import PaymentPage from "./payment-page/PaymentPage";
 import useAuth from "../../context/useAuth";
 import "./profile.scss";
 import { getAuthMe } from "../../services/artistServices";
@@ -33,8 +34,9 @@ const ProfilePage: React.FC = () => {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isNewUser] = useState(locationState?.newUser || false);
   const [onboardingStep, setOnboardingStep] = useState<
-    "businessName" | "services" | "completed"
+    "businessName" | "services" | "payment" | "completed"
   >("completed");
+  const [showPaymentPage, setShowPaymentPage] = useState(false);
 
   useEffect(() => {
     if (isNewUser) {
@@ -42,17 +44,32 @@ const ProfilePage: React.FC = () => {
       setShowEditBusinessName(true);
     }
   }, [isNewUser]);
-  useEffect(() => {
-    getAuthMe().then((response) => {
-      // You can handle the response if needed
-      console.log(response);
-    });
-  }, []);
+  // useEffect(() => {
+  //   getAuthMe().then((response) => {
+  //     // You can handle the response if needed
+  //     console.log(response);
+  //   });
+  // }, []);
 
   const handleBusinessNameSave = () => {
     setShowEditBusinessName(false);
     setOnboardingStep("services");
     setShowUpdateServices(true);
+  };
+
+  const handleServicesSave = () => {
+    setShowUpdateServices(false);
+    // Check if user has an active subscription
+    const hasActiveSubscription = user?.stripeSubscriptionActive;
+
+    if (hasActiveSubscription) {
+      // User has active sub, dont show payment page
+      setOnboardingStep("completed");
+    } else {
+      // No active sub, skip payment page
+      setOnboardingStep("payment");
+      setShowPaymentPage(true);
+    }
   };
 
   const profileMenuItems = [
@@ -102,7 +119,9 @@ const ProfilePage: React.FC = () => {
           <p>
             {onboardingStep === "businessName"
               ? "First, let's set your business name"
-              : "Now, let's add your services"}
+              : onboardingStep === "services"
+              ? "Now, let's add your services"
+              : "Finally, let's complete your payment setup"}
           </p>
         </div>
       )}
@@ -162,15 +181,34 @@ const ProfilePage: React.FC = () => {
 
       {isNewUser && showUpdateServices && onboardingStep === "services" && (
         <UpdateServicesModal
-          onClose={() => {
-            setShowUpdateServices(false);
-            setOnboardingStep("completed");
-          }}
+          onClose={handleServicesSave}
           onGoBack={() => {
             setShowUpdateServices(false);
             setOnboardingStep("completed");
           }}
         />
+      )}
+
+      {isNewUser && showPaymentPage && onboardingStep === "payment" && (
+        <div className="profile-page__payment-modal-overlay">
+          <div className="profile-page__payment-modal">
+            <div className="profile-page__payment-modal-header">
+              <h2>Complete Your Payment Setup</h2>
+              <button
+                className="profile-page__payment-modal-close"
+                onClick={() => {
+                  setShowPaymentPage(false);
+                  setOnboardingStep("completed");
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="profile-page__payment-modal-content">
+              <PaymentPage />
+            </div>
+          </div>
+        </div>
       )}
 
       {!isNewUser && showEditBusinessName && (

@@ -15,7 +15,7 @@ import {
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import toast from "react-hot-toast";
 import {
   PendingFormsSvg,
   TotalAppointmentsSvg,
@@ -70,7 +70,6 @@ const ClientDetailPage: React.FC = () => {
       setError(null);
 
       const response = await getCustomerById(id);
-      console.log("Client data fetched:", response.data);
 
       if (response.status !== 200) {
         throw new Error("Failed to fetch client details");
@@ -339,11 +338,15 @@ const ClientDetailPage: React.FC = () => {
           onClose={() => setShowDeleteClient(false)}
           headerText="Delete Client"
           shorterText="Are you sure you want to delete this client?"
-          handleDelete={() => {
-            deleteCustomer(client.id).then(() => {
+          handleDelete={async () => {
+            try {
+              await deleteCustomer(client.id);
               setShowDeleteClient(false);
               navigate("/clients");
-            });
+            } catch (err) {
+              toast.error(err?.message || "Failed to delete client");
+              setShowDeleteClient(false);
+            }
           }}
         />
       )}
