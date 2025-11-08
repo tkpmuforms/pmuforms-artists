@@ -37,7 +37,11 @@ export const bookAppointment = async (data: {
   appointmentDate: string;
   customerId: string;
   services: number[];
-}) => axiosInstance.post("/api/appointments/book-appointment", data);
+}) =>
+  axiosInstance.post(
+    "/api/appointments/artist/book-appointment?notify_customer=1",
+    data
+  );
 
 export const sendMessage = async (data: {
   email: string;
@@ -264,17 +268,21 @@ export const createSubscription = async (
 };
 
 export const cancelSubscription = async () => {
-  return axiosInstance.post("/api/subscriptions/stripe/cancel-subscription");
+  return axiosInstance.get("/api/subscriptions/stripe/cancel-subscription");
+};
+
+export const getSubscription = async () => {
+  return axiosInstance.get("/api/subscriptions/stripe/subscription-details");
 };
 
 export const changeSubscriptionPlan = async (
-  priceId: string,
+  newPriceId: string,
   paymentMethodId: string
 ) => {
   return axiosInstance.post(
     "/api/subscriptions/stripe/change-subscription-plan",
     {
-      priceId,
+      newPriceId,
       paymentMethodId,
     }
   );

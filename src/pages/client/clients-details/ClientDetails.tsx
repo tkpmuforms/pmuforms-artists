@@ -342,6 +342,7 @@ const ClientDetailPage: React.FC = () => {
           handleDelete={() => {
             deleteCustomer(client.id).then(() => {
               setShowDeleteClient(false);
+              navigate("/clients");
             });
           }}
         />

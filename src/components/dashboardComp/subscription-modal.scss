@@ -116,6 +116,11 @@
       background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
     }
 
+    &--current {
+      border-color: var(--pmu-primary);
+      background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+    }
+
     &__badge {
       position: absolute;
       top: -8px;
@@ -133,6 +138,30 @@
     }
 
     &__trial {
+      position: absolute;
+      top: -8px;
+      left: 16px;
+      background: var(--pmu-primary);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    &__popular-label {
+      position: absolute;
+      top: -8px;
+      left: 16px;
+      background: var(--pmu-primary);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    &__current-label {
       position: absolute;
       top: -8px;
       left: 16px;
@@ -286,6 +315,18 @@
         border-radius: 8px;
       }
 
+      &__popular-label {
+        padding: 3px 10px;
+        font-size: 11px;
+        border-radius: 8px;
+      }
+
+      &__current-label {
+        padding: 3px 10px;
+        font-size: 11px;
+        border-radius: 8px;
+      }
+
       &__name {
         font-size: 13px;
         margin-bottom: 6px;
@@ -386,6 +427,18 @@
       }
 
       &__trial {
+        padding: 2px 8px;
+        font-size: 10px;
+        border-radius: 6px;
+      }
+
+      &__popular-label {
+        padding: 2px 8px;
+        font-size: 10px;
+        border-radius: 6px;
+      }
+
+      &__current-label {
         padding: 2px 8px;
         font-size: 10px;
         border-radius: 6px;

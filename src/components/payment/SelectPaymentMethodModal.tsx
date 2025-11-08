@@ -7,9 +7,16 @@ import {
   createSubscription,
   listPaymentMethods,
   changeSubscriptionPlan,
+  getAuthMe,
 } from "../../services/artistServices";
 import AddCardModal from "./AddCardModal";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/auth";
+import {
+  saveSubscriptionToStorage,
+  getSubscriptionFromStorage,
+} from "../../utils/subscriptionUtils";
 
 interface Card {
   id: string;
@@ -25,6 +32,7 @@ interface SelectPaymentMethodModalProps {
   onClose: () => void;
   priceId?: string;
   onPaymentSuccess?: () => void;
+  hasActiveSubscription?: boolean;
 }
 
 const SelectPaymentMethodModal = ({
@@ -32,12 +40,14 @@ const SelectPaymentMethodModal = ({
   onClose,
   priceId,
   onPaymentSuccess,
+  hasActiveSubscription = false,
 }: SelectPaymentMethodModalProps) => {
   const [cards, setCards] = useState<Card[]>(initialCards);
   const [selectedCard, setSelectedCard] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showAddCard, setShowAddCard] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (initialCards.length === 0) {
@@ -96,17 +106,50 @@ const SelectPaymentMethodModal = ({
     setError("");
 
     try {
-      await changeSubscriptionPlan(priceId, selectedCard);
-      toast.success("Payment successful! Subscription activated.");
+      const subscriptionData = getSubscriptionFromStorage();
+      const isSubscriptionActive =
+        subscriptionData &&
+        ["active", "trialing"].includes(subscriptionData.status.toLowerCase());
+
+      const shouldChangeSubscription =
+        hasActiveSubscription || isSubscriptionActive;
+
+      if (shouldChangeSubscription) {
+        const response = await changeSubscriptionPlan(priceId, selectedCard);
+        toast.success("Subscription plan updated successfully!");
+
+        if (response.data) {
+          saveSubscriptionToStorage(response.data);
+        }
+      } else {
+        const response = await createSubscription(priceId, selectedCard);
+        toast.success("Payment successful! Subscription activated.");
+
+        if (response.data) {
+          saveSubscriptionToStorage(response.data);
+        }
+      }
+
+      getAuthMe()
+        .then((response) => {
+          dispatch(setUser(response?.data?.user));
+        })
+        .catch((error) => {
+          console.error("Error fetching auth user:", error);
+        });
+
       if (onPaymentSuccess) {
         onPaymentSuccess();
       }
 
       onClose();
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "Payment failed. Please try again."
-      );
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Payment failed. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
       console.error("Error making payment:", err);
     } finally {
       setLoading(false);
@@ -127,6 +170,12 @@ const SelectPaymentMethodModal = ({
     );
   }
 
+  const subscriptionData = getSubscriptionFromStorage();
+  const isChangingPlan =
+    hasActiveSubscription ||
+    (subscriptionData &&
+      ["active", "trialing"].includes(subscriptionData.status.toLowerCase()));
+
   return (
     <div className="payment-modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -137,7 +186,11 @@ const SelectPaymentMethodModal = ({
           </button>
         </div>
 
-        <p className="modal-subtitle">Select or add card to make payment</p>
+        <p className="modal-subtitle">
+          {isChangingPlan
+            ? "Select card to update your subscription plan"
+            : "Select or add card to make payment"}
+        </p>
 
         {error && <div className="error-message">{error}</div>}
 
@@ -207,7 +260,11 @@ const SelectPaymentMethodModal = ({
             onClick={handleMakePayment}
             disabled={loading || !selectedCard || cards.length === 0}
           >
-            {loading ? "Processing..." : "Make Payment"}
+            {loading
+              ? "Processing..."
+              : isChangingPlan
+              ? "Update Plan"
+              : "Make Payment"}
           </button>
         </div>
       </div>

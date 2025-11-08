@@ -23,6 +23,10 @@ export interface User {
   lastLoggedIn?: Date | null;
   notifications?: number;
   signature_url?: string;
+  stripeSubscriptionActive?: boolean;
+  stripeCustomerId?: string;
+  defaultStripePaymentMethod?: string;
+  stripeSubscriptionId?: string;
 }
 
 export interface Service {

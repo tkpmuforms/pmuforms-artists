@@ -9,6 +9,7 @@ import {
   bookAppointment,
 } from "../../../services/artistServices";
 import { LoadingSmall } from "../../loading/Loading";
+import toast from "react-hot-toast";
 
 interface PreviewAppointmentModalProps {
   onClose: () => void;
@@ -93,18 +94,19 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
 
       const response = await bookAppointment(bookingData);
 
-      const appointmentId = response.data?.appointmentId || response.data?.id;
+      const appointmentId = response.data?.appointment?.id;
 
       if (appointmentId) {
         const baseUrl =
-          process.env.REACT_APP_USER_WEBSITE_URL ||
-          "https://business.pmuforms.com/#/${businessUri}";
-        const appointmentUrl = `${baseUrl}/appointment/${appointmentId}`;
+          import.meta.env.VITE_USER_WEBSITE_URL ||
+          "https://business.pmuforms.com";
+        const appointmentUrl = `${baseUrl}/#/appointment/${appointmentId}`;
 
         onSuccess(appointmentUrl);
+        toast.success("Appointment booked successfully");
       } else {
         console.error("No appointment ID returned from API");
-
+        console.error("Full response:", response);
         alert("Error: No appointment ID received");
       }
     } catch (error) {

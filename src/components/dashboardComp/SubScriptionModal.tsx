@@ -10,12 +10,14 @@ interface SubscriptionModalProps {
   onClose: () => void;
   onShowFeatures?: () => void;
   onSubscribe?: () => void;
+  currentPriceId?: string;
 }
 
 const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   onClose,
   onShowFeatures,
   onSubscribe,
+  currentPriceId,
 }) => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
@@ -75,6 +77,10 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
     onClose();
   };
 
+  const isCurrentPlan = (priceId: string) => {
+    return currentPriceId === priceId;
+  };
+
   return (
     <>
       <div className="subscription-modal">
@@ -92,10 +98,15 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 Forms
               </div>
             </div>
-            <h2>Reactivate your PMU Subscription</h2>
+            <h2>
+              {currentPriceId
+                ? "Change Your PMU Subscription"
+                : "Reactivate your PMU Subscription"}
+            </h2>
             <p>
-              Subscribe to unlock and keep enjoying the ultimate experience on
-              PMU Forms
+              {currentPriceId
+                ? "Select a new plan to switch your subscription"
+                : "Subscribe to unlock and keep enjoying the ultimate experience on PMU Forms"}
             </p>
           </div>
 
@@ -106,16 +117,36 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 <div
                   key={index}
                   className={`pricing-plan ${
-                    plan.popular ? "pricing-plan--popular" : ""
+                    plan.popular && !currentPriceId
+                      ? "pricing-plan--popular"
+                      : ""
+                  } ${
+                    isCurrentPlan(plan.priceId)
+                      ? "pricing-plan--current pricing-plan--popular"
+                      : ""
                   }`}
-                  onClick={() => handleSubscribeClick(plan.priceId)}
+                  onClick={() =>
+                    !isCurrentPlan(plan.priceId) &&
+                    handleSubscribeClick(plan.priceId)
+                  }
+                  style={{
+                    cursor: isCurrentPlan(plan.priceId)
+                      ? "not-allowed"
+                      : "pointer",
+                    opacity: isCurrentPlan(plan.priceId) ? 0.7 : 1,
+                  }}
                 >
                   {plan.badge && (
                     <div className="pricing-plan__badge">{plan.badge}</div>
                   )}
-                  {plan.popular && (
+                  {plan.popular && !currentPriceId && (
                     <div className="pricing-plan__popular-label">
                       Best Value
+                    </div>
+                  )}
+                  {isCurrentPlan(plan.priceId) && (
+                    <div className="pricing-plan__current-label">
+                      Current Plan
                     </div>
                   )}
                   <div className="pricing-plan__name">{plan.name}</div>
@@ -148,6 +179,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           onClose={() => setShowPaymentModal(false)}
           priceId={selectedPriceId}
           onPaymentSuccess={handlePaymentSuccess}
+          hasActiveSubscription={!!currentPriceId}
         />
       )}
     </>
