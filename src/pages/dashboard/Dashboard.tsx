@@ -64,24 +64,12 @@ const Dashboard: React.FC = () => {
     {
       title: "Add New Client",
       icon: CreateNewClientIcon,
-      onClick: () => {
-        if (!hasActiveSubscription) {
-          setShowSubscriptionModal(true);
-          return;
-        }
-        setShowAddClient(true);
-      },
+      onClick: () => setShowAddClient(true),
     },
     {
       title: "Manage Forms",
       icon: CreateNewFormIcon,
-      onClick: () => {
-        if (!hasActiveSubscription) {
-          setShowSubscriptionModal(true);
-        } else {
-          navigate("/forms");
-        }
-      },
+      onClick: () => navigate("/forms"),
     },
     {
       title: "Send Form",

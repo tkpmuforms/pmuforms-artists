@@ -35,7 +35,7 @@ import "./payment.scss";
 
 const PaymentPage = () => {
   const { user } = useAuth();
-  console.log("User data in PaymentPage:", user);
+
   const defaultCardId = user?.defaultStripePaymentMethod || "";
   const [showAddCard, setShowAddCard] = useState(false);
   const [showSelectPayment, setShowSelectPayment] = useState(false);
