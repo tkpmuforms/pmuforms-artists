@@ -15,13 +15,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ChangePasswordModal from "../../components/profileComp/ChangePasswordModal";
 import EditBusinessNameModal from "../../components/profileComp/EditBusinessNameModal";
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
-import PaymentPage from "./payment-page/PaymentPage";
 import useAuth from "../../context/useAuth";
+import type { OnboardingStep } from "../auth/authUtils";
+import { determineOnboardingStep } from "../auth/authUtils";
+import PaymentPage from "./payment-page/PaymentPage";
 import "./profile.scss";
-import { getAuthMe } from "../../services/artistServices";
 
 interface LocationState {
   newUser?: boolean;
+  onboardingStep?: OnboardingStep;
 }
 
 const ProfilePage: React.FC = () => {
@@ -33,23 +35,29 @@ const ProfilePage: React.FC = () => {
   const [showUpdateServices, setShowUpdateServices] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isNewUser] = useState(locationState?.newUser || false);
-  const [onboardingStep, setOnboardingStep] = useState<
-    "businessName" | "services" | "payment" | "completed"
-  >("completed");
+  const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>(
+    locationState?.onboardingStep || "completed"
+  );
   const [showPaymentPage, setShowPaymentPage] = useState(false);
 
   useEffect(() => {
-    if (isNewUser) {
-      setOnboardingStep("businessName");
-      setShowEditBusinessName(true);
+    if (!user) return;
+
+    const currentStep = determineOnboardingStep(user);
+    setOnboardingStep(currentStep);
+
+    const shouldShowOnboarding = isNewUser || currentStep !== "completed";
+
+    if (shouldShowOnboarding) {
+      if (currentStep === "businessName") {
+        setShowEditBusinessName(true);
+      } else if (currentStep === "services") {
+        setShowUpdateServices(true);
+      } else if (currentStep === "payment") {
+        setShowPaymentPage(true);
+      }
     }
-  }, [isNewUser]);
-  // useEffect(() => {
-  //   getAuthMe().then((response) => {
-  //     // You can handle the response if needed
-  //     console.log(response);
-  //   });
-  // }, []);
+  }, [user, isNewUser]);
 
   const handleBusinessNameSave = () => {
     setShowEditBusinessName(false);
@@ -59,14 +67,12 @@ const ProfilePage: React.FC = () => {
 
   const handleServicesSave = () => {
     setShowUpdateServices(false);
-    // Check if user has an active subscription
+
     const hasActiveSubscription = user?.stripeSubscriptionActive;
 
     if (hasActiveSubscription) {
-      // User has active sub, dont show payment page
       setOnboardingStep("completed");
     } else {
-      // No active sub, skip payment page
       setOnboardingStep("payment");
       setShowPaymentPage(true);
     }
@@ -88,11 +94,6 @@ const ProfilePage: React.FC = () => {
       title: "Payment & Subscriptions",
       onClick: () => navigate("/profile/payment"),
     },
-    // {
-    //   icon: <FileText size={10} />,
-    //   title: "Integrations ",
-    //   onClick: () => navigate("/profile/integrations"),
-    // },
     {
       icon: <HelpCircle size={10} />,
       title: "Help & Support",

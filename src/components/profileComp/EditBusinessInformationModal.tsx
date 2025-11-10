@@ -1,16 +1,16 @@
 "use client";
 
+import { Avatar } from "@mui/material";
+import { X } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
-import { X } from "lucide-react";
-import "./edit-business-information-modal.scss";
-import useAuth from "../../context/useAuth";
 import toast from "react-hot-toast";
-import { getAuthMe, updateBusinessName } from "../../services/artistServices";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../redux/auth";
-import { Avatar } from "@mui/material";
 import { EditBusinessLogoSvg } from "../../assets/svgs/ProfileSvg";
+import useAuth from "../../context/useAuth";
+import { setUser } from "../../redux/auth";
+import { getAuthMe, updateBusinessInfo } from "../../services/artistServices";
+import "./edit-business-information-modal.scss";
 
 interface EditBusinessInformationModalProps {
   onClose: () => void;
@@ -23,8 +23,10 @@ const EditBusinessInformationModal: React.FC<
   const { user } = useAuth();
   const dispatch = useDispatch();
   const [businessName, setBusinessName] = useState(user?.businessName || "");
-  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
-  const [address, setAddress] = useState(user?.address || "");
+  const [phoneNumber, setPhoneNumber] = useState(
+    user?.businessPhoneNumber || ""
+  );
+  const [address, setAddress] = useState(user?.businessAddress || "");
   const [website, setWebsite] = useState(user?.website || "");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState(user?.avatarUrl || "");
@@ -53,12 +55,12 @@ const EditBusinessInformationModal: React.FC<
 
     const businessData = {
       businessName: businessName.trim(),
-      phoneNumber: phoneNumber.trim(),
-      address: address.trim(),
+      businessPhoneNumber: phoneNumber.trim(),
+      businessAddress: address.trim(),
       website: website.trim(),
     };
 
-    updateBusinessName(businessData)
+    updateBusinessInfo(businessData)
       .then(() => {
         getAuthUser();
         onSave();
