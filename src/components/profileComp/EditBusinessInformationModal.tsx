@@ -30,6 +30,7 @@ const EditBusinessInformationModal: React.FC<
   const [website, setWebsite] = useState(user?.website || "");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState(user?.avatarUrl || "");
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -47,11 +48,13 @@ const EditBusinessInformationModal: React.FC<
     document.getElementById("logo-upload")?.click();
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!businessName.trim()) {
       toast.error("Business name cannot be empty");
       return;
     }
+
+    setIsSaving(true);
 
     const businessData = {
       businessName: businessName.trim(),
@@ -60,20 +63,20 @@ const EditBusinessInformationModal: React.FC<
       website: website.trim(),
     };
 
-    updateBusinessInfo(businessData)
-      .then(() => {
-        getAuthUser();
-        onSave();
-        toast.success("Business information updated successfully!");
-      })
-      .catch((error) => {
-        console.error("Error saving business information:", error);
-        toast.error("Failed to save business information");
-      });
+    try {
+      await updateBusinessInfo(businessData);
+      await getAuthUser();
+      toast.success("Business information updated successfully!");
+      onSave();
+    } catch (error) {
+      console.error("Error saving business information:", error);
+      toast.error("Failed to save business information");
+      setIsSaving(false);
+    }
   };
 
   const getAuthUser = () => {
-    getAuthMe()
+    return getAuthMe()
       .then((response) => {
         dispatch(setUser(response?.data?.user));
       })
@@ -194,8 +197,9 @@ const EditBusinessInformationModal: React.FC<
         <button
           className="edit-business-information-modal__save"
           onClick={handleSave}
+          disabled={isSaving}
         >
-          Save Changes
+          {isSaving ? "Saving..." : "Save Changes"}
         </button>
       </div>
     </div>

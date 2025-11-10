@@ -13,7 +13,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ChangePasswordModal from "../../components/profileComp/ChangePasswordModal";
-import EditBusinessNameModal from "../../components/profileComp/EditBusinessNameModal";
+import EditBusinessInformationModal from "../../components/profileComp/EditBusinessInformationModal";
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
 import useAuth from "../../context/useAuth";
 import type { OnboardingStep } from "../auth/authUtils";
@@ -31,7 +31,7 @@ const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as LocationState;
-  const [showEditBusinessName, setShowEditBusinessName] = useState(false);
+  const [showEditBusinessInfo, setShowEditBusinessInfo] = useState(false);
   const [showUpdateServices, setShowUpdateServices] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isNewUser] = useState(locationState?.newUser || false);
@@ -50,7 +50,7 @@ const ProfilePage: React.FC = () => {
 
     if (shouldShowOnboarding) {
       if (currentStep === "businessName") {
-        setShowEditBusinessName(true);
+        setShowEditBusinessInfo(true);
       } else if (currentStep === "services") {
         setShowUpdateServices(true);
       } else if (currentStep === "payment") {
@@ -59,8 +59,8 @@ const ProfilePage: React.FC = () => {
     }
   }, [user, isNewUser]);
 
-  const handleBusinessNameSave = () => {
-    setShowEditBusinessName(false);
+  const handleBusinessInfoSave = () => {
+    setShowEditBusinessInfo(false);
     setOnboardingStep("services");
     setShowUpdateServices(true);
   };
@@ -169,14 +169,14 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {isNewUser &&
-        showEditBusinessName &&
+        showEditBusinessInfo &&
         onboardingStep === "businessName" && (
-          <EditBusinessNameModal
+          <EditBusinessInformationModal
             onClose={() => {
-              setShowEditBusinessName(false);
+              setShowEditBusinessInfo(false);
               setOnboardingStep("completed");
             }}
-            onSave={handleBusinessNameSave}
+            onSave={handleBusinessInfoSave}
           />
         )}
 
@@ -212,10 +212,10 @@ const ProfilePage: React.FC = () => {
         </div>
       )}
 
-      {!isNewUser && showEditBusinessName && (
-        <EditBusinessNameModal
-          onClose={() => setShowEditBusinessName(false)}
-          onSave={() => setShowEditBusinessName(false)}
+      {!isNewUser && showEditBusinessInfo && (
+        <EditBusinessInformationModal
+          onClose={() => setShowEditBusinessInfo(false)}
+          onSave={() => setShowEditBusinessInfo(false)}
         />
       )}
 

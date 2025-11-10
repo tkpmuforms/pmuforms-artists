@@ -414,7 +414,10 @@ const Dashboard: React.FC = () => {
       </div>
 
       {showAddClient && (
-        <AddClientModal onClose={handleModalFlow.closeAddClient} />
+        <AddClientModal
+          onClose={handleModalFlow.closeAddClient}
+          onSuccess={handleModalFlow.closeAddClient}
+        />
       )}
 
       {showFormLinkModal && (
