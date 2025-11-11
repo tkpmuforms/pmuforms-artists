@@ -1,15 +1,14 @@
 "use client";
 
-import type React from "react";
-import { Edit } from "lucide-react";
-import "./business-information-page.scss";
-import useAuth from "../../../context/useAuth";
-import { useState } from "react";
-import { Service } from "../../../redux/types";
-import EditBusinessNameModal from "../../../components/profileComp/EditBusinessNameModal";
-import UpdateServicesModal from "../../../components/profileComp/UpdateServicesModal";
 import { Avatar } from "@mui/material";
+import { Edit } from "lucide-react";
+import type React from "react";
+import { useState } from "react";
 import EditBusinessInformationModal from "../../../components/profileComp/EditBusinessInformationModal";
+import UpdateServicesModal from "../../../components/profileComp/UpdateServicesModal";
+import useAuth from "../../../context/useAuth";
+import { Service } from "../../../redux/types";
+import "./business-information-page.scss";
 
 const BusinessInformationPage: React.FC = () => {
   const [showEditBusinessName, setShowEditBusinessName] = useState(false);
@@ -70,10 +69,14 @@ const BusinessInformationPage: React.FC = () => {
               </div>
 
               <label>Phone Number</label>
-              <div className="business-info">{user?.phoneNumber || "N/A"}</div>
+              <div className="business-info">
+                {user?.businessPhoneNumber || "N/A"}
+              </div>
 
               <label>Address</label>
-              <div className="business-info">{user?.address || "N/A"}</div>
+              <div className="business-info">
+                {user?.businessAddress || "N/A"}
+              </div>
 
               <label>Website</label>
               <div className="business-info">{user?.website || "N/A"}</div>

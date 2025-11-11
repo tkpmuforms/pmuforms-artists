@@ -125,6 +125,15 @@ const Dashboard: React.FC = () => {
     )}&background=A858F0&color=fff&size=40`;
   };
 
+  const refreshMetrics = async () => {
+    try {
+      const metricsResponse = await getMyMetrics();
+      setMetrics(metricsResponse.data?.metrics);
+    } catch (error) {
+      console.error("Error refreshing metrics:", error);
+    }
+  };
+
   const handleModalFlow = {
     closeSubscription: () => setShowSubscriptionModal(false),
     showFeatures: () => {
@@ -138,6 +147,10 @@ const Dashboard: React.FC = () => {
     closeFeatures: () => setShowFeaturesModal(false),
     closeFormLink: () => setShowFormLinkModal(false),
     closeAddClient: () => setShowAddClient(false),
+    closeAddClientAndRefresh: async () => {
+      setShowAddClient(false);
+      await refreshMetrics();
+    },
   };
 
   useEffect(() => {
@@ -414,7 +427,10 @@ const Dashboard: React.FC = () => {
       </div>
 
       {showAddClient && (
-        <AddClientModal onClose={handleModalFlow.closeAddClient} />
+        <AddClientModal
+          onClose={handleModalFlow.closeAddClient}
+          onSuccess={handleModalFlow.closeAddClientAndRefresh}
+        />
       )}
 
       {showFormLinkModal && (

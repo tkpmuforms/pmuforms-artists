@@ -2,6 +2,35 @@ import { auth, signInWithPopup } from "../../firebase/firebase";
 import { createArtist } from "../../services/artistServices";
 import type { AuthProvider, UserCredential, User } from "firebase/auth";
 
+export type OnboardingStep =
+  | "businessName"
+  | "services"
+  | "payment"
+  | "completed";
+
+interface Artist {
+  businessName?: string;
+  services?: unknown[];
+  stripeSubscriptionActive?: boolean;
+  appStorePurchaseActive?: boolean;
+}
+
+export const determineOnboardingStep = (artist: Artist): OnboardingStep => {
+  if (artist.businessName === "New Business") {
+    return "businessName";
+  }
+
+  if (!artist.services || artist.services.length === 0) {
+    return "services";
+  }
+
+  if (!artist.stripeSubscriptionActive && !artist.appStorePurchaseActive) {
+    return "payment";
+  }
+
+  return "completed";
+};
+
 export const HandleSocialLogin = async (
   provider: AuthProvider,
   navigate: (path: string, options?: { state?: any }) => void,
@@ -33,8 +62,16 @@ export const HandleSocialLogin = async (
     localStorage.setItem("accessToken", res.data?.access_token ?? "");
     handleAuthSuccess(res?.data?.artist, res.data?.access_token ?? "");
 
-    if (res.data.userCreated === true) {
-      navigate("/profile", { state: { newUser: true } });
+    const artist = res?.data?.artist;
+    const onboardingStep = determineOnboardingStep(artist);
+
+    if (res.data.userCreated === true || onboardingStep !== "completed") {
+      navigate("/profile", {
+        state: {
+          newUser: true,
+          onboardingStep,
+        },
+      });
     } else {
       navigate("/dashboard");
     }
@@ -72,8 +109,16 @@ export const SignInSuccessWithAuthResult = async (
     localStorage.setItem("accessToken", res.data?.access_token ?? "");
     handleAuthSuccess(res?.data?.artist, res.data?.access_token ?? "");
 
-    if (res.data.userCreated === true) {
-      navigate("/profile", { state: { newUser: true } });
+    const artist = res?.data?.artist;
+    const onboardingStep = determineOnboardingStep(artist);
+
+    if (res.data.userCreated === true || onboardingStep !== "completed") {
+      navigate("/profile", {
+        state: {
+          newUser: true,
+          onboardingStep,
+        },
+      });
     } else {
       navigate("/dashboard");
     }

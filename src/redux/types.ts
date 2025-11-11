@@ -3,11 +3,12 @@ export interface User {
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
+  businessPhoneNumber?: string;
   avatarUrl?: string;
   documentPath?: string;
   documentId?: string;
   userId?: string;
-  address?: string;
+  businessAddress?: string;
   website?: string;
   email?: string;
   businessName?: string;

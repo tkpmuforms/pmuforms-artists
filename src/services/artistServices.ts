@@ -307,3 +307,11 @@ export const detachPaymentMethod = async (paymentMethodId: string) => {
 export const listTransactions = async () => {
   return axiosInstance.get("/api/subscriptions/stripe/list-transactions");
 };
+export const updateBusinessInfo = async (data: {
+  businessName: string;
+  businessPhoneNumber: string;
+  businessAddress: string;
+  website?: string;
+}) => {
+  return axiosInstance.patch("/api/artists/update-business-info", data);
+};
