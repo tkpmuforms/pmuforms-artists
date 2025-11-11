@@ -22,9 +22,9 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
 
-  const weeklyPrice = 10;
-  const monthlyPrice = 29.99;
-  const yearlyPrice = 269.99;
+  const weeklyPrice = 9.99;
+  const monthlyPrice = 19.99;
+  const yearlyPrice = 149.99;
 
   const monthlyPricePerWeek = monthlyPrice / 4.33;
   const yearlyPricePerWeek = yearlyPrice / 52;
@@ -37,30 +37,30 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const pricingPlans = [
     {
       name: "WEEKLY",
-      price: "$10",
+      price: "$9.99",
       period: "week",
       subtitle: "Basic access",
       badge: "",
       popular: false,
-      priceId: "price_1SOKJc1WpkP2T0EiyKEpxK4J",
+      priceId: "price_1SSQsX1jrMBI9bYuLckOJGZY",
     },
     {
       name: "MONTHLY",
-      price: "$29.99",
+      price: "$19.99",
       period: "month",
       subtitle: `(only $${monthlyPricePerWeek.toFixed(2)} / week)`,
       badge: `-${Math.round(monthlyDiscount)}%`,
       popular: false,
-      priceId: "price_1SOKMB1WpkP2T0EinSb2IbdD",
+      priceId: "price_1SSQsB1jrMBI9bYugUUPQIqd",
     },
     {
       name: "YEARLY",
-      price: "$269.99",
+      price: "$149.99",
       period: "year",
       subtitle: `(only $${yearlyPricePerWeek.toFixed(2)} / week)`,
       badge: `-${Math.round(yearlyDiscount)}%`,
       popular: true,
-      priceId: "price_1SOKNb1WpkP2T0EiO1dNlUAr",
+      priceId: "price_1SSQrl1jrMBI9bYubEXB1TjG",
     },
   ];
 
