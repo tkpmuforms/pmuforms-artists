@@ -22,9 +22,9 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
 
-  const weeklyPrice = 10;
-  const monthlyPrice = 29.99;
-  const yearlyPrice = 269.99;
+  const weeklyPrice = Number(import.meta.env.VITE_WEEKLY_PRICE);
+  const monthlyPrice = Number(import.meta.env.VITE_MONTHLY_PRICE);
+  const yearlyPrice = Number(import.meta.env.VITE_YEARLY_PRICE);
 
   const monthlyPricePerWeek = monthlyPrice / 4.33;
   const yearlyPricePerWeek = yearlyPrice / 52;
@@ -36,31 +36,43 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
   const pricingPlans = [
     {
-      name: "WEEKLY",
-      price: "$10",
-      period: "week",
-      subtitle: "Basic access",
-      badge: "",
-      popular: false,
-      priceId: "price_1SOKJc1WpkP2T0EiyKEpxK4J",
+      name: import.meta.env.VITE_WEEKLY_NAME,
+      price: `$${weeklyPrice}`,
+      period: import.meta.env.VITE_WEEKLY_PERIOD,
+      subtitle: import.meta.env.VITE_WEEKLY_SUBTITLE,
+      badge: import.meta.env.VITE_WEEKLY_BADGE,
+      popular: import.meta.env.VITE_WEEKLY_POPULAR === "true",
+      priceId: import.meta.env.VITE_WEEKLY_PRICE_ID,
     },
     {
-      name: "MONTHLY",
-      price: "$29.99",
-      period: "month",
-      subtitle: `(only $${monthlyPricePerWeek.toFixed(2)} / week)`,
-      badge: `-${Math.round(monthlyDiscount)}%`,
-      popular: false,
-      priceId: "price_1SOKMB1WpkP2T0EinSb2IbdD",
+      name: import.meta.env.VITE_MONTHLY_NAME,
+      price: `$${monthlyPrice}`,
+      period: import.meta.env.VITE_MONTHLY_PERIOD,
+      subtitle:
+        import.meta.env.VITE_MONTHLY_BADGE_PERCENT === "auto"
+          ? `(only $${monthlyPricePerWeek.toFixed(2)} / week)`
+          : `(only $${monthlyPricePerWeek.toFixed(2)} / week)`,
+      badge:
+        import.meta.env.VITE_MONTHLY_BADGE_PERCENT === "auto"
+          ? `-${Math.round(monthlyDiscount)}%`
+          : import.meta.env.VITE_MONTHLY_BADGE_PERCENT || "",
+      popular: import.meta.env.VITE_MONTHLY_POPULAR === "true",
+      priceId: import.meta.env.VITE_MONTHLY_PRICE_ID,
     },
     {
-      name: "YEARLY",
-      price: "$269.99",
-      period: "year",
-      subtitle: `(only $${yearlyPricePerWeek.toFixed(2)} / week)`,
-      badge: `-${Math.round(yearlyDiscount)}%`,
-      popular: true,
-      priceId: "price_1SOKNb1WpkP2T0EiO1dNlUAr",
+      name: import.meta.env.VITE_YEARLY_NAME,
+      price: `$${yearlyPrice}`,
+      period: import.meta.env.VITE_YEARLY_PERIOD,
+      subtitle:
+        import.meta.env.VITE_YEARLY_BADGE_PERCENT === "auto"
+          ? `(only $${yearlyPricePerWeek.toFixed(2)} / week)`
+          : `(only $${yearlyPricePerWeek.toFixed(2)} / week)`,
+      badge:
+        import.meta.env.VITE_YEARLY_BADGE_PERCENT === "auto"
+          ? `-${Math.round(yearlyDiscount)}%`
+          : import.meta.env.VITE_YEARLY_BADGE_PERCENT || "",
+      popular: import.meta.env.VITE_YEARLY_POPULAR === "true",
+      priceId: import.meta.env.VITE_YEARLY_PRICE_ID,
     },
   ];
 
