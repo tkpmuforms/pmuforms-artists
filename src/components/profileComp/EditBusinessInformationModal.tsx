@@ -155,6 +155,21 @@ const EditBusinessInformationModal: React.FC<
             </div>
 
             <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={user?.email || ""}
+                className="form-input"
+                placeholder="Email"
+                disabled
+                style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
               <label htmlFor="phoneNumber">Business Phone Number</label>
               <input
                 id="phoneNumber"
@@ -165,9 +180,7 @@ const EditBusinessInformationModal: React.FC<
                 placeholder="Business Phone Number"
               />
             </div>
-          </div>
 
-          <div className="form-row">
             <div className="form-group">
               <label htmlFor="address">Business Address</label>
               <input
@@ -179,7 +192,9 @@ const EditBusinessInformationModal: React.FC<
                 placeholder="Business Address"
               />
             </div>
+          </div>
 
+          <div className="form-row">
             <div className="form-group">
               <label htmlFor="website">Business Website (Optional)</label>
               <input
