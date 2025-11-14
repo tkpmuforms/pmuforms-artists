@@ -36,42 +36,30 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
   const pricingPlans = [
     {
-      name: import.meta.env.VITE_WEEKLY_NAME,
+      name: "WEEKLY",
       price: `$${weeklyPrice}`,
-      period: import.meta.env.VITE_WEEKLY_PERIOD,
-      subtitle: import.meta.env.VITE_WEEKLY_SUBTITLE,
-      badge: import.meta.env.VITE_WEEKLY_BADGE,
-      popular: import.meta.env.VITE_WEEKLY_POPULAR === "true",
+      period: "week",
+      subtitle: "Basic access",
+      badge: "",
+      popular: false,
       priceId: import.meta.env.VITE_WEEKLY_PRICE_ID,
     },
     {
-      name: import.meta.env.VITE_MONTHLY_NAME,
+      name: "MONTHLY",
       price: `$${monthlyPrice}`,
-      period: import.meta.env.VITE_MONTHLY_PERIOD,
-      subtitle:
-        import.meta.env.VITE_MONTHLY_BADGE_PERCENT === "auto"
-          ? `(only $${monthlyPricePerWeek.toFixed(2)} / week)`
-          : `(only $${monthlyPricePerWeek.toFixed(2)} / week)`,
-      badge:
-        import.meta.env.VITE_MONTHLY_BADGE_PERCENT === "auto"
-          ? `-${Math.round(monthlyDiscount)}%`
-          : import.meta.env.VITE_MONTHLY_BADGE_PERCENT || "",
-      popular: import.meta.env.VITE_MONTHLY_POPULAR === "true",
+      period: "month",
+      subtitle: `(only $${monthlyPricePerWeek.toFixed(2)} / week)`,
+      badge: `-${Math.round(monthlyDiscount)}%`,
+      popular: false,
       priceId: import.meta.env.VITE_MONTHLY_PRICE_ID,
     },
     {
-      name: import.meta.env.VITE_YEARLY_NAME,
+      name: "YEARLY",
       price: `$${yearlyPrice}`,
-      period: import.meta.env.VITE_YEARLY_PERIOD,
-      subtitle:
-        import.meta.env.VITE_YEARLY_BADGE_PERCENT === "auto"
-          ? `(only $${yearlyPricePerWeek.toFixed(2)} / week)`
-          : `(only $${yearlyPricePerWeek.toFixed(2)} / week)`,
-      badge:
-        import.meta.env.VITE_YEARLY_BADGE_PERCENT === "auto"
-          ? `-${Math.round(yearlyDiscount)}%`
-          : import.meta.env.VITE_YEARLY_BADGE_PERCENT || "",
-      popular: import.meta.env.VITE_YEARLY_POPULAR === "true",
+      period: "year",
+      subtitle: `(only $${yearlyPricePerWeek.toFixed(2)} / week)`,
+      badge: `-${Math.round(yearlyDiscount)}%`,
+      popular: true,
       priceId: import.meta.env.VITE_YEARLY_PRICE_ID,
     },
   ];
