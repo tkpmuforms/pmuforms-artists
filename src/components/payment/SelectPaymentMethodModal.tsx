@@ -129,7 +129,6 @@ const SelectPaymentMethodModal = ({
         }
       }
 
-      // Refresh user data to update subscription status immediately
       await refreshAuthUser(dispatch);
 
       if (onPaymentSuccess) {
