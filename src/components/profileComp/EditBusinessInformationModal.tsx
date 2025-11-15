@@ -9,7 +9,8 @@ import { useDispatch } from "react-redux";
 import { EditBusinessLogoSvg } from "../../assets/svgs/ProfileSvg";
 import useAuth from "../../context/useAuth";
 import { setUser } from "../../redux/auth";
-import { getAuthMe, updateBusinessInfo } from "../../services/artistServices";
+import { updateBusinessInfo } from "../../services/artistServices";
+import { refreshAuthUser } from "../../utils/authUtils";
 import "./edit-business-information-modal.scss";
 
 interface EditBusinessInformationModalProps {
@@ -65,7 +66,7 @@ const EditBusinessInformationModal: React.FC<
 
     try {
       await updateBusinessInfo(businessData);
-      await getAuthUser();
+      await refreshAuthUser(dispatch);
       toast.success("Business information updated successfully!");
       onSave();
     } catch (error) {
@@ -73,16 +74,6 @@ const EditBusinessInformationModal: React.FC<
       toast.error("Failed to save business information");
       setIsSaving(false);
     }
-  };
-
-  const getAuthUser = () => {
-    return getAuthMe()
-      .then((response) => {
-        dispatch(setUser(response?.data?.user));
-      })
-      .catch((error) => {
-        console.error("Error fetching auth user:", error);
-      });
   };
 
   return (

@@ -7,16 +7,15 @@ import {
   createSubscription,
   listPaymentMethods,
   changeSubscriptionPlan,
-  getAuthMe,
 } from "../../services/artistServices";
 import AddCardModal from "./AddCardModal";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../redux/auth";
 import {
   saveSubscriptionToStorage,
   getSubscriptionFromStorage,
 } from "../../utils/subscriptionUtils";
+import { refreshAuthUser } from "../../utils/authUtils";
 
 interface Card {
   id: string;
@@ -130,13 +129,8 @@ const SelectPaymentMethodModal = ({
         }
       }
 
-      getAuthMe()
-        .then((response) => {
-          dispatch(setUser(response?.data?.user));
-        })
-        .catch((error) => {
-          console.error("Error fetching auth user:", error);
-        });
+      // Refresh user data to update subscription status immediately
+      await refreshAuthUser(dispatch);
 
       if (onPaymentSuccess) {
         onPaymentSuccess();
