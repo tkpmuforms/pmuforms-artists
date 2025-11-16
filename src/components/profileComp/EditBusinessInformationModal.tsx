@@ -9,7 +9,8 @@ import { useDispatch } from "react-redux";
 import { EditBusinessLogoSvg } from "../../assets/svgs/ProfileSvg";
 import useAuth from "../../context/useAuth";
 import { setUser } from "../../redux/auth";
-import { getAuthMe, updateBusinessInfo } from "../../services/artistServices";
+import { updateBusinessInfo } from "../../services/artistServices";
+import { refreshAuthUser } from "../../utils/authUtils";
 import "./edit-business-information-modal.scss";
 
 interface EditBusinessInformationModalProps {
@@ -65,7 +66,7 @@ const EditBusinessInformationModal: React.FC<
 
     try {
       await updateBusinessInfo(businessData);
-      await getAuthUser();
+      await refreshAuthUser(dispatch);
       toast.success("Business information updated successfully!");
       onSave();
     } catch (error) {
@@ -73,16 +74,6 @@ const EditBusinessInformationModal: React.FC<
       toast.error("Failed to save business information");
       setIsSaving(false);
     }
-  };
-
-  const getAuthUser = () => {
-    return getAuthMe()
-      .then((response) => {
-        dispatch(setUser(response?.data?.user));
-      })
-      .catch((error) => {
-        console.error("Error fetching auth user:", error);
-      });
   };
 
   return (
@@ -155,6 +146,21 @@ const EditBusinessInformationModal: React.FC<
             </div>
 
             <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={user?.email || ""}
+                className="form-input"
+                placeholder="Email"
+                disabled
+                style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
               <label htmlFor="phoneNumber">Business Phone Number</label>
               <input
                 id="phoneNumber"
@@ -165,9 +171,7 @@ const EditBusinessInformationModal: React.FC<
                 placeholder="Business Phone Number"
               />
             </div>
-          </div>
 
-          <div className="form-row">
             <div className="form-group">
               <label htmlFor="address">Business Address</label>
               <input
@@ -179,7 +183,9 @@ const EditBusinessInformationModal: React.FC<
                 placeholder="Business Address"
               />
             </div>
+          </div>
 
+          <div className="form-row">
             <div className="form-group">
               <label htmlFor="website">Business Website (Optional)</label>
               <input

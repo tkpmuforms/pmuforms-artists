@@ -3,6 +3,7 @@
 import { CreditCard, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
 import SubscriptionModal from "../../../components/dashboardComp/SubScriptionModal";
 import { LoadingSmall } from "../../../components/loading/Loading";
@@ -17,6 +18,7 @@ import {
   listPaymentMethods,
   listTransactions,
 } from "../../../services/artistServices";
+import { refreshAuthUser } from "../../../utils/authUtils";
 import {
   formatNextBillingDate,
   getPlanName,
@@ -35,6 +37,7 @@ import "./payment.scss";
 
 const PaymentPage = () => {
   const { user } = useAuth();
+  const dispatch = useDispatch();
 
   const defaultCardId = user?.defaultStripePaymentMethod || "";
   const [showAddCard, setShowAddCard] = useState(false);
@@ -131,6 +134,9 @@ const PaymentPage = () => {
   const handleCancelSubscription = async () => {
     try {
       await cancelSubscription();
+
+      await refreshAuthUser(dispatch);
+
       fetchTransactionHistory();
       const response = await getSubscription();
       const subData = response.data;
@@ -160,7 +166,10 @@ const PaymentPage = () => {
     setShowAddCard(false);
   };
 
-  const handleSubscriptionSuccess = () => {
+  const handleSubscriptionSuccess = async () => {
+    // Refresh user data to update subscription status immediately
+    await refreshAuthUser(dispatch);
+
     fetchTransactionHistory();
     fetchSubscriptionData();
     setShowUpgradeSubscription(false);

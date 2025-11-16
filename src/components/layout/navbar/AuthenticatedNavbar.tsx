@@ -139,7 +139,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
             </svg>
           </button>
 
-          <button
+          {/* <button
             className="notification-button"
             onClick={onNotificationClick}
             aria-label="Notifications"
@@ -160,7 +160,7 @@ const AuthenticatedNavbar: React.FC<AuthenticatedNavbarProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+          </button> */}
           {showSearch && (
             <ClientSearchModal onClose={() => setShowSearch(false)} />
           )}

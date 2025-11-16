@@ -22,9 +22,9 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
 
-  const weeklyPrice = 9.99;
-  const monthlyPrice = 19.99;
-  const yearlyPrice = 149.99;
+  const weeklyPrice = Number(import.meta.env.VITE_WEEKLY_PRICE);
+  const monthlyPrice = Number(import.meta.env.VITE_MONTHLY_PRICE);
+  const yearlyPrice = Number(import.meta.env.VITE_YEARLY_PRICE);
 
   const monthlyPricePerWeek = monthlyPrice / 4.33;
   const yearlyPricePerWeek = yearlyPrice / 52;
@@ -37,30 +37,30 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const pricingPlans = [
     {
       name: "WEEKLY",
-      price: "$9.99",
+      price: `$${weeklyPrice}`,
       period: "week",
       subtitle: "Basic access",
       badge: "",
       popular: false,
-      priceId: "price_1SSQsX1jrMBI9bYuLckOJGZY",
+      priceId: import.meta.env.VITE_WEEKLY_PRICE_ID,
     },
     {
       name: "MONTHLY",
-      price: "$19.99",
+      price: `$${monthlyPrice}`,
       period: "month",
       subtitle: `(only $${monthlyPricePerWeek.toFixed(2)} / week)`,
       badge: `-${Math.round(monthlyDiscount)}%`,
       popular: false,
-      priceId: "price_1SSQsB1jrMBI9bYugUUPQIqd",
+      priceId: import.meta.env.VITE_MONTHLY_PRICE_ID,
     },
     {
       name: "YEARLY",
-      price: "$149.99",
+      price: `$${yearlyPrice}`,
       period: "year",
       subtitle: `(only $${yearlyPricePerWeek.toFixed(2)} / week)`,
       badge: `-${Math.round(yearlyDiscount)}%`,
       popular: true,
-      priceId: "price_1SSQrl1jrMBI9bYubEXB1TjG",
+      priceId: import.meta.env.VITE_YEARLY_PRICE_ID,
     },
   ];
 

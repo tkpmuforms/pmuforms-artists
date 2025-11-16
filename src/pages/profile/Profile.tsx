@@ -20,6 +20,7 @@ import type { OnboardingStep } from "../auth/authUtils";
 import { determineOnboardingStep } from "../auth/authUtils";
 import PaymentPage from "./payment-page/PaymentPage";
 import "./profile.scss";
+import { getAuthMe } from "../../services/artistServices";
 
 interface LocationState {
   newUser?: boolean;
@@ -58,6 +59,12 @@ const ProfilePage: React.FC = () => {
       }
     }
   }, [user, isNewUser]);
+
+  useEffect(() => {
+    getAuthMe().then(() => {
+      console.log("User data refreshed");
+    });
+  }, []);
 
   const handleBusinessInfoSave = () => {
     setShowEditBusinessInfo(false);
