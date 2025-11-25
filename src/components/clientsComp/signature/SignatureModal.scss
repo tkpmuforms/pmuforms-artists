@@ -1,3 +1,7 @@
+.signature-canvas {
+  touch-action: none; /* Prevent scrolling gestures */
+}
+
 .signature-modal {
   position: fixed;
   top: 0;
