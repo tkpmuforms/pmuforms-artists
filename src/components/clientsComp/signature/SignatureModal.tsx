@@ -185,14 +185,6 @@ const SignatureModal: React.FC<SignatureModalProps> = ({
               onMouseMove={draw}
               onMouseUp={stopDrawing}
               onMouseLeave={stopDrawing}
-            />
-            <canvas
-              ref={canvasRef}
-              className="signature-canvas"
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseLeave={stopDrawing}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={stopDrawing}
