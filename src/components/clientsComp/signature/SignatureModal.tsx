@@ -122,6 +122,48 @@ const SignatureModal: React.FC<SignatureModalProps> = ({
     }
   };
 
+  const getTouchPos = (canvas: HTMLCanvasElement, touch: Touch) => {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    };
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault(); // stop scrolling
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const touch = e.touches[0] as Touch;
+    const pos = getTouchPos(canvas, touch);
+
+    setIsDrawing(true);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault(); // stop page scrolling
+    if (!isDrawing) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const touch = e.touches[0] as Touch;
+    const pos = getTouchPos(canvas, touch);
+
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    setHasSignature(true);
+  };
+
   return (
     <div className="signature-modal">
       <div className="signature-modal__overlay" onClick={onClose} />
@@ -143,6 +185,9 @@ const SignatureModal: React.FC<SignatureModalProps> = ({
               onMouseMove={draw}
               onMouseUp={stopDrawing}
               onMouseLeave={stopDrawing}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={stopDrawing}
             />
           </div>
 
