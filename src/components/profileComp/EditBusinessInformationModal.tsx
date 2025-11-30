@@ -71,7 +71,17 @@ const EditBusinessInformationModal: React.FC<
       onSave();
     } catch (error) {
       console.error("Error saving business information:", error);
-      toast.error("Failed to save business information");
+      let errorMessage = "Failed to update business information";
+
+      const err = error as Record<string, unknown>;
+      const messageOrMsg = err?.message ?? err?.msg;
+      if (typeof messageOrMsg === "string") {
+        errorMessage = messageOrMsg;
+      } else if (Array.isArray(messageOrMsg)) {
+        errorMessage = messageOrMsg.join(", ");
+      }
+
+      toast.error(errorMessage);
       setIsSaving(false);
     }
   };
@@ -187,7 +197,7 @@ const EditBusinessInformationModal: React.FC<
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="website">Business Website (Optional)</label>
+              <label htmlFor="website">Business Website</label>
               <input
                 id="website"
                 type="url"
