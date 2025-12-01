@@ -68,6 +68,9 @@ const BusinessInformationPage: React.FC = () => {
                 <div className="business-name">{user?.businessName}</div>
               </div>
 
+              <label>Email</label>
+              <div className="business-info">{user?.email || "N/A"}</div>
+
               <label>Phone Number</label>
               <div className="business-info">
                 {user?.businessPhoneNumber || "N/A"}

@@ -156,7 +156,7 @@ const Auth: React.FC = () => {
                             )
                           }
                         />
-                        <MobileFacebookLoginSvg
+                        {/* <MobileFacebookLoginSvg
                           onClick={() =>
                             HandleSocialLogin(
                               facebookProvider,
@@ -165,7 +165,7 @@ const Auth: React.FC = () => {
                               showAlert
                             )
                           }
-                        />
+                        /> */}
                         <MobileAppleLoginSvg
                           onClick={() =>
                             HandleSocialLogin(
@@ -258,7 +258,7 @@ const Auth: React.FC = () => {
                       )
                     }
                   />
-                  <FacebookLoginSvg
+                  {/* <FacebookLoginSvg
                     onClick={() =>
                       HandleSocialLogin(
                         facebookProvider,
@@ -267,7 +267,7 @@ const Auth: React.FC = () => {
                         showAlert
                       )
                     }
-                  />
+                  /> */}
                   <AppleLoginSvg
                     onClick={() =>
                       HandleSocialLogin(

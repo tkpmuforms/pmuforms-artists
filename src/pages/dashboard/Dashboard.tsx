@@ -16,6 +16,7 @@ import {
 } from "../../assets/svgs/DashboardSvg";
 import AddClientModal from "../../components/clientsComp/AddClientModal";
 import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
+import AppointmentGraphs from "../../components/dashboardComp/AppointmentGraphs";
 import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
 import FormLinkModal from "../../components/dashboardComp/FormLinkModal";
 import MetricsCard from "../../components/dashboardComp/MetricsCard";
@@ -424,6 +425,8 @@ const Dashboard: React.FC = () => {
             {renderRecentForms()}
           </div>
         </section>
+
+        {/* <AppointmentGraphs appointments={appointments} /> */}
       </div>
 
       {showAddClient && (
