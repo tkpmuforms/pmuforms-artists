@@ -355,7 +355,7 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
 
   const handleUpdateServices = (selectedServiceIds: number[]) => {
     if (!form) return;
-    
+
     updateFormServices(form.id, { services: selectedServiceIds })
       .then((response) => {
         if (response?.data?.form?.id) {
