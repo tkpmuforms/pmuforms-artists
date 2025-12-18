@@ -355,20 +355,51 @@ const EditForms: React.FC<EditFormsProps> = ({ formId, onClose }) => {
 
   const handleUpdateServices = (selectedServiceIds: number[]) => {
     if (!form) return;
-    const updatedForm = {
-      ...form,
-      services: selectedServiceIds,
-    };
+    
     updateFormServices(form.id, { services: selectedServiceIds })
-      .then(() => {
+      .then((response) => {
+        if (response?.data?.form?.id) {
+          const newFormId = response.data.form.id;
+
+          if (paramFormId && newFormId !== form.id) {
+            navigate(`/forms/edit/${newFormId}`, { replace: true });
+          }
+
+          const formData = response.data.form;
+          const transformedForm: SingleForm = {
+            id: formData.id || formData._id,
+            type: formData.type,
+            title: formData.title,
+            sections: formData.sections.map((section: Section) => ({
+              ...section,
+              _id: section._id || section.id,
+            })),
+            services: formData.services || [],
+          };
+
+          const updatedForm = JSON.parse(
+            JSON.stringify(transformedForm).replace(
+              /\(?\{\{user\.businessName\}\}\)?/g,
+              user?.businessName || "Your Business Name"
+            )
+          );
+
+          setForm(updatedForm);
+        } else {
+          const updatedForm = {
+            ...form,
+            services: selectedServiceIds,
+          };
+          setForm(updatedForm);
+        }
+
+        setShowServicesModal(false);
         toast.success("Services updated successfully");
       })
       .catch((error) => {
         console.error("Error updating services:", error);
         toast.error("Failed to update services");
       });
-    setShowServicesModal(false);
-    setForm(updatedForm);
   };
 
   const handleSaveForm = () => {

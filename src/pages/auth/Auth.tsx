@@ -5,11 +5,9 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import {
   AppleLoginSvg,
-  FacebookLoginSvg,
   GoogleLoginSvg,
   LogoSvg,
   MobileAppleLoginSvg,
-  MobileFacebookLoginSvg,
   MobileGoogleLoginSvg,
 } from "../../assets/svgs/AuthSvg";
 import LoginPage from "../../components/authComp/login/Login";
@@ -17,11 +15,7 @@ import SignupPage from "../../components/authComp/signup/SignUp";
 import Navbar from "../../components/layout/navbar/Navbar";
 import ImageSlider from "../../components/slider/ImageSlider";
 import useAuth from "../../context/useAuth";
-import {
-  appleProvider,
-  facebookProvider,
-  googleProvider,
-} from "../../firebase/firebase";
+import { appleProvider, googleProvider } from "../../firebase/firebase";
 import "./auth.scss";
 import { HandleSocialLogin } from "./authUtils";
 
