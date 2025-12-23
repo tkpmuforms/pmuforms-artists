@@ -58,19 +58,19 @@ export const DeleteFormSvg: React.FC<IconProps> = ({ onClick }) => {
         height="48"
         rx="24"
         fill="#FF3B30"
-        fill-opacity="0.1"
+        fillOpacity="0.1"
       />
       <path
         d="M45.5 19.4833C42.725 19.2083 39.9333 19.0667 37.15 19.0667C35.5 19.0667 33.85 19.15 32.2 19.3167L30.5 19.4833"
         stroke="#FF3B30"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M35.084 18.6417L35.2673 17.5501C35.4007 16.7584 35.5007 16.1667 36.909 16.1667H39.0923C40.5007 16.1667 40.609 16.7917 40.734 17.5584L40.9173 18.6417"
         stroke="#FF3B30"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
