@@ -1,4 +1,4 @@
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,9 +20,12 @@ const ClientsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalClients, setTotalClients] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [totalPages, setTotalPages] = useState(0);
 
   const convertToClient = (
-    customer: CustomerResponse["customers"][0]
+    customer: CustomerResponse["customers"][0],
   ): Client => {
     const clientName = customer?.name ?? customer?.info?.client_name ?? "";
     return {
@@ -34,17 +37,18 @@ const ClientsPage: React.FC = () => {
     };
   };
 
-  const fetchCustomers = async (searchName?: string) => {
+  const fetchCustomers = async (page: number = 1, searchName?: string) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await searchCustomers(searchName, 1, 30);
 
+      const response = await searchCustomers(searchName, page, itemsPerPage);
       const data: CustomerResponse = response?.data;
 
       const convertedClients = data.customers?.map(convertToClient);
       setClients(convertedClients);
       setTotalClients(data.metadata.total);
+      setTotalPages(Math.ceil(data.metadata.total / itemsPerPage));
     } catch (err) {
       console.error("Error fetching customers:", err);
       setError("Failed to load clients. Please try again.");
@@ -54,15 +58,21 @@ const ClientsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchCustomers();
-  }, []);
+    fetchCustomers(currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchCustomers(1, searchQuery || undefined);
+  }, [itemsPerPage]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      setCurrentPage(1); // Reset to first page when searching
       if (searchQuery.trim()) {
-        fetchCustomers(searchQuery.trim());
+        fetchCustomers(1, searchQuery.trim());
       } else {
-        fetchCustomers();
+        fetchCustomers(1);
       }
     }, 300);
 
@@ -79,7 +89,17 @@ const ClientsPage: React.FC = () => {
 
   const handleAddClientSuccess = () => {
     setShowAddClient(false);
-    fetchCustomers();
+    fetchCustomers(currentPage);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const handleItemsPerPageChange = (value: number) => {
+    setItemsPerPage(value);
   };
 
   if (loading && clients.length === 0) {
@@ -102,7 +122,7 @@ const ClientsPage: React.FC = () => {
         </button>
       </div>
 
-      {/* <div className="clients-page__search">
+      <div className="clients-page__search">
         <div className="search-input-wrapper">
           <Search size={20} className="search-icon" />
           <input
@@ -114,7 +134,7 @@ const ClientsPage: React.FC = () => {
             className="search-input"
           />
         </div>
-      </div> */}
+      </div>
 
       <div className="clients-page__stats">
         <span>Total Clients: {totalClients}</span>
@@ -129,7 +149,13 @@ const ClientsPage: React.FC = () => {
       {error && (
         <div className="clients-page__error">
           <p>{error}</p>
-          <button onClick={() => fetchCustomers()}>Retry</button>
+          <button
+            onClick={() =>
+              fetchCustomers(currentPage, searchQuery || undefined)
+            }
+          >
+            Retry
+          </button>
         </div>
       )}
 
@@ -155,7 +181,47 @@ const ClientsPage: React.FC = () => {
 
       {loading && clients.length > 0 && (
         <div className="clients-page__loading-more">
-          <p>Updating results...</p>
+          <LoadingSmall />
+        </div>
+      )}
+
+      {!loading && totalPages > 1 && (
+        <div className="clients-page__pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pagination-btn pagination-btn--prev"
+            aria-label="Previous page"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <div className="pagination-info">
+            <span className="pagination-current">{currentPage}</span>
+            <span className="pagination-separator">/</span>
+            <span className="pagination-total">{totalPages}</span>
+          </div>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pagination-btn pagination-btn--next"
+            aria-label="Next page"
+          >
+            <ChevronRight size={20} />
+          </button>
+          <div className="pagination-per-page">
+            <label htmlFor="items-per-page">Show:</label>
+            <select
+              id="items-per-page"
+              value={itemsPerPage}
+              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+              className="per-page-select"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={30}>30</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
         </div>
       )}
 

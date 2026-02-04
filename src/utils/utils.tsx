@@ -26,7 +26,7 @@ export const generateInitials = (name: string): string => {
   }
 
   return name
-    .split(" ")
+    ?.split(" ")
     .filter((word) => word.length > 0)
     .map((word) => word.charAt(0).toUpperCase())
     .slice(0, 2)
@@ -116,7 +116,7 @@ export const getCardLogo = (brand: string): string | null => {
 };
 
 export const getTransactionStatus = (
-  status: string
+  status: string,
 ): "Successful" | "Failed" | "Pending" => {
   if (status === "succeeded" || status === "paid") return "Successful";
   if (status === "failed") return "Failed";
