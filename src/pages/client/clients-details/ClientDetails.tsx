@@ -301,12 +301,12 @@ const ClientDetailPage: React.FC = () => {
             setShowEditClient(false);
             fetchClientDetails();
           }}
-          id={client.id}
+          id={client?.id}
           initialFormData={{
-            firstName: client.name.split(" ")[0],
-            lastName: client.name.split(" ")[1] || "",
-            email: client.email,
-            phone: client.phone?.toString(),
+            firstName: client?.name.split(" ")[0],
+            lastName: client?.name.split(" ")[1] || "",
+            email: client?.email,
+            phone: client?.phone?.toString(),
           }}
         />
       )}
@@ -340,7 +340,7 @@ const ClientDetailPage: React.FC = () => {
           shorterText="Are you sure you want to delete this client?"
           handleDelete={async () => {
             try {
-              await deleteCustomer(client.id);
+              await deleteCustomer(client?.id);
               setShowDeleteClient(false);
               navigate("/clients");
             } catch (err) {
