@@ -80,7 +80,7 @@ const ClientDetailPage: React.FC = () => {
       if (customer) {
         setClient({
           id: customer.id,
-          name: customer.name,
+          name: customer.name || customer.email?.split("@")[0] || "Client 1",
           email: customer.email || "No email provided",
           phone: customer?.info?.cell_phone || undefined,
         });
