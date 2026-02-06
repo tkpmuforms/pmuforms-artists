@@ -121,7 +121,7 @@ const ClientDetailPage: React.FC = () => {
       onClick: () =>
         navigate(`/clients/${client?.id}/appointments`, {
           state: {
-            clientName: client?.name,
+            clientName: client?.name || "Client 1",
             clientEmail: client?.email,
             clientPhone: client?.phone,
           },
@@ -143,7 +143,7 @@ const ClientDetailPage: React.FC = () => {
       onClick: () =>
         navigate(`/clients/${client?.id}/notes`, {
           state: {
-            clientName: client?.name,
+            clientName: client?.name || "Client 1",
             clientEmail: client?.email,
             clientPhone: client?.phone,
           },
@@ -206,7 +206,7 @@ const ClientDetailPage: React.FC = () => {
       <div className="client-detail-page__content">
         <div className="client-detail-page__profile">
           <div className="profile-info">
-            <h1>{client.name}</h1>
+            <h1>{client?.name || "Client 1"}</h1>
             <p>Here are all the essential details about your client.</p>
           </div>
           <button
@@ -303,8 +303,8 @@ const ClientDetailPage: React.FC = () => {
           }}
           id={client?.id}
           initialFormData={{
-            firstName: client?.name.split(" ")[0],
-            lastName: client?.name.split(" ")[1] || "",
+            firstName: client?.name?.split(" ")[0] || "",
+            lastName: client?.name?.split(" ")[1] || "",
             email: client?.email,
             phone: client?.phone?.toString(),
           }}
@@ -314,7 +314,7 @@ const ClientDetailPage: React.FC = () => {
       {showSendConsentForm && (
         <SendConsentFormModal
           clientId={id}
-          clientName={client?.name}
+          clientName={client?.name || ""}
           onClose={() => setShowSendConsentForm(false)}
           onSuccess={() => {
             setShowSendConsentForm(false);
