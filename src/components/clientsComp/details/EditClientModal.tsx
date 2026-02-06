@@ -38,7 +38,11 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
   const handleSave = () => {
     setLoading(true);
     const updatedData = {
-      name: formData.firstName + " " + formData.lastName,
+      name:
+        [formData.firstName, formData.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim() || "No name",
       primaryPhone: formData.phone,
       email: formData.email,
     };
