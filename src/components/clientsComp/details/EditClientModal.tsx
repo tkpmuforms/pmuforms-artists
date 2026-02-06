@@ -42,7 +42,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
         [formData.firstName, formData.lastName]
           .filter(Boolean)
           .join(" ")
-          .trim() || "Client 1",
+          .trim() || "No name",
       primaryPhone: formData.phone,
       email: formData.email,
     };
