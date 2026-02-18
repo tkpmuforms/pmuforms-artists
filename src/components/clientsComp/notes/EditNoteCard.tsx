@@ -17,6 +17,7 @@ interface EditCardProps {
   onSaveEdit: () => void;
   onCancelEdit: () => void;
   onImageUpload: (file: File) => Promise<void>;
+  onImageClick?: (imageUrl: string) => void;
   formatDate: (date: string) => string;
   isUploading?: boolean;
 }
@@ -32,6 +33,7 @@ const EditCard: React.FC<EditCardProps> = ({
   onSaveEdit,
   onCancelEdit,
   onImageUpload,
+  onImageClick,
   formatDate,
   isUploading = false,
 }) => {
@@ -174,7 +176,10 @@ const EditCard: React.FC<EditCardProps> = ({
               ) : (
                 <>
                   {selectedNote.imageUrl && (
-                    <div className="editor-preview__image">
+                    <div
+                      className="editor-preview__image editor-preview__image--clickable"
+                      onClick={() => onImageClick?.(selectedNote.imageUrl!)}
+                    >
                       <img
                         src={selectedNote.imageUrl}
                         alt="Note attachment"

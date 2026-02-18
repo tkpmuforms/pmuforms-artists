@@ -20,6 +20,7 @@ interface NoteCardProps {
   isSelected: boolean;
   onNoteClick: (note: Note) => void;
   onDeleteNote: (note: Note) => void;
+  onImageClick?: (imageUrl: string) => void;
   formatDate: (date: string) => string;
 }
 
@@ -28,6 +29,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
   isSelected,
   onNoteClick,
   onDeleteNote,
+  onImageClick,
   formatDate,
 }) => {
   const getDisplayDate = (note: Note) => {
@@ -53,7 +55,13 @@ const NoteCard: React.FC<NoteCardProps> = ({
     >
       <div className="note-card__content">
         {note.imageUrl && (
-          <div className="note-card__image">
+          <div
+            className="note-card__image"
+            onClick={(e) => {
+              e.stopPropagation();
+              onImageClick?.(note.imageUrl!);
+            }}
+          >
             <img
               src={note.imageUrl}
               alt="Note attachment"

@@ -9,6 +9,7 @@ import { useLocation, useParams } from "react-router-dom";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
 import EditCard from "../../../components/clientsComp/notes/EditNoteCard";
 import NoteCard from "../../../components/clientsComp/notes/NoteCard";
+import ImageViewerModal from "../../../components/clientsComp/notes/ImageViewerModal";
 import NotesModal from "../../../components/clientsComp/notes/NotesModal";
 import useAuth from "../../../context/useAuth";
 import { storage } from "../../../firebase/firebase";
@@ -39,6 +40,7 @@ const ClientNotesPage: React.FC = () => {
   const [editContent, setEditContent] = useState("");
   const [editImageUrl, setEditImageUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [viewerImageUrl, setViewerImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (clientId) {
@@ -224,6 +226,7 @@ const ClientNotesPage: React.FC = () => {
                   isSelected={selectedNote?.id === note.id}
                   onNoteClick={handleNoteClick}
                   onDeleteNote={handleDeleteNote}
+                  onImageClick={setViewerImageUrl}
                   formatDate={formatDate}
                 />
               ))
@@ -242,6 +245,7 @@ const ClientNotesPage: React.FC = () => {
           onSaveEdit={handleSaveEdit}
           onCancelEdit={handleCancelEdit}
           onImageUpload={handleImageUpload}
+          onImageClick={setViewerImageUrl}
           formatDate={formatDate}
           isUploading={isUploading}
         />
@@ -264,6 +268,13 @@ const ClientNotesPage: React.FC = () => {
           headerText="Delete this Note"
           shorterText="Are you sure you want to delete this note?"
           handleDelete={confirmDelete}
+        />
+      )}
+
+      {viewerImageUrl && (
+        <ImageViewerModal
+          imageUrl={viewerImageUrl}
+          onClose={() => setViewerImageUrl(null)}
         />
       )}
     </div>

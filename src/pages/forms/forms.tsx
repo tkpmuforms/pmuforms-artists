@@ -133,7 +133,7 @@ const FormsPage: React.FC = () => {
               >
                 <Plus size={16} />
                 Unlock Your Forms
-                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Form
+                {activeTab?.charAt(0).toUpperCase() + activeTab.slice(1)} Form
               </button>
             </div>
           )}
