@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Trash2 } from "lucide-react";
+import { Camera, Eye, Trash2 } from "lucide-react";
 import type React from "react";
 import "./noteCard.scss";
 
@@ -20,6 +20,7 @@ interface NoteCardProps {
   isSelected: boolean;
   onNoteClick: (note: Note) => void;
   onDeleteNote: (note: Note) => void;
+  onImageClick?: (imageUrl: string) => void;
   formatDate: (date: string) => string;
 }
 
@@ -28,6 +29,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
   isSelected,
   onNoteClick,
   onDeleteNote,
+  onImageClick,
   formatDate,
 }) => {
   const getDisplayDate = (note: Note) => {
@@ -53,13 +55,22 @@ const NoteCard: React.FC<NoteCardProps> = ({
     >
       <div className="note-card__content">
         {note.imageUrl && (
-          <div className="note-card__image">
+          <div
+            className="note-card__image"
+            onClick={(e) => {
+              e.stopPropagation();
+              onImageClick?.(note.imageUrl!);
+            }}
+          >
             <img
               src={note.imageUrl}
               alt="Note attachment"
               className="note-card__img"
             />
-            <Camera className="note-card__camera-icon" size={14} />
+            <div className="note-card__icons">
+              <Camera size={14} />
+              <Eye size={14} />
+            </div>
           </div>
         )}
         <p className="note-card__text">{note.note}</p>

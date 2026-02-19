@@ -95,6 +95,15 @@
       overflow: hidden;
       margin-bottom: 16px;
       border: 2px solid #e2e8f0;
+
+      &--clickable {
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+          opacity: 0.85;
+        }
+      }
     }
 
     &__img {
