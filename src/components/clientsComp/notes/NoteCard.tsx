@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Trash2 } from "lucide-react";
+import { Camera, Eye, Trash2 } from "lucide-react";
 import type React from "react";
 import "./noteCard.scss";
 
@@ -67,7 +67,10 @@ const NoteCard: React.FC<NoteCardProps> = ({
               alt="Note attachment"
               className="note-card__img"
             />
-            <Camera className="note-card__camera-icon" size={14} />
+            <div className="note-card__icons">
+              <Camera size={14} />
+              <Eye size={14} />
+            </div>
           </div>
         )}
         <p className="note-card__text">{note.note}</p>
