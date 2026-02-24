@@ -75,7 +75,7 @@ const Auth: React.FC = () => {
   const shouldHideSlider = () => {
     if (page === "login") return false;
     return ["password", "verification", "business", "services"].includes(
-      signupStep
+      signupStep,
     );
   };
 
@@ -91,7 +91,7 @@ const Auth: React.FC = () => {
 
   const showAlert = (
     type: "error" | "success" | "warning" | "info",
-    message: string
+    message: string,
   ) => {
     (toast as any)[type](message);
   };
@@ -146,7 +146,7 @@ const Auth: React.FC = () => {
                               googleProvider,
                               navigate,
                               handleAuthSuccess,
-                              showAlert
+                              showAlert,
                             )
                           }
                         />
@@ -160,7 +160,7 @@ const Auth: React.FC = () => {
                             )
                           }
                         /> */}
-                        <MobileAppleLoginSvg
+                        {/* <MobileAppleLoginSvg
                           onClick={() =>
                             HandleSocialLogin(
                               appleProvider,
@@ -169,7 +169,7 @@ const Auth: React.FC = () => {
                               showAlert
                             )
                           }
-                        />
+                        /> */}
                       </div>
                     </>
                   )}
@@ -248,7 +248,7 @@ const Auth: React.FC = () => {
                         googleProvider,
                         navigate,
                         handleAuthSuccess,
-                        showAlert
+                        showAlert,
                       )
                     }
                   />
@@ -262,7 +262,7 @@ const Auth: React.FC = () => {
                       )
                     }
                   /> */}
-                  <AppleLoginSvg
+                  {/* <AppleLoginSvg
                     onClick={() =>
                       HandleSocialLogin(
                         appleProvider,
@@ -271,7 +271,7 @@ const Auth: React.FC = () => {
                         showAlert
                       )
                     }
-                  />
+                  /> */}
                 </div>
               </>
             )}
