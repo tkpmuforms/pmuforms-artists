@@ -77,7 +77,6 @@ const SelectPaymentMethodModal = ({
       setSelectedCard(defaultCard?.id || formattedCards[0]?.id || "");
     } catch (error) {
       console.error("Error fetching payment methods:", error);
-      setError("Failed to load payment methods");
     }
   };
 
@@ -256,8 +255,8 @@ const SelectPaymentMethodModal = ({
             {loading
               ? "Processing..."
               : isChangingPlan
-              ? "Update Plan"
-              : "Make Payment"}
+                ? "Update Plan"
+                : "Make Payment"}
           </button>
         </div>
       </div>

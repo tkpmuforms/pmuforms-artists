@@ -333,53 +333,49 @@ const PaymentPage = () => {
             </div>
           </section>
 
-          {!isMobileSub && (
+          {!isMobileSub && !loading && subscriptionHistory.length > 0 && (
             <section className="payment-page__section payment-page__section--right">
               <h2 className="payment-page__section-title">
                 Payment & Subscription History
               </h2>
-              {loading ? (
-                <LoadingSmall />
-              ) : (
-                <div className="payment-page__history-table">
-                  <div className="payment-page__table-header">
-                    <div className="payment-page__table-cell">Date</div>
-                    <div className="payment-page__table-cell">Description</div>
-                    <div className="payment-page__table-cell">Card Used</div>
-                    <div className="payment-page__table-cell">Amount</div>
-                    <div className="payment-page__table-cell">Status</div>
-                    <div className="payment-page__table-cell"></div>
-                  </div>
-
-                  {subscriptionHistory.map((item, index) => (
-                    <div key={index} className="payment-page__table-row">
-                      <div className="payment-page__table-cell">
-                        {item.date}
-                      </div>
-                      <div className="payment-page__table-cell">
-                        {item.description}
-                      </div>
-                      <div className="payment-page__table-cell">
-                        {item.cardUsed}
-                      </div>
-                      <div className="payment-page__table-cell">
-                        ${item.amount}
-                      </div>
-                      <div className="payment-page__table-cell">
-                        <span
-                          className="payment-page__status-badge"
-                          style={{ color: getStatusColor(item.status) }}
-                        >
-                          • {item.status}
-                        </span>
-                      </div>
-                      <div className="payment-page__table-cell">
-                        <button className="payment-page__action-btn">⋮</button>
-                      </div>
-                    </div>
-                  ))}
+              <div className="payment-page__history-table">
+                <div className="payment-page__table-header">
+                  <div className="payment-page__table-cell">Date</div>
+                  <div className="payment-page__table-cell">Description</div>
+                  <div className="payment-page__table-cell">Card Used</div>
+                  <div className="payment-page__table-cell">Amount</div>
+                  <div className="payment-page__table-cell">Status</div>
+                  <div className="payment-page__table-cell"></div>
                 </div>
-              )}
+
+                {subscriptionHistory.map((item, index) => (
+                  <div key={index} className="payment-page__table-row">
+                    <div className="payment-page__table-cell">
+                      {item.date}
+                    </div>
+                    <div className="payment-page__table-cell">
+                      {item.description}
+                    </div>
+                    <div className="payment-page__table-cell">
+                      {item.cardUsed}
+                    </div>
+                    <div className="payment-page__table-cell">
+                      ${item.amount}
+                    </div>
+                    <div className="payment-page__table-cell">
+                      <span
+                        className="payment-page__status-badge"
+                        style={{ color: getStatusColor(item.status) }}
+                      >
+                        • {item.status}
+                      </span>
+                    </div>
+                    <div className="payment-page__table-cell">
+                      <button className="payment-page__action-btn">⋮</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
           )}
         </div>
