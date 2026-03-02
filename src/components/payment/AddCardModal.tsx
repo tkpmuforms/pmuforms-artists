@@ -160,12 +160,12 @@ const CardForm = ({ onClose, onCardAdded }: AddCardModalProps) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="postalCode">Postal Code (Optional)</label>
+            <label htmlFor="postalCode">Zip Code (Optional)</label>
             <input
               type="text"
               id="postalCode"
               name="postalCode"
-              placeholder="Enter postal code"
+              placeholder="Enter Zip code"
               value={formData.postalCode}
               onChange={handleChange}
             />

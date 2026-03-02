@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { X } from "lucide-react";
+import { X, Check, Star } from "lucide-react";
 import { useState } from "react";
 import "./subscription-modal.scss";
 import SelectPaymentMethodModal from "../payment/SelectPaymentMethodModal";
@@ -13,6 +13,14 @@ interface SubscriptionModalProps {
   currentPriceId?: string;
 }
 
+const features = [
+  "Unlimited client forms",
+  "Digital signatures",
+  "Secure cloud storage",
+  "Instant PDF export",
+  "HIPAA compliant",
+];
+
 const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   onClose,
   onShowFeatures,
@@ -22,47 +30,17 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
 
-  const weeklyPrice = Number(import.meta.env.VITE_WEEKLY_PRICE);
   const monthlyPrice = Number(import.meta.env.VITE_MONTHLY_PRICE);
   const yearlyPrice = Number(import.meta.env.VITE_YEARLY_PRICE);
 
-  const monthlyPricePerWeek = monthlyPrice / 4.33;
   const yearlyPricePerWeek = yearlyPrice / 52;
+  const monthlyPricePerWeek = monthlyPrice / 4.33;
 
-  const monthlyDiscount =
-    ((weeklyPrice * 4.33 - monthlyPrice) / (weeklyPrice * 4.33)) * 100;
   const yearlyDiscount =
-    ((weeklyPrice * 52 - yearlyPrice) / (weeklyPrice * 52)) * 100;
+    ((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100;
 
-  const pricingPlans = [
-    {
-      name: "WEEKLY",
-      price: `$${weeklyPrice}`,
-      period: "week",
-      subtitle: "Basic access",
-      badge: "",
-      popular: false,
-      priceId: import.meta.env.VITE_WEEKLY_PRICE_ID,
-    },
-    {
-      name: "MONTHLY",
-      price: `$${monthlyPrice}`,
-      period: "month",
-      subtitle: `(only $${monthlyPricePerWeek.toFixed(2)} / week)`,
-      badge: `-${Math.round(monthlyDiscount)}%`,
-      popular: false,
-      priceId: import.meta.env.VITE_MONTHLY_PRICE_ID,
-    },
-    {
-      name: "YEARLY",
-      price: `$${yearlyPrice}`,
-      period: "year",
-      subtitle: `(only $${yearlyPricePerWeek.toFixed(2)} / week)`,
-      badge: `-${Math.round(yearlyDiscount)}%`,
-      popular: true,
-      priceId: import.meta.env.VITE_YEARLY_PRICE_ID,
-    },
-  ];
+  const yearlyPriceId = import.meta.env.VITE_YEARLY_PRICE_ID;
+  const monthlyPriceId = import.meta.env.VITE_MONTHLY_PRICE_ID;
 
   const handleSubscribeClick = (priceId: string) => {
     setSelectedPriceId(priceId);
@@ -79,6 +57,14 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
   const isCurrentPlan = (priceId: string) => {
     return currentPriceId === priceId;
+  };
+
+  const getButtonText = (planName: string, priceId: string) => {
+    if (isCurrentPlan(priceId)) return "Current Plan";
+    if (currentPriceId) return "Upgrade Subscription";
+    return planName === "yearly"
+      ? "Continue with Yearly Plan"
+      : "Subscribe";
   };
 
   return (
@@ -98,69 +84,114 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 Forms
               </div>
             </div>
-            <h2>
-              {currentPriceId
-                ? "Change Your PMU Subscription"
-                : "Reactivate your PMU Subscription"}
-            </h2>
+            <h2>Continue Creating Without Limits</h2>
             <p>
               {currentPriceId
                 ? "Select a new plan to switch your subscription"
-                : "Subscribe to unlock and keep enjoying the ultimate experience on PMU Forms"}
+                : "Keep access to your PMU client forms and all premium features"}
             </p>
           </div>
 
-          <div className="subscription-modal__pricing">
-            <h3>SELECT YOUR PLAN</h3>
-            <div className="pricing-plans">
-              {pricingPlans.map((plan, index) => (
-                <div
-                  key={index}
-                  className={`pricing-plan ${
-                    plan.popular && !currentPriceId
-                      ? "pricing-plan--popular"
-                      : ""
-                  } ${
-                    isCurrentPlan(plan.priceId)
-                      ? "pricing-plan--current pricing-plan--popular"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    !isCurrentPlan(plan.priceId) &&
-                    handleSubscribeClick(plan.priceId)
-                  }
-                  style={{
-                    cursor: isCurrentPlan(plan.priceId)
-                      ? "not-allowed"
-                      : "pointer",
-                    opacity: isCurrentPlan(plan.priceId) ? 0.7 : 1,
-                  }}
-                >
-                  {plan.badge && (
-                    <div className="pricing-plan__badge">{plan.badge}</div>
-                  )}
-                  {plan.popular && !currentPriceId && (
-                    <div className="pricing-plan__popular-label">
-                      Best Value
-                    </div>
-                  )}
-                  {isCurrentPlan(plan.priceId) && (
-                    <div className="pricing-plan__current-label">
-                      Current Plan
-                    </div>
-                  )}
-                  <div className="pricing-plan__name">{plan.name}</div>
-                  <div className="pricing-plan__price">
-                    <span className="pricing-plan__amount">{plan.price}</span>
-                    <span className="pricing-plan__period">
-                      / {plan.period}
-                    </span>
-                  </div>
-                  <div className="pricing-plan__subtitle">{plan.subtitle}</div>
-                </div>
-              ))}
+          <div className="subscription-modal__featured">
+            <div className="featured-plan">
+              <div className="featured-plan__badges">
+                <span className="featured-plan__badge featured-plan__badge--recommended">
+                  Recommended
+                </span>
+                <span className="featured-plan__badge featured-plan__badge--value">
+                  Best Value
+                </span>
+                <span className="featured-plan__badge featured-plan__badge--save">
+                  Save {Math.round(yearlyDiscount)}%
+                </span>
+              </div>
+
+              {isCurrentPlan(yearlyPriceId) && (
+                <div className="featured-plan__current-tag">Current Plan</div>
+              )}
+
+              <div className="featured-plan__price-row">
+                <span className="featured-plan__amount">${yearlyPrice}</span>
+                <span className="featured-plan__period">/year</span>
+              </div>
+              <div className="featured-plan__subtitle">
+                Only ${yearlyPricePerWeek.toFixed(2)}/week
+              </div>
+
+              <ul className="featured-plan__features">
+                {features.map((feature, i) => (
+                  <li key={i}>
+                    <Check size={16} />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                className="featured-plan__cta"
+                onClick={() =>
+                  !isCurrentPlan(yearlyPriceId) &&
+                  handleSubscribeClick(yearlyPriceId)
+                }
+                disabled={isCurrentPlan(yearlyPriceId)}
+              >
+                {getButtonText("yearly", yearlyPriceId)}
+              </button>
+
+              <p className="featured-plan__guarantee">
+                Cancel anytime &middot; 7-day money-back guarantee
+              </p>
             </div>
           </div>
+
+          <div className="subscription-modal__alt-plan">
+            <div
+              className={`alt-plan ${
+                isCurrentPlan(monthlyPriceId) ? "alt-plan--current" : ""
+              }`}
+              onClick={() =>
+                !isCurrentPlan(monthlyPriceId) &&
+                handleSubscribeClick(monthlyPriceId)
+              }
+            >
+              <div className="alt-plan__info">
+                <span className="alt-plan__name">Monthly</span>
+                <span className="alt-plan__price">
+                  ${monthlyPrice}/month
+                </span>
+                <span className="alt-plan__weekly">
+                  (${monthlyPricePerWeek.toFixed(2)}/week)
+                </span>
+              </div>
+              {isCurrentPlan(monthlyPriceId) ? (
+                <span className="alt-plan__current-badge">Current</span>
+              ) : (
+                <span className="alt-plan__select">
+                  {currentPriceId ? "Switch" : "Select"}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="subscription-modal__testimonial">
+            <div className="testimonial">
+              <div className="testimonial__stars">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={14} fill="#f59e0b" color="#f59e0b" />
+                ))}
+              </div>
+              <p className="testimonial__quote">
+                &ldquo;PMU Forms saves me 4+ hours per week.&rdquo;
+              </p>
+              <p className="testimonial__author">
+                &mdash; Sarah M., Brow Artist
+              </p>
+            </div>
+          </div>
+
+          <p className="subscription-modal__social-proof">
+            Join 4,000+ PMU artists
+          </p>
 
           <div className="subscription-modal__actions">
             <button

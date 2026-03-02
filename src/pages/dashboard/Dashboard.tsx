@@ -121,7 +121,7 @@ const Dashboard: React.FC = () => {
 
     const customerName = customers[customerId]?.name || "Unknown Client";
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      customerName
+      customerName,
     )}&background=A858F0&color=fff&size=40`;
   };
 
@@ -163,7 +163,7 @@ const Dashboard: React.FC = () => {
         const displayedAppointments = appointments.slice(0, 4);
         const uniqueCustomerIds = [
           ...new Set(
-            displayedAppointments.map((apt: any) => apt.customerId as string)
+            displayedAppointments.map((apt: any) => apt.customerId as string),
           ),
         ] as string[];
 
@@ -172,7 +172,7 @@ const Dashboard: React.FC = () => {
             getCustomerById(customerId).catch((error) => {
               console.error(`Error fetching customer ${customerId}:`, error);
               return null;
-            })
+            }),
           );
 
           const customerResponses = await Promise.all(customerPromises);
@@ -188,7 +188,7 @@ const Dashboard: React.FC = () => {
               }
               return acc;
             },
-            {} as Record<string, { name: string; avatar?: string }>
+            {} as Record<string, { name: string; avatar?: string }>,
           );
 
           setCustomers(customerMap);
@@ -282,7 +282,7 @@ const Dashboard: React.FC = () => {
     return recentForms
       .sort(
         (a: any, b: any) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
       )
       .slice(0, 8)
       .map((form) => (
