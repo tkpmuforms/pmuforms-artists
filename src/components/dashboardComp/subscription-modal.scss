@@ -286,6 +286,11 @@
       background: rgba(16, 185, 129, 0.2);
       color: #34d399;
     }
+
+    &--popular {
+      background: rgba(168, 85, 247, 0.25);
+      color: #c084fc;
+    }
   }
 
   &__current-tag {
@@ -428,10 +433,18 @@
     color: rgba(255, 255, 255, 0.4);
   }
 
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
   &__select {
     font-size: 13px;
     font-weight: 600;
-    color: var(--pmu-primary);
+    color: white;
     white-space: nowrap;
   }
 
