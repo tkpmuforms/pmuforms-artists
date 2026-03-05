@@ -62,9 +62,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const getButtonText = (planName: string, priceId: string) => {
     if (isCurrentPlan(priceId)) return "Current Plan";
     if (currentPriceId) return "Upgrade Subscription";
-    return planName === "yearly"
-      ? "Continue with Yearly Plan"
-      : "Subscribe";
+    return planName === "monthly" ? "Subscribe" : "Continue with Yearly Plan";
   };
 
   return (
@@ -95,27 +93,21 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           <div className="subscription-modal__featured">
             <div className="featured-plan">
               <div className="featured-plan__badges">
-                <span className="featured-plan__badge featured-plan__badge--recommended">
-                  Recommended
-                </span>
-                <span className="featured-plan__badge featured-plan__badge--value">
-                  Best Value
-                </span>
-                <span className="featured-plan__badge featured-plan__badge--save">
-                  Save {Math.round(yearlyDiscount)}%
+                <span className="featured-plan__badge featured-plan__badge--popular">
+                  Overly Picked
                 </span>
               </div>
 
-              {isCurrentPlan(yearlyPriceId) && (
+              {isCurrentPlan(monthlyPriceId) && (
                 <div className="featured-plan__current-tag">Current Plan</div>
               )}
 
               <div className="featured-plan__price-row">
-                <span className="featured-plan__amount">${yearlyPrice}</span>
-                <span className="featured-plan__period">/year</span>
+                <span className="featured-plan__amount">${monthlyPrice}</span>
+                <span className="featured-plan__period">/month</span>
               </div>
               <div className="featured-plan__subtitle">
-                Only ${yearlyPricePerWeek.toFixed(2)}/week
+                Only ${monthlyPricePerWeek.toFixed(2)}/week
               </div>
 
               <ul className="featured-plan__features">
@@ -130,12 +122,12 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               <button
                 className="featured-plan__cta"
                 onClick={() =>
-                  !isCurrentPlan(yearlyPriceId) &&
-                  handleSubscribeClick(yearlyPriceId)
+                  !isCurrentPlan(monthlyPriceId) &&
+                  handleSubscribeClick(monthlyPriceId)
                 }
-                disabled={isCurrentPlan(yearlyPriceId)}
+                disabled={isCurrentPlan(monthlyPriceId)}
               >
-                {getButtonText("yearly", yearlyPriceId)}
+                {getButtonText("monthly", monthlyPriceId)}
               </button>
 
               <p className="featured-plan__guarantee">
@@ -147,23 +139,32 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           <div className="subscription-modal__alt-plan">
             <div
               className={`alt-plan ${
-                isCurrentPlan(monthlyPriceId) ? "alt-plan--current" : ""
+                isCurrentPlan(yearlyPriceId) ? "alt-plan--current" : ""
               }`}
               onClick={() =>
-                !isCurrentPlan(monthlyPriceId) &&
-                handleSubscribeClick(monthlyPriceId)
+                !isCurrentPlan(yearlyPriceId) &&
+                handleSubscribeClick(yearlyPriceId)
               }
             >
               <div className="alt-plan__info">
-                <span className="alt-plan__name">Monthly</span>
-                <span className="alt-plan__price">
-                  ${monthlyPrice}/month
-                </span>
+                <div className="alt-plan__badges">
+                  <span className="featured-plan__badge featured-plan__badge--recommended">
+                    Recommended
+                  </span>
+                  <span className="featured-plan__badge featured-plan__badge--value">
+                    Best Value
+                  </span>
+                  <span className="featured-plan__badge featured-plan__badge--save">
+                    Save {Math.round(yearlyDiscount)}%
+                  </span>
+                </div>
+                <span className="alt-plan__name">Yearly</span>
+                <span className="alt-plan__price">${yearlyPrice}/year</span>
                 <span className="alt-plan__weekly">
-                  (${monthlyPricePerWeek.toFixed(2)}/week)
+                  (${yearlyPricePerWeek.toFixed(2)}/week)
                 </span>
               </div>
-              {isCurrentPlan(monthlyPriceId) ? (
+              {isCurrentPlan(yearlyPriceId) ? (
                 <span className="alt-plan__current-badge">Current</span>
               ) : (
                 <span className="alt-plan__select">
@@ -193,14 +194,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             Join 4,000+ PMU artists
           </p>
 
-          <div className="subscription-modal__actions">
-            <button
-              className="subscription-modal__restore"
-              onClick={onShowFeatures}
-            >
-              Restore Purchases
-            </button>
-          </div>
+          <div className="subscription-modal__actions"></div>
         </div>
       </div>
 
