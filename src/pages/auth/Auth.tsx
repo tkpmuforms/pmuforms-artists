@@ -24,7 +24,8 @@ type SignupStep = "email" | "password" | "verification";
 
 const Auth: React.FC = () => {
   const [page, setPage] = useState<AuthPage>("login");
-  const [showMobileAuth, setShowMobileAuth] = useState(false);
+  const fromApp = new URLSearchParams(window.location.search).get("from") === "app";
+  const [showMobileAuth, setShowMobileAuth] = useState(fromApp);
   const [isMobile, setIsMobile] = useState(false);
   const [signupStep, setSignupStep] = useState<SignupStep>("email");
   const [signupEmail, setSignupEmail] = useState<string>("");
