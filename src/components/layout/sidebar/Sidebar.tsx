@@ -10,6 +10,7 @@ import {
   DashboardIcon,
   FormsIcon,
   ProfileIcon,
+  ServicesIcon,
 } from "../../../assets/svgs/DashboardSvg.tsx";
 import useAuth from "../../../context/useAuth.ts";
 import { Avatar } from "@mui/material";
@@ -69,6 +70,7 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
         dashboard: DashboardIcon,
         clients: ClientIcon,
         forms: FormsIcon,
+        services: ServicesIcon,
         profile: ProfileIcon,
       };
       const IconComponent = iconMap[iconName];
