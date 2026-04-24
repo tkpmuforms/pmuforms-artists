@@ -131,6 +131,49 @@ export const FormsIcon: React.FC<IconProps> = ({
   );
 };
 
+export const ServicesIcon: React.FC<IconProps> = ({
+  isActive = false,
+  onClick,
+}) => {
+  const fillColor = isActive ? "var(--pmu-primary)" : "#292D32";
+  const fillOpacity = isActive ? "1" : "0.5";
+
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
+    >
+      <path
+        opacity="0.4"
+        d="M17.5 3L19 7L23 8.5L19 10L17.5 14L16 10L12 8.5L16 7L17.5 3Z"
+        fill={fillColor}
+        fillOpacity={fillOpacity}
+      />
+      <path
+        d="M8 8L9 11L12 12L9 13L8 16L7 13L4 12L7 11L8 8Z"
+        fill={fillColor}
+        fillOpacity={fillOpacity}
+      />
+      <path
+        d="M3.5 18.5L12.5 9.5"
+        stroke={fillColor}
+        strokeOpacity={fillOpacity}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 18L12.75 20L14.5 20.75L12.75 21.5L12 23L11.25 21.5L9.5 20.75L11.25 20L12 18Z"
+        fill={fillColor}
+        fillOpacity={fillOpacity}
+      />
+    </svg>
+  );
+};
+
 export const ProfileIcon: React.FC<IconProps> = ({
   isActive = false,
   onClick,

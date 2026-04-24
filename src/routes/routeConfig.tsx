@@ -63,6 +63,10 @@ const PrivacyPolicyPage = lazy(
 const PaymentPage = lazy(
   () => import("../pages/profile/payment-page/PaymentPage.tsx")
 );
+
+const ServicesPage = lazy(
+  () => import("../pages/services/ServicesPage.tsx")
+);
 interface RouteProps {
   path: string;
   element: ReactNode;
@@ -132,6 +136,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/forms",
     element: <Forms />,
     breadcrumbs: ["Forms"],
+  },
+  {
+    path: "/services",
+    element: <ServicesPage />,
+    breadcrumbs: ["Services"],
   },
   {
     path: "/forms/preview/:formId",
