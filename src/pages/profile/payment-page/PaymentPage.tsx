@@ -90,7 +90,7 @@ const PaymentPage = () => {
             | "unionpay",
           isDefault: pm.id === defaultCardId,
           color: getCardColor(pm.card?.brand || "visa"),
-        })
+        }),
       );
 
       setCards(formattedCards);
@@ -120,7 +120,7 @@ const PaymentPage = () => {
           }`,
           amount: invoice.amount,
           status: getTransactionStatus(invoice.status),
-        })
+        }),
       );
 
       setSubscriptionHistory(formattedHistory);
@@ -180,14 +180,14 @@ const PaymentPage = () => {
   const isActive = isMobileSub
     ? true
     : subscriptionData
-    ? isSubscriptionActive(subscriptionData.status)
-    : user?.stripeSubscriptionActive;
+      ? isSubscriptionActive(subscriptionData.status)
+      : user?.stripeSubscriptionActive;
 
   const currentPlan = isMobileSub
     ? null
     : subscriptionData
-    ? getPlanName(subscriptionData.interval, subscriptionData.intervalCount)
-    : "No Active Plan";
+      ? getPlanName(subscriptionData.interval, subscriptionData.intervalCount)
+      : "No Active Plan";
 
   const isCancelled = !isMobileSub && !!subscriptionData?.cancelAt;
 
@@ -199,10 +199,10 @@ const PaymentPage = () => {
   const billingDateValue = isMobileSub
     ? "—"
     : isCancelled
-    ? formatNextBillingDate(subscriptionData.cancelAt!)
-    : subscriptionData?.currentPeriodEnd
-    ? formatNextBillingDate(subscriptionData.currentPeriodEnd)
-    : "N/A";
+      ? formatNextBillingDate(subscriptionData.cancelAt!)
+      : subscriptionData?.currentPeriodEnd
+        ? formatNextBillingDate(subscriptionData.currentPeriodEnd)
+        : "N/A";
 
   return (
     <div className="payment-page">
@@ -350,9 +350,7 @@ const PaymentPage = () => {
 
                 {subscriptionHistory.map((item, index) => (
                   <div key={index} className="payment-page__table-row">
-                    <div className="payment-page__table-cell">
-                      {item.date}
-                    </div>
+                    <div className="payment-page__table-cell">{item.date}</div>
                     <div className="payment-page__table-cell">
                       {item.description}
                     </div>
