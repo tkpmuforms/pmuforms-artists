@@ -7,6 +7,7 @@ import {
   createSubscription,
   listPaymentMethods,
   changeSubscriptionPlan,
+  validateCoupon,
 } from "../../services/artistServices";
 import AddCardModal from "./AddCardModal";
 import toast from "react-hot-toast";
@@ -46,6 +47,10 @@ const SelectPaymentMethodModal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showAddCard, setShowAddCard] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; description: string } | null>(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -89,6 +94,40 @@ const SelectPaymentMethodModal = ({
     return colors[brand.toLowerCase()] || "#6B2A6B";
   };
 
+  const handleApplyCoupon = async () => {
+    const trimmed = couponCode.trim();
+    if (!trimmed) return;
+
+    setCouponLoading(true);
+    setCouponError("");
+
+    try {
+      const response = await validateCoupon(trimmed);
+      const data = response.data?.data || response.data;
+
+      if (data?.isValid === false) {
+        setCouponError(data?.message || "Invalid coupon code");
+        return;
+      }
+
+      const percentOff = data?.percent_off;
+      const amountOff = data?.amount_off;
+      const name = data?.name || trimmed;
+
+      let description = name;
+      if (percentOff) description = `${name} — ${percentOff}% off`;
+      else if (amountOff) description = `${name} — $${(amountOff / 100).toFixed(2)} off`;
+
+      setAppliedCoupon({ code: trimmed, description });
+      setCouponCode("");
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.response?.data?.error || "Invalid coupon code";
+      setCouponError(msg);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
   const handleMakePayment = async () => {
     if (!selectedCard) {
       setError("Please select a payment method");
@@ -112,15 +151,17 @@ const SelectPaymentMethodModal = ({
       const shouldChangeSubscription =
         hasActiveSubscription || isSubscriptionActive;
 
+      const coupon = appliedCoupon?.code;
+
       if (shouldChangeSubscription) {
-        const response = await changeSubscriptionPlan(priceId, selectedCard);
+        const response = await changeSubscriptionPlan(priceId, selectedCard, coupon);
         toast.success("Subscription plan updated successfully!");
 
         if (response.data) {
           saveSubscriptionToStorage(response.data);
         }
       } else {
-        const response = await createSubscription(priceId, selectedCard);
+        const response = await createSubscription(priceId, selectedCard, coupon);
         toast.success("Payment successful! Subscription activated.");
 
         if (response.data) {
@@ -236,6 +277,49 @@ const SelectPaymentMethodModal = ({
                 </div>
               ))}
             </div>
+          )}
+        </div>
+
+        <div className="coupon-section">
+          {appliedCoupon ? (
+            <div className="coupon-applied">
+              <span className="coupon-applied__text">
+                🎟 {appliedCoupon.description}
+              </span>
+              <button
+                className="coupon-applied__remove"
+                onClick={() => setAppliedCoupon(null)}
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="coupon-input-row">
+                <input
+                  className="coupon-input"
+                  type="text"
+                  placeholder="Coupon code"
+                  value={couponCode}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value.toUpperCase());
+                    setCouponError("");
+                  }}
+                  onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                  disabled={couponLoading}
+                />
+                <button
+                  className="coupon-apply-btn"
+                  onClick={handleApplyCoupon}
+                  disabled={couponLoading || !couponCode.trim()}
+                >
+                  {couponLoading ? "..." : "Apply"}
+                </button>
+              </div>
+              {couponError && (
+                <p className="coupon-error">{couponError}</p>
+              )}
+            </>
           )}
         </div>
 

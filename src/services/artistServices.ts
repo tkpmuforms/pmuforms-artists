@@ -257,13 +257,21 @@ export const getAppointmentById = async (appointmentId: string) =>
 export const updateMySignature = async (data: { signature_url: string }) =>
   axiosInstance.patch("/api/artists/update-signature", data);
 
+export const validateCoupon = async (couponCode: string) => {
+  return axiosInstance.post("/api/subscriptions/stripe/validate-coupon", {
+    couponCode,
+  });
+};
+
 export const createSubscription = async (
   priceId: string,
-  paymentMethodId: string
+  paymentMethodId: string,
+  couponCode?: string
 ) => {
   return axiosInstance.post("/api/subscriptions/stripe/create-subscription", {
     priceId,
     paymentMethodId,
+    ...(couponCode ? { couponCode } : {}),
   });
 };
 
@@ -277,13 +285,15 @@ export const getSubscription = async () => {
 
 export const changeSubscriptionPlan = async (
   newPriceId: string,
-  paymentMethodId: string
+  paymentMethodId: string,
+  couponCode?: string
 ) => {
   return axiosInstance.post(
     "/api/subscriptions/stripe/change-subscription-plan",
     {
       newPriceId,
       paymentMethodId,
+      ...(couponCode ? { couponCode } : {}),
     }
   );
 };
