@@ -203,6 +203,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           cards={[]}
           onClose={() => setShowPaymentModal(false)}
           priceId={selectedPriceId}
+          planAmount={selectedPriceId === yearlyPriceId ? yearlyPrice : monthlyPrice}
           onPaymentSuccess={handlePaymentSuccess}
           hasActiveSubscription={!!currentPriceId}
         />

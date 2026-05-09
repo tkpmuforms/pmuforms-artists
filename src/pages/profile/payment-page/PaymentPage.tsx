@@ -175,8 +175,8 @@ const PaymentPage = () => {
     setShowUpgradeSubscription(false);
   };
 
+  // const isMobileSub =  false;
   const isMobileSub = user?.appStorePurchaseActive ?? false;
-
   const isActive = isMobileSub
     ? true
     : subscriptionData

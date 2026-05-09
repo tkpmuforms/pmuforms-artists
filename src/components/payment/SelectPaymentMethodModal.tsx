@@ -31,6 +31,7 @@ interface SelectPaymentMethodModalProps {
   cards?: Card[];
   onClose: () => void;
   priceId?: string;
+  planAmount?: number;
   onPaymentSuccess?: () => void;
   hasActiveSubscription?: boolean;
 }
@@ -39,6 +40,7 @@ const SelectPaymentMethodModal = ({
   cards: initialCards = [],
   onClose,
   priceId,
+  planAmount,
   onPaymentSuccess,
   hasActiveSubscription = false,
 }: SelectPaymentMethodModalProps) => {
@@ -50,7 +52,12 @@ const SelectPaymentMethodModal = ({
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; description: string } | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    description: string;
+    percentOff?: number | null;
+    amountOff?: number | null;
+  } | null>(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -110,15 +117,16 @@ const SelectPaymentMethodModal = ({
         return;
       }
 
-      const percentOff = data?.percent_off;
-      const amountOff = data?.amount_off;
-      const name = data?.name || trimmed;
+      const couponDetails = data?.coupon;
+      const percentOff = couponDetails?.percent_off;
+      const amountOff = couponDetails?.amount_off;
+      const name = couponDetails?.name || trimmed;
 
       let description = name;
       if (percentOff) description = `${name} — ${percentOff}% off`;
       else if (amountOff) description = `${name} — $${(amountOff / 100).toFixed(2)} off`;
 
-      setAppliedCoupon({ code: trimmed, description });
+      setAppliedCoupon({ code: trimmed, description, percentOff, amountOff });
       setCouponCode("");
     } catch (err: any) {
       const msg = err.response?.data?.message || err.response?.data?.error || "Invalid coupon code";
@@ -283,15 +291,34 @@ const SelectPaymentMethodModal = ({
         <div className="coupon-section">
           {appliedCoupon ? (
             <div className="coupon-applied">
-              <span className="coupon-applied__text">
-                🎟 {appliedCoupon.description}
-              </span>
-              <button
-                className="coupon-applied__remove"
-                onClick={() => setAppliedCoupon(null)}
-              >
-                Remove
-              </button>
+              <div className="coupon-applied__top">
+                <span className="coupon-applied__text">
+                  🎟 {appliedCoupon.description}
+                </span>
+                <button
+                  className="coupon-applied__remove"
+                  onClick={() => setAppliedCoupon(null)}
+                >
+                  Remove
+                </button>
+              </div>
+              {planAmount != null && (() => {
+                const savings = appliedCoupon.percentOff
+                  ? planAmount * (appliedCoupon.percentOff / 100)
+                  : appliedCoupon.amountOff
+                    ? appliedCoupon.amountOff / 100
+                    : null;
+                if (savings == null) return null;
+                const newTotal = planAmount - savings;
+                return (
+                  <div className="coupon-applied__savings">
+                    <span className="coupon-applied__original">${planAmount.toFixed(2)}</span>
+                    <span className="coupon-applied__arrow">→</span>
+                    <span className="coupon-applied__new-total">${newTotal.toFixed(2)}</span>
+                    <span className="coupon-applied__save-label">You save ${savings.toFixed(2)}</span>
+                  </div>
+                );
+              })()}
             </div>
           ) : (
             <>
