@@ -201,8 +201,10 @@ export const createClient = async (data: {
   email?: string;
 }) => axiosInstance.post("/api/customers/my-customers/create-customer", data);
 
-export const getMyMetrics = async () =>
-  axiosInstance.get("/api/artists/my-metrics");
+export const getMyMetrics = async (days?: number) =>
+  axiosInstance.get(
+    `/api/artists/my-metrics${days ? `?days=${days}` : ""}`
+  );
 
 export const DeleteAppointment = async (appointmentId: string) =>
   axiosInstance.delete(`/api/appointments/${appointmentId}`);

@@ -245,17 +245,31 @@ const EditProfilePage: React.FC = () => {
     fetchProfile();
   }, [user]);
 
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setUploadingAvatar(true);
+    if (!file) return;
 
-      const previewUrl = URL.createObjectURL(file);
-      setAvatarUrl(previewUrl);
+    setUploadingAvatar(true);
+    setAvatarUrl(URL.createObjectURL(file));
 
-      setTimeout(() => {
-        setUploadingAvatar(false);
-      }, 2000);
+    try {
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+      });
+      const storageRef = ref(storage, `avatars/artists/${user?._id}`);
+      const snapshot = await uploadBytes(storageRef, compressedFile);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+      setAvatarUrl(downloadUrl);
+    } catch (err) {
+      console.error("Failed to upload avatar:", err);
+      toast.error("Failed to upload photo. Please try again.");
+      setAvatarUrl(user?.avatarUrl || "");
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -298,6 +312,10 @@ const EditProfilePage: React.FC = () => {
         phoneNumber: profileData.phoneNumber.replace(/\D/g, ""),
       };
 
+      if (avatarUrl) {
+        updateData.avatarUrl = avatarUrl;
+      }
+
       if (!updateData.email) {
         const { email, ...rest } = updateData;
         updateData = rest;
@@ -310,13 +328,25 @@ const EditProfilePage: React.FC = () => {
       await updateMyProfile(updateData);
 
       clearProfileCache();
+      getAuthUser();
+      toast.success("Profile updated successfully!");
     } catch (err: any) {
       console.error("Failed to update profile:", err);
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to update profile. Please try again."
-      );
+      const apiMessage: string =
+        err.response?.data?.message || err.message || "";
+
+      if (
+        apiMessage.toLowerCase().includes("phonenumber") ||
+        apiMessage.toLowerCase().includes("phone number") ||
+        apiMessage.toLowerCase().includes("phone")
+      ) {
+        setValidationErrors((prev) => ({
+          ...prev,
+          phoneNumber: "Invalid Phone Number",
+        }));
+      } else {
+        setError("Failed to update profile. Please try again.");
+      }
     } finally {
       setIsSaving(false);
     }

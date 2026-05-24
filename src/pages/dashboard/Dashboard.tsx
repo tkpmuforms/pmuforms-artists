@@ -2,7 +2,7 @@
 
 import { ChevronDown, Plus } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import {
@@ -56,6 +56,33 @@ const Dashboard: React.FC = () => {
     Record<string, { name: string; avatar?: string }>
   >({});
   const [recentForms, setRecentForms] = useState<any[]>([]);
+
+  const [selectedDays, setSelectedDays] = useState(7);
+  const [showDaysDropdown, setShowDaysDropdown] = useState(false);
+  const daysDropdownRef = useRef<HTMLDivElement>(null);
+
+  const dayOptions = [
+    { label: "Last 7 days", value: 7 },
+    { label: "Last 14 days", value: 14 },
+    { label: "Last 30 days", value: 30 },
+    { label: "Last 90 days", value: 90 },
+  ];
+
+  const selectedLabel =
+    dayOptions.find((o) => o.value === selectedDays)?.label ?? "Last 7 days";
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        daysDropdownRef.current &&
+        !daysDropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowDaysDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const hasActiveSubscription =
     user?.appStorePurchaseActive || user?.stripeSubscriptionActive;
@@ -125,13 +152,22 @@ const Dashboard: React.FC = () => {
     )}&background=A858F0&color=fff&size=40`;
   };
 
-  const refreshMetrics = async () => {
+  const refreshMetrics = async (days?: number) => {
     try {
-      const metricsResponse = await getMyMetrics();
+      setMetricsLoading(true);
+      const metricsResponse = await getMyMetrics(days ?? selectedDays);
       setMetrics(metricsResponse.data?.metrics);
     } catch (error) {
       console.error("Error refreshing metrics:", error);
+    } finally {
+      setMetricsLoading(false);
     }
+  };
+
+  const handleDaysChange = (days: number) => {
+    setSelectedDays(days);
+    setShowDaysDropdown(false);
+    refreshMetrics(days);
   };
 
   const handleModalFlow = {
@@ -201,7 +237,7 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    getMyMetrics()
+    getMyMetrics(selectedDays)
       .then((metricsResponse) => {
         setMetrics(metricsResponse.data?.metrics);
         setMetricsLoading(false);
@@ -322,10 +358,26 @@ const Dashboard: React.FC = () => {
         <section className="dashboard__metrics">
           <div className="dashboard__metrics-header">
             <h2 className="dashboard__section-title">KEY METRICS</h2>
-            <div className="dashboard__date-filter">
-              <button className="dashboard__filter-btn">
-                Last 7 days <ChevronDown size={16} />
+            <div className="dashboard__date-filter" ref={daysDropdownRef}>
+              <button
+                className="dashboard__filter-btn"
+                onClick={() => setShowDaysDropdown((v) => !v)}
+              >
+                {selectedLabel} <ChevronDown size={16} />
               </button>
+              {showDaysDropdown && (
+                <div className="dashboard__filter-dropdown">
+                  {dayOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={`dashboard__filter-option${selectedDays === opt.value ? " dashboard__filter-option--active" : ""}`}
+                      onClick={() => handleDaysChange(opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="dashboard__metrics-grid">
@@ -384,10 +436,26 @@ const Dashboard: React.FC = () => {
         <section className="dashboard__metrics">
           <div className="dashboard__metrics-header">
             <h2 className="dashboard__section-title">KEY METRICS</h2>
-            <div className="dashboard__date-filter">
-              <button className="dashboard__filter-btn">
-                Last 7 days <ChevronDown size={16} />
+            <div className="dashboard__date-filter" ref={daysDropdownRef}>
+              <button
+                className="dashboard__filter-btn"
+                onClick={() => setShowDaysDropdown((v) => !v)}
+              >
+                {selectedLabel} <ChevronDown size={16} />
               </button>
+              {showDaysDropdown && (
+                <div className="dashboard__filter-dropdown">
+                  {dayOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={`dashboard__filter-option${selectedDays === opt.value ? " dashboard__filter-option--active" : ""}`}
+                      onClick={() => handleDaysChange(opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="dashboard__metrics-grid">

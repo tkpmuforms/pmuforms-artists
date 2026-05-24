@@ -127,7 +127,7 @@ const ClientsPage: React.FC = () => {
           <Search size={20} className="search-icon" />
           <input
             type="text"
-            placeholder="search name, email, phone number"
+            placeholder="Search name, email, phone number"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={handleSearchFocus}

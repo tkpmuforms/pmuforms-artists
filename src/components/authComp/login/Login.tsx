@@ -45,12 +45,23 @@ const LoginPage: React.FC = () => {
         error instanceof Error
           ? error.message
           : "Login failed! Try again later.";
-      showAlert(
-        "error",
-        errorMessage.includes("user-not-found")
-          ? "Account not found, Please signup and try again."
-          : errorMessage
-      );
+
+      let userMessage = "Login failed. Please try again later.";
+      if (errorMessage.includes("user-not-found")) {
+        userMessage = "Account not found. Please sign up and try again.";
+      } else if (
+        errorMessage.includes("wrong-password") ||
+        errorMessage.includes("invalid-credential") ||
+        errorMessage.includes("invalid-password")
+      ) {
+        userMessage = "Incorrect password. Please try again.";
+      } else if (errorMessage.includes("too-many-requests")) {
+        userMessage = "Too many failed attempts. Please try again later.";
+      } else if (errorMessage.includes("user-disabled")) {
+        userMessage = "This account has been disabled. Please contact support.";
+      }
+
+      showAlert("error", userMessage);
     }
   };
   return (

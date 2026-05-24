@@ -72,6 +72,7 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
                   value={appointmentDate}
                   onChange={(e) => setAppointmentDate(e.target.value)}
                   className="form-input"
+                  min={new Date().toISOString().split("T")[0]}
                 />
               </div>
             </div>
