@@ -37,9 +37,10 @@ const ProfilePage: React.FC = () => {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isNewUser] = useState(locationState?.newUser || false);
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>(
-    locationState?.onboardingStep || "completed"
+    locationState?.onboardingStep || "completed",
   );
   const [showPaymentPage, setShowPaymentPage] = useState(false);
+  const [freshAvatarUrl, setFreshAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -61,8 +62,11 @@ const ProfilePage: React.FC = () => {
   }, [user, isNewUser]);
 
   useEffect(() => {
-    getAuthMe().then(() => {
-      console.log("User data refreshed");
+    getAuthMe().then((res) => {
+      const profileAvatarUrl = res?.data?.user?.profile?.avatarUrl;
+      if (profileAvatarUrl) {
+        setFreshAvatarUrl(profileAvatarUrl);
+      }
     });
   }, []);
 
@@ -128,8 +132,8 @@ const ProfilePage: React.FC = () => {
             {onboardingStep === "businessName"
               ? "First, let's set your business name"
               : onboardingStep === "services"
-              ? "Now, let's add your services"
-              : "Finally, let's complete your payment setup"}
+                ? "Now, let's add your services"
+                : "Finally, let's complete your payment setup"}
           </p>
         </div>
       )}
@@ -139,10 +143,11 @@ const ProfilePage: React.FC = () => {
           <div className="profile-page__user">
             <div className="profile-page__avatar">
               <Avatar
-                src={user?.avatarUrl ?? ""}
+                src={user?.avatarUrl ?? freshAvatarUrl ?? ""}
                 alt={user?.businessName ?? ""}
                 sx={{ width: 60, height: 60 }}
               />
+              x
             </div>
             <div className="profile-page__user-info">
               <h1>{user?.businessName}</h1>

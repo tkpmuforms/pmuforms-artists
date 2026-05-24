@@ -53,12 +53,12 @@ const BusinessInformationPage: React.FC = () => {
               <label>Business Name</label>
               <div className="business-name-container">
                 <Avatar
-                  src={user?.avatarUrl || ""}
+                  src={user?.logoUrl || ""}
                   alt="Profile Avatar"
                   sx={{
                     width: 60,
                     height: 60,
-                    backgroundColor: !user?.avatarUrl ? "#8E2D8E1A" : undefined,
+                    backgroundColor: !user?.logoUrl ? "#8E2D8E1A" : undefined,
                   }}
                 >
                   {user?.firstName && user?.lastName

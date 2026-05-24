@@ -324,6 +324,8 @@ export const updateBusinessInfo = async (data: {
   businessPhoneNumber: string;
   businessAddress: string;
   website?: string;
+  logoUrl?: string;
+  removeLogoUrl?: boolean;
 }) => {
   return axiosInstance.patch("/api/artists/update-business-info", data);
 };

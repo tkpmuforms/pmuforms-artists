@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar } from "@mui/material";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { X } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
@@ -8,7 +9,7 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { EditBusinessLogoSvg } from "../../assets/svgs/ProfileSvg";
 import useAuth from "../../context/useAuth";
-import { setUser } from "../../redux/auth";
+import { storage } from "../../firebase/firebase";
 import { updateBusinessInfo } from "../../services/artistServices";
 import { refreshAuthUser } from "../../utils/authUtils";
 import "./edit-business-information-modal.scss";
@@ -30,7 +31,8 @@ const EditBusinessInformationModal: React.FC<
   const [address, setAddress] = useState(user?.businessAddress || "");
   const [website, setWebsite] = useState(user?.website || "");
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState(user?.avatarUrl || "");
+  const [logoPreview, setLogoPreview] = useState(user?.logoUrl || "");
+  const [removeLogo, setRemoveLogo] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +59,7 @@ const EditBusinessInformationModal: React.FC<
 
     setIsSaving(true);
 
-    const businessData = {
+    const businessData: Parameters<typeof updateBusinessInfo>[0] = {
       businessName: businessName.trim(),
       businessPhoneNumber: phoneNumber.trim(),
       businessAddress: address.trim(),
@@ -65,6 +67,14 @@ const EditBusinessInformationModal: React.FC<
     };
 
     try {
+      if (logoFile) {
+        const storageRef = ref(storage, `logos/artists/${user?._id}`);
+        const snapshot = await uploadBytes(storageRef, logoFile);
+        businessData.logoUrl = await getDownloadURL(snapshot.ref);
+      } else if (removeLogo) {
+        businessData.removeLogoUrl = true;
+      }
+
       await updateBusinessInfo(businessData);
       await refreshAuthUser(dispatch);
       toast.success("Business information updated successfully!");
@@ -133,10 +143,26 @@ const EditBusinessInformationModal: React.FC<
                 </button>
               </div>
             </div>
+            {logoPreview && !removeLogo && (
+              <button
+                className="remove-logo-btn"
+                type="button"
+                onClick={() => {
+                  setRemoveLogo(true);
+                  setLogoFile(null);
+                  setLogoPreview("");
+                }}
+              >
+                Remove Logo
+              </button>
+            )}
             <input
               type="file"
               accept="image/*"
-              onChange={handleLogoChange}
+              onChange={(e) => {
+                setRemoveLogo(false);
+                handleLogoChange(e);
+              }}
               className="logo-input"
               id="logo-upload"
             />
