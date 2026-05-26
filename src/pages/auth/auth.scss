@@ -135,6 +135,12 @@
   position: relative;
   margin: 0 auto;
 
+  > svg:first-child {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 16px;
+  }
+
   .auth-logo {
     margin-bottom: 20px;
     display: flex;

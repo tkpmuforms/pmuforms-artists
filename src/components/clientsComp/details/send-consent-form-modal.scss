@@ -143,6 +143,11 @@
       background: var(--pmu-primary);
       color: white;
       border-color: var(--pmu-primary);
+
+      &:hover {
+        color: white;
+        background: var(--pmu-primary);
+      }
     }
   }
 

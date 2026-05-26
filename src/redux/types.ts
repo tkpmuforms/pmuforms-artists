@@ -5,6 +5,7 @@ export interface User {
   phoneNumber?: string;
   businessPhoneNumber?: string;
   avatarUrl?: string;
+  logoUrl?: string;
   documentPath?: string;
   documentId?: string;
   userId?: string;
@@ -23,6 +24,11 @@ export interface User {
   services?: Service[];
   lastLoggedIn?: Date | null;
   notifications?: number;
+  profile?: {
+    firstName?: string;
+    lastName?: string;
+    avatarUrl?: string;
+  };
   signature_url?: string;
   stripeSubscriptionActive?: boolean;
   stripeCustomerId?: string;

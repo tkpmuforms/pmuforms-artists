@@ -37,6 +37,35 @@
         resize: vertical;
         min-height: 100px;
       }
+
+      input.error,
+      textarea.error {
+        border-color: #dc2626;
+      }
+
+      .field-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 4px;
+        min-height: 18px;
+      }
+
+      .field-error {
+        font-size: 12px;
+        color: #dc2626;
+      }
+
+      .char-counter {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-left: auto;
+
+        &--limit {
+          color: #dc2626;
+          font-weight: 500;
+        }
+      }
     }
 
     button {

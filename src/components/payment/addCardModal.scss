@@ -331,12 +331,18 @@
 
   .coupon-applied {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
     padding: 10px 14px;
     background: #f0faf0;
     border: 1px solid #6abf69;
     border-radius: 8px;
+
+    &__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
     &__text {
       font-size: 14px;
@@ -355,6 +361,38 @@
       &:hover {
         text-decoration: underline;
       }
+    }
+
+    &__savings {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    &__original {
+      color: #999;
+      text-decoration: line-through;
+    }
+
+    &__arrow {
+      color: #999;
+    }
+
+    &__new-total {
+      color: #2e7d32;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    &__save-label {
+      margin-left: auto;
+      color: #2e7d32;
+      font-weight: 500;
+      background: #d4edda;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
     }
   }
 }

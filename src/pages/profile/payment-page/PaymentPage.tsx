@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
 import SubscriptionModal from "../../../components/dashboardComp/SubScriptionModal";
-import { LoadingSmall } from "../../../components/loading/Loading";
 import AddCardModal from "../../../components/payment/AddCardModal";
 import SelectPaymentMethodModal from "../../../components/payment/SelectPaymentMethodModal";
 import useAuth from "../../../context/useAuth";
@@ -175,8 +174,8 @@ const PaymentPage = () => {
     setShowUpgradeSubscription(false);
   };
 
+  // const isMobileSub =  false;
   const isMobileSub = user?.appStorePurchaseActive ?? false;
-
   const isActive = isMobileSub
     ? true
     : subscriptionData

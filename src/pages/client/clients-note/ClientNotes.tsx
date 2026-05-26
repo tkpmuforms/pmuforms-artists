@@ -75,7 +75,7 @@ const ClientNotesPage: React.FC = () => {
       const compressedFile = await imageCompression(file, options);
       const storageRef = ref(
         storage,
-        `images/${user._id}/${file.name}-${Date.now()}`
+        `images/${user._id}/${file.name}-${Date.now()}`,
       );
       const snapshot = await uploadBytes(storageRef, compressedFile);
       const downloadUrl = await getDownloadURL(snapshot.ref);
@@ -129,7 +129,7 @@ const ClientNotesPage: React.FC = () => {
       };
 
       setNotes(
-        notes.map((note) => (note.id === selectedNote.id ? updatedNote : note))
+        notes.map((note) => (note.id === selectedNote.id ? updatedNote : note)),
       );
 
       setSelectedNote(updatedNote);
@@ -211,15 +211,15 @@ const ClientNotesPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="content-grid">
-        <div className="notes-column">
-          <div className="notes-list">
-            {notes?.length === 0 ? (
-              <div className="notes-list__empty">
-                <p>No notes added yet</p>
-              </div>
-            ) : (
-              notes?.map((note) => (
+      {notes?.length === 0 ? (
+        <div className="notes-empty-state">
+          <p>No notes added</p>
+        </div>
+      ) : (
+        <div className="content-grid">
+          <div className="notes-column">
+            <div className="notes-list">
+              {notes.map((note) => (
                 <NoteCard
                   key={note.id}
                   note={note}
@@ -229,27 +229,27 @@ const ClientNotesPage: React.FC = () => {
                   onImageClick={setViewerImageUrl}
                   formatDate={formatDate}
                 />
-              ))
-            )}
+              ))}
+            </div>
           </div>
-        </div>
 
-        <EditCard
-          selectedNote={selectedNote}
-          isEditing={isEditing}
-          editContent={editContent}
-          setEditContent={setEditContent}
-          editImageUrl={editImageUrl}
-          setEditImageUrl={setEditImageUrl}
-          onEditClick={handleEditClick}
-          onSaveEdit={handleSaveEdit}
-          onCancelEdit={handleCancelEdit}
-          onImageUpload={handleImageUpload}
-          onImageClick={setViewerImageUrl}
-          formatDate={formatDate}
-          isUploading={isUploading}
-        />
-      </div>
+          <EditCard
+            selectedNote={selectedNote}
+            isEditing={isEditing}
+            editContent={editContent}
+            setEditContent={setEditContent}
+            editImageUrl={editImageUrl}
+            setEditImageUrl={setEditImageUrl}
+            onEditClick={handleEditClick}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
+            onImageUpload={handleImageUpload}
+            onImageClick={setViewerImageUrl}
+            formatDate={formatDate}
+            isUploading={isUploading}
+          />
+        </div>
+      )}
 
       {showNotesModal && (
         <NotesModal

@@ -82,7 +82,7 @@ const ClientDetailPage: React.FC = () => {
           id: customer.id,
           name: customer.name || "No name",
           email: customer.email || "No email provided",
-          phone: customer?.info?.cell_phone || undefined,
+          phone: customer?.info?.cell_phone || customer?.primaryPhone || customer?.phone || undefined,
         });
         setLoading(false);
       } else {
@@ -109,8 +109,10 @@ const ClientDetailPage: React.FC = () => {
   const handleCopyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
+      toast.success("Copied to clipboard!");
     } catch (err) {
       console.error("Failed to copy to clipboard:", err);
+      toast.error("Failed to copy");
     }
   };
 

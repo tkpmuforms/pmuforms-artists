@@ -39,7 +39,7 @@ const Appointment: React.FC = () => {
     lastPage: 1,
   });
 
-  const perPage = 10;
+  const perPage = 12;
 
   const fetchPageAppointments = async (page: number) => {
     try {
@@ -208,7 +208,7 @@ const Appointment: React.FC = () => {
             <Search size={20} />
             <input
               type="text"
-              placeholder="Search by client name, appointment ID..."
+              placeholder="Search appointments..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
