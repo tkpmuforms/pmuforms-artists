@@ -67,6 +67,8 @@ const ClientDetailPage: React.FC = () => {
 
     try {
       setLoading(true);
+      setMetricsLoading(true);
+      setClientMetricsMetadata(null);
       setError(null);
 
       const response = await getCustomerById(id);
@@ -163,12 +165,12 @@ const ClientDetailPage: React.FC = () => {
           <div className="overview-card__content">
             <div className="overview-card__label">Pending Forms</div>
             <div className="overview-card__value">
-              {metricsLoading ? (
+              {metricsLoading || !clientMetricsMetadata ? (
                 <div className="metrics-loading">
                   <div className="loading-skeleton"></div>
                 </div>
               ) : (
-                clientMetricsMetadata?.pendingForms || "0"
+                clientMetricsMetadata.pendingForms
               )}
             </div>
           </div>
@@ -181,12 +183,12 @@ const ClientDetailPage: React.FC = () => {
           <div className="overview-card__content">
             <div className="overview-card__label">Total Appointments</div>
             <div className="overview-card__value">
-              {metricsLoading ? (
+              {metricsLoading || !clientMetricsMetadata ? (
                 <div className="metrics-loading">
                   <div className="loading-skeleton"></div>
                 </div>
               ) : (
-                clientMetricsMetadata?.totalAppointments || "0"
+                clientMetricsMetadata.totalAppointments
               )}
             </div>
           </div>

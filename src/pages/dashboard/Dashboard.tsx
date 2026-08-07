@@ -114,26 +114,38 @@ const Dashboard: React.FC = () => {
   const getMetricsConfig = (metricsData?: Metrics | null) => [
     {
       title: "Total Clients",
-      value: metricsData?.totalClients?.toString() || "0",
+      value:
+        metricsData?.totalClients == null
+          ? "loading"
+          : metricsData.totalClients.toString(),
       icon: PeopleIcon,
       color: "var(--pmu-primary)",
       onClick: () => navigate("/clients"),
     },
     {
       title: "Forms Shared",
-      value: metricsData?.formsShared?.toString() || "0",
+      value:
+        metricsData?.formsShared == null
+          ? "loading"
+          : metricsData.formsShared.toString(),
       icon: FormsSavedIcon,
       color: "#560056",
     },
     {
       title: "Pending Submissions",
-      value: metricsData?.pendingSubmissions?.toString() || "0",
+      value:
+        metricsData?.pendingSubmissions == null
+          ? "loading"
+          : metricsData.pendingSubmissions.toString(),
       icon: PendingSubmissionsIcon,
       color: "#f59e0b",
     },
     {
       title: "Today's Schedule",
-      value: metricsData?.todaysSchedule?.toString() || "0",
+      value:
+        metricsData?.todaysSchedule == null
+          ? "loading"
+          : metricsData.todaysSchedule.toString(),
       icon: TodaysScheduleIcon,
       color: "#ef4444",
     },

@@ -1,6 +1,7 @@
 import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { CircularProgress } from "@mui/material";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddClientModal from "../../components/clientsComp/AddClientModal";
 import ClientCard from "../../components/clientsComp/ClientCard";
@@ -19,10 +20,11 @@ const ClientsPage: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalClients, setTotalClients] = useState(0);
+  const [totalClients, setTotalClients] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [totalPages, setTotalPages] = useState(0);
+  const latestRequest = useRef(0);
 
   const convertToClient = (
     customer: CustomerResponse["customers"][0],
@@ -30,7 +32,7 @@ const ClientsPage: React.FC = () => {
     const clientName = customer?.name ?? customer?.info?.client_name ?? "";
     return {
       id: customer?.id,
-      name: clientName || "No name provided",
+      name: clientName,
       email: customer?.email || "No email provided",
       initials: generateInitials(clientName),
       color: generateColor(clientName),
@@ -38,46 +40,39 @@ const ClientsPage: React.FC = () => {
   };
 
   const fetchCustomers = async (page: number = 1, searchName?: string) => {
+    const requestId = ++latestRequest.current;
+
     try {
       setLoading(true);
+      setTotalClients(null);
       setError(null);
 
       const response = await searchCustomers(searchName, page, itemsPerPage);
       const data: CustomerResponse = response?.data;
 
-      const convertedClients = data.customers?.map(convertToClient);
+      // A newer search/page request has superseded this response.
+      if (requestId !== latestRequest.current) return;
+
+      const convertedClients = data?.customers?.map(convertToClient) ?? [];
       setClients(convertedClients);
-      setTotalClients(data.metadata.total);
-      setTotalPages(Math.ceil(data.metadata.total / itemsPerPage));
+      setTotalClients(data?.metadata?.total ?? 0);
+      setTotalPages(Math.ceil((data?.metadata?.total ?? 0) / itemsPerPage));
     } catch (err) {
+      if (requestId !== latestRequest.current) return;
       console.error("Error fetching customers:", err);
       setError("Failed to load clients. Please try again.");
     } finally {
-      setLoading(false);
+      if (requestId === latestRequest.current) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCustomers(currentPage);
-  }, [currentPage]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-    fetchCustomers(1, searchQuery || undefined);
-  }, [itemsPerPage]);
-
-  useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setCurrentPage(1); // Reset to first page when searching
-      if (searchQuery.trim()) {
-        fetchCustomers(1, searchQuery.trim());
-      } else {
-        fetchCustomers(1);
-      }
+      fetchCustomers(currentPage, searchQuery.trim() || undefined);
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+  }, [currentPage, itemsPerPage, searchQuery]);
 
   const handleSearchFocus = () => {
     setShowSearch(true);
@@ -129,7 +124,10 @@ const ClientsPage: React.FC = () => {
             type="text"
             placeholder="Search name, email, phone number"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
             onFocus={handleSearchFocus}
             className="search-input"
           />
@@ -137,7 +135,18 @@ const ClientsPage: React.FC = () => {
       </div>
 
       <div className="clients-page__stats">
-        <span>Total Clients: {totalClients}</span>
+        <span>
+          Total Clients:{" "}
+          {totalClients === null ? (
+            <CircularProgress
+              size={14}
+              sx={{ color: "#8e2d8e" }}
+              aria-label="Loading total clients"
+            />
+          ) : (
+            totalClients
+          )}
+        </span>
         {/* {searchQuery && (
           <span>
             {" "}

@@ -1,5 +1,8 @@
 import { auth, signInWithPopup } from "../../firebase/firebase";
-import { createArtist } from "../../services/artistServices";
+import {
+  createArtist,
+  sendEmailVerification,
+} from "../../services/artistServices";
 import type { AuthProvider, UserCredential, User } from "firebase/auth";
 
 export type OnboardingStep =
@@ -14,6 +17,20 @@ interface Artist {
   stripeSubscriptionActive?: boolean;
   appStorePurchaseActive?: boolean;
 }
+
+const getErrorMessage = (error: unknown): string => {
+  const responseMessage = (error as any)?.response?.data?.message;
+  const responseError = (error as any)?.response?.data?.error;
+
+  if (typeof responseMessage === "string") return responseMessage;
+  if (typeof responseError === "string") return responseError;
+  if (error instanceof Error) return error.message;
+
+  return "Login failed! Try again later.";
+};
+
+const isEmailNotVerifiedError = (message: string): boolean =>
+  /e-?mail(?: address)?.*\bnot\b.*\bverified\b/i.test(message);
 
 export const determineOnboardingStep = (artist: Artist): OnboardingStep => {
   if (artist.businessName === "New Business") {
@@ -125,11 +142,25 @@ export const SignInSuccessWithAuthResult = async (
   } catch (error: unknown) {
     console.error("Error during login callback:", error);
 
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : (error as any)?.response?.data?.error ||
-          "Login failed! Try again later.";
+    const errorMessage = getErrorMessage(error);
+
+    if (isEmailNotVerifiedError(errorMessage)) {
+      try {
+        await sendEmailVerification(user.uid);
+        showAlert(
+          "success",
+          "Your email is not verified. A new verification link has been sent."
+        );
+        return;
+      } catch (resendError) {
+        console.error("Error resending verification email:", resendError);
+        showAlert(
+          "error",
+          "Your email is not verified, and we could not resend the verification link. Please try again."
+        );
+        return;
+      }
+    }
 
     showAlert("error", errorMessage);
   }
