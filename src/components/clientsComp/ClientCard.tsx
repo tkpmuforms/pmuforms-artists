@@ -4,7 +4,6 @@ import type React from "react";
 import { ChevronRight } from "lucide-react";
 import "./client-card.scss";
 import { Client } from "../../redux/types";
-import { CircularProgress } from "@mui/material";
 
 interface ClientCardProps {
   client: Client;
@@ -25,13 +24,7 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onClick }) => {
       </div>
       <div className="client-card__info">
         <h3 className="client-card__name">
-          {client.name || (
-            <CircularProgress
-              size={18}
-              sx={{ color: "#8e2d8e" }}
-              aria-label="Loading client name"
-            />
-          )}
+          {client.name?.trim() || "No name provided"}
         </h3>
         <p className="client-card__email">{client.email}</p>
       </div>
