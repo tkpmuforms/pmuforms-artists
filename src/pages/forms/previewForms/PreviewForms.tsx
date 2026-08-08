@@ -146,20 +146,22 @@ const PreviewForms: React.FC<PreviewFormsProps> = ({ formId, onClose }) => {
           </div>
         </div>
 
-        {form.sections && form.sections.length > 0 ? (
-          form.sections.map((section) => (
-            <div key={section._id || section.id}>
+        <div className="preview-fields" aria-disabled="true">
+          {form.sections && form.sections.length > 0 ? (
+            form.sections.map((section) => (
+              <div key={section._id || section.id}>
               <h3>{section.title}</h3>
               {section.data && section.data.length > 0 ? (
                 renderPreviewFormFields(section.data)
               ) : (
                 <p>No fields in this section</p>
               )}
-            </div>
-          ))
-        ) : (
-          <p>No sections found in this form</p>
-        )}
+              </div>
+            ))
+          ) : (
+            <p>No sections found in this form</p>
+          )}
+        </div>
       </div>
 
       {showConfirmDeleteModal && (
