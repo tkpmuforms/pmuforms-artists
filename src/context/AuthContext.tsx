@@ -1,4 +1,10 @@
-import React, { createContext, useEffect } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setAuthenticated, setLoading, setUser } from "../redux/auth";
@@ -8,6 +14,8 @@ import axiosInstance, {
   isValidToken,
 } from "../utils/axios/axiosSetup";
 import { RootState } from "../redux/store";
+import { createArtist } from "../services/artistServices";
+import { mobileAuthHandoff } from "../utils/mobileAuth";
 
 const TESTING_MODE = false;
 
@@ -19,10 +27,20 @@ export const setAuthHeader = (token?: string) => {
   }
 };
 
-const AuthContext = createContext({
+interface AuthContextValue {
+  method: string;
+  logout: () => void;
+  handleAuthSuccess: (user: User, token: string) => void;
+  handleAuthFail: () => void;
+  user: User;
+  isAuthenticated: boolean;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContextValue>({
   method: "JWT",
   logout: () => {},
-  handleAuthSuccess: (_user: User, _token: string) => {},
+  handleAuthSuccess: () => {},
   handleAuthFail: () => {},
   user: {} as User,
   isAuthenticated: false,
@@ -39,6 +57,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { user, isAuthenticated, loading } = useSelector(
     (state: RootState) => state.auth
   );
+  const initializationStarted = useRef(false);
+  const [mobileAuthPending, setMobileAuthPending] = useState(
+    mobileAuthHandoff !== null
+  );
 
   const handleAuthSuccess = (user: User, token: string) => {
     dispatch(setLoading(false));
@@ -47,15 +69,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setAuthHeader(token);
   };
 
-  const handleAuthFail = () => {
+  const handleAuthFail = useCallback(() => {
+    localStorage.removeItem("accessToken");
     dispatch(setLoading(false));
     dispatch(setAuthenticated(false));
     dispatch(setUser({}));
     setAuthHeader();
-  };
+  }, [dispatch]);
 
   useEffect(() => {
+    if (initializationStarted.current) {
+      return;
+    }
+    initializationStarted.current = true;
+
     if (TESTING_MODE) {
+      setMobileAuthPending(false);
       dispatch(setLoading(false));
       dispatch(setAuthenticated(true));
       dispatch(
@@ -72,6 +101,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       dispatch(setLoading(true));
 
       try {
+        if (mobileAuthHandoff) {
+          const response = await createArtist(
+            mobileAuthHandoff.firebaseToken
+          );
+          const artist = response.data?.artist;
+          const webToken = response.data?.access_token ?? "";
+
+          if (!artist || !isValidToken(webToken)) {
+            throw new Error("Unable to verify the mobile sign-in session");
+          }
+
+          localStorage.setItem("accessToken", webToken);
+          localStorage.setItem("userId", artist.id ?? artist._id ?? "");
+          localStorage.setItem("userEmail", artist.email ?? "");
+          setAuthHeader(webToken);
+          dispatch(setUser(artist));
+          dispatch(setAuthenticated(true));
+          return;
+        }
+
         const token = getAccessToken();
 
         if (token && isValidToken(token)) {
@@ -84,12 +133,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.error("Error during auth initialization:", error);
         handleAuthFail();
       } finally {
+        setMobileAuthPending(false);
         dispatch(setLoading(false));
       }
     };
 
     initializeAuth();
-  }, [dispatch]);
+  }, [dispatch, handleAuthFail]);
 
   const logout = () => {
     if (TESTING_MODE) {
@@ -121,7 +171,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     handleAuthFail,
     user,
     isAuthenticated,
-    loading,
+    loading: loading || mobileAuthPending,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

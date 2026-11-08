@@ -29,7 +29,10 @@ const ClientsPage: React.FC = () => {
   const convertToClient = (
     customer: CustomerResponse["customers"][0],
   ): Client => {
-    const clientName = customer?.name ?? customer?.info?.client_name ?? "";
+    const clientName =
+      customer?.name?.trim() ||
+      customer?.info?.client_name?.trim() ||
+      "No name provided";
     return {
       id: customer?.id,
       name: clientName,

@@ -20,17 +20,33 @@ export const isValidToken = (accessToken: string) => {
   if (!accessToken) {
     return false;
   }
-  const decodedToken = JSON.parse(atob(accessToken.split(".")[1]));
-  return decodedToken.exp * 1000 > new Date().getTime();
+  try {
+    const decodedToken = JSON.parse(atob(accessToken.split(".")[1]));
+    return decodedToken.exp * 1000 > new Date().getTime();
+  } catch {
+    return false;
+  }
 };
 
 axiosInstance.defaults.headers["content-type"] = "application/json";
-const accessToken = getAccessToken();
 
 axiosInstance.interceptors.request.use((req) => {
-  if (accessToken && isValidToken(accessToken)) {
+  // This endpoint accepts a Firebase ID token in the request body and is also
+  // used to bootstrap sessions handed off by the mobile app. Never attach a
+  // previous Safari user's bearer token to this identity exchange.
+  if (req.url === "/api/auth/artist/create") {
+    delete req.headers.Authorization;
     return req;
   }
+
+  const accessToken = getAccessToken();
+
+  if (accessToken && isValidToken(accessToken)) {
+    req.headers.Authorization = `Bearer ${accessToken}`;
+    return req;
+  }
+
+  delete req.headers.Authorization;
 
   const pathname = history.location.pathname;
   if (pathname === "/" || pathname.includes("#")) {
@@ -39,8 +55,6 @@ axiosInstance.interceptors.request.use((req) => {
   history.push("/", { sessionExpired: true });
   return req;
 });
-
-axiosInstance.defaults.headers.common.Authorization = `Bearer ${getAccessToken()}`;
 
 axiosInstance.interceptors.response.use(
   (response) => {
