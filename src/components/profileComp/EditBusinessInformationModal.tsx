@@ -14,6 +14,8 @@ import { updateBusinessInfo } from "../../services/artistServices";
 import { refreshAuthUser } from "../../utils/authUtils";
 import "./edit-business-information-modal.scss";
 
+const DEFAULT_BUSINESS_NAME = "New Business";
+
 interface EditBusinessInformationModalProps {
   onClose: () => void;
   onSave: () => void;
@@ -24,7 +26,11 @@ const EditBusinessInformationModal: React.FC<
 > = ({ onClose, onSave }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
-  const [businessName, setBusinessName] = useState(user?.businessName || "");
+  // "New Business" is the placeholder the API gives new accounts; showing it
+  // in the field made the form look complete when it wasn't.
+  const [businessName, setBusinessName] = useState(
+    user?.businessName === DEFAULT_BUSINESS_NAME ? "" : user?.businessName || ""
+  );
   const [phoneNumber, setPhoneNumber] = useState(
     user?.businessPhoneNumber || ""
   );
@@ -57,6 +63,11 @@ const EditBusinessInformationModal: React.FC<
       return;
     }
 
+    if (businessName.trim() === DEFAULT_BUSINESS_NAME) {
+      toast.error("Please enter your own business name");
+      return;
+    }
+
     setIsSaving(true);
 
     const businessData: Parameters<typeof updateBusinessInfo>[0] = {
@@ -83,8 +94,14 @@ const EditBusinessInformationModal: React.FC<
       console.error("Error saving business information:", error);
       let errorMessage = "Failed to update business information";
 
-      const err = error as Record<string, unknown>;
-      const messageOrMsg = err?.message ?? err?.msg;
+      const err = error as {
+        response?: { data?: { message?: unknown } };
+        message?: unknown;
+        msg?: unknown;
+      };
+      // prefer the API's own message over axios' "Request failed with status code 400"
+      const messageOrMsg =
+        err?.response?.data?.message ?? err?.message ?? err?.msg;
       if (typeof messageOrMsg === "string") {
         errorMessage = messageOrMsg;
       } else if (Array.isArray(messageOrMsg)) {
