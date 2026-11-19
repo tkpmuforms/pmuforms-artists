@@ -343,12 +343,18 @@ const Dashboard: React.FC = () => {
       ));
   };
 
+  // Prefer the artist's own first name (Edit Your Profile), then the business
+  // name; skip the "New Business" placeholder new accounts start with.
+  const greetingName =
+    user?.profile?.firstName?.trim() ||
+    (user?.businessName && user.businessName !== "New Business"
+      ? user.businessName
+      : "");
+
   const renderHeader = () => (
     <div className="dashboard__header">
       <div className="dashboard__welcome">
-        <h1>
-          {user?.businessName ? `Hey, ${user.businessName} 👋` : "Hey there 👋"}
-        </h1>
+        <h1>{greetingName ? `Hey, ${greetingName} 👋` : "Hey there 👋"}</h1>
         <p>Here's your activity for today</p>
       </div>
       <div className="dashboard__actions">
