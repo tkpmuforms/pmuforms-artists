@@ -447,6 +447,8 @@ const EditProfilePage: React.FC = () => {
     );
   }
 
+  const hasSignatureOnFile = Boolean(user?.signature_url);
+
   return (
     <div className="edit-profile-page">
       <div className="edit-profile-page__container">
@@ -457,7 +459,7 @@ const EditProfilePage: React.FC = () => {
             onClick={() => setShowSignModal(true)}
           >
             <Edit3 size={16} />
-            Add Signature
+            {hasSignatureOnFile ? "Update Signature" : "Add Signature"}
           </button>
         </div>
 
@@ -708,7 +710,9 @@ const EditProfilePage: React.FC = () => {
         <SignatureModal
           onClose={() => setShowSignModal(false)}
           onSubmit={handleSignatureSubmit}
-          title="Add Your Signature"
+          title={
+            hasSignatureOnFile ? "Update Your Signature" : "Add Your Signature"
+          }
           existingSignature={user?.signature_url}
         />
       )}
