@@ -31,6 +31,12 @@ export const Menu: MenuItem[] = [
     icon: "services",
   },
   {
+    name: "Integrations",
+    basePath: "/integrations",
+    TSKey: "Integrations",
+    icon: "integrations",
+  },
+  {
     name: "Profile",
     basePath: "/profile",
     TSKey: "Profile",

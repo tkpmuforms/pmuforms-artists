@@ -3,7 +3,8 @@ import { createBrowserHistory } from "history";
 
 const history = createBrowserHistory();
 
-const baseURL = "https://admin.pmuforms.com/";
+const baseURL =
+  import.meta.env.VITE_API_BASE_URL || "https://admin.pmuforms.com/";
 
 const axiosInstance = axios.create({
   baseURL,

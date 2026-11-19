@@ -39,6 +39,9 @@ const ReminderPage = lazy(
 const IntegrationsPage = lazy(
   () => import("../pages/profile/IntegrationsPage.tsx")
 );
+const SquareServicesMappingPage = lazy(
+  () => import("../pages/profile/SquareServicesMappingPage.tsx")
+);
 
 const AllAppointments = lazy(
   () => import("../pages/appointments/Appointment.tsx")
@@ -168,9 +171,14 @@ export const authorizedRoutes: RouteProps[] = [
     breadcrumbs: ["Profile", "Business Information"],
   },
   {
-    path: "/profile/integrations",
+    path: "/integrations",
     element: <IntegrationsPage />,
-    breadcrumbs: ["Profile", "Integrations"],
+    breadcrumbs: ["Integrations"],
+  },
+  {
+    path: "/integrations/square/mapping",
+    element: <SquareServicesMappingPage />,
+    breadcrumbs: ["Integrations", "Services Mapping"],
   },
   {
     path: "/profile/payment",

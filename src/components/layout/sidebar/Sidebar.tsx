@@ -12,6 +12,7 @@ import {
   ProfileIcon,
   ServicesIcon,
 } from "../../../assets/svgs/DashboardSvg.tsx";
+import { IntegrationsIcon } from "../../../assets/svgs/IntegrationsSvg.tsx";
 import useAuth from "../../../context/useAuth.ts";
 import { Avatar } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -71,6 +72,7 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
         clients: ClientIcon,
         forms: FormsIcon,
         services: ServicesIcon,
+        integrations: IntegrationsIcon,
         profile: ProfileIcon,
       };
       const IconComponent = iconMap[iconName];
