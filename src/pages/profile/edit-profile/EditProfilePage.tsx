@@ -178,6 +178,15 @@ const EditProfilePage: React.FC = () => {
     return errors;
   };
 
+  // The API validates with @IsPhoneNumber() and no default region, so it only
+  // accepts international format. Returns "" when there is no number.
+  const toE164USPhone = (phone: string): string => {
+    const digits = phone.replace(/\D/g, "");
+    if (!digits) return "";
+    if (digits.length === 11 && digits[0] === "1") return `+${digits}`;
+    return `+1${digits}`;
+  };
+
   const formatPhoneNumber = (phone: string): string => {
     const digits = phone.replace(/\D/g, "");
 
@@ -204,7 +213,12 @@ const EditProfilePage: React.FC = () => {
         setProfileData({
           firstName: cachedProfile.profile.firstName || user?.firstName || "",
           lastName: cachedProfile.profile.lastName || user?.lastName || "",
-          phoneNumber: cachedProfile.profile.phone || user?.phoneNumber || "",
+          phoneNumber: formatPhoneNumber(
+            cachedProfile.profile.phoneNumber ||
+              cachedProfile.profile.phone ||
+              user?.phoneNumber ||
+              ""
+          ),
           email: cachedProfile.profile.email || user?.email || "",
         });
 
@@ -223,7 +237,12 @@ const EditProfilePage: React.FC = () => {
         const newProfileData = {
           firstName: response.data?.profile.firstName || user?.firstName || "",
           lastName: response.data?.profile.lastName || user?.lastName || "",
-          phoneNumber: response.data?.profile.phone || user?.phoneNumber || "",
+          phoneNumber: formatPhoneNumber(
+            response.data?.profile.phoneNumber ||
+              response.data?.profile.phone ||
+              user?.phoneNumber ||
+              ""
+          ),
           email: response.data?.profile.email || user?.email || "",
         };
 
@@ -309,7 +328,7 @@ const EditProfilePage: React.FC = () => {
         firstName: profileData.firstName.trim(),
         lastName: profileData.lastName.trim(),
         email: profileData.email.trim(),
-        phoneNumber: profileData.phoneNumber.replace(/\D/g, ""),
+        phoneNumber: toE164USPhone(profileData.phoneNumber),
       };
 
       if (avatarUrl) {
@@ -330,23 +349,33 @@ const EditProfilePage: React.FC = () => {
       clearProfileCache();
       getAuthUser();
       toast.success("Profile updated successfully!");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to update profile:", err);
-      const apiMessage: string =
-        err.response?.data?.message || err.message || "";
+      const rawMessage = (
+        err as { response?: { data?: { message?: unknown } } }
+      )?.response?.data?.message;
+      const messages = (
+        Array.isArray(rawMessage) ? rawMessage : [rawMessage]
+      ).filter((m): m is string => typeof m === "string" && m.length > 0);
 
-      if (
-        apiMessage.toLowerCase().includes("phonenumber") ||
-        apiMessage.toLowerCase().includes("phone number") ||
-        apiMessage.toLowerCase().includes("phone")
-      ) {
+      const phoneMessage = messages.find((m) => /phone/i.test(m));
+      if (phoneMessage) {
         setValidationErrors((prev) => ({
           ...prev,
-          phoneNumber: "Invalid Phone Number",
+          phoneNumber: "Please enter a valid USA phone number",
         }));
-      } else {
-        setError("Failed to update profile. Please try again.");
       }
+
+      const otherMessages = messages.filter((m) => m !== phoneMessage);
+      const message = phoneMessage
+        ? "Please enter a valid USA phone number"
+        : otherMessages.join(", ") ||
+          "Failed to update profile. Please try again.";
+
+      if (!phoneMessage || otherMessages.length > 0) {
+        setError(otherMessages.join(", ") || message);
+      }
+      toast.error(message);
     } finally {
       setIsSaving(false);
     }
