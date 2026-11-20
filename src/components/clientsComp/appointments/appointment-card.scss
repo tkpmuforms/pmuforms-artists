@@ -1,7 +1,9 @@
 .appointment-card {
+  // no overflow: hidden here, it would clip the actions menu; the header
+  // rounds its own top corners instead
+  position: relative;
   background: white;
   border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #f3f4f6;
   transition: all 0.2s ease;
@@ -11,8 +13,15 @@
     transform: translateY(-1px);
   }
 
+  // keep an open menu above the cards below and beside this one
+  &:hover,
+  &:focus-within {
+    z-index: 5;
+  }
+
   .card-header {
     background: #f6f7f7;
+    border-radius: 11px 11px 0 0;
     padding: 20px 15px;
     display: flex;
     align-items: flex-start;
@@ -76,6 +85,8 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         padding: 4px 0;
         min-width: 140px;
+        width: max-content;
+        max-width: calc(100vw - 32px);
         z-index: 10;
         opacity: 0;
         visibility: hidden;
@@ -95,6 +106,7 @@
           align-items: center;
           gap: 8px;
           color: #374151;
+          white-space: nowrap;
           transition: background-color 0.15s;
 
           &:hover {
@@ -111,7 +123,9 @@
         }
       }
 
-      &:hover .dropdown-menu {
+      // focus-within also opens it for keyboard and tap
+      &:hover .dropdown-menu,
+      &:focus-within .dropdown-menu {
         opacity: 1;
         visibility: visible;
         transform: translateY(0);

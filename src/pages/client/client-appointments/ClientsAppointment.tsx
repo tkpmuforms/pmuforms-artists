@@ -12,6 +12,8 @@ import {
   getCustomerById,
 } from "../../../services/artistServices";
 import AppointmentCard from "../../../components/clientsComp/appointments/AppointmentCard";
+import ShareFormLinkModal from "../../../components/clientsComp/appointments/ShareFormLinkModal";
+import { startFillingOnThisDevice } from "../../../utils/formLinks";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import "./client-appointments.scss";
 
@@ -25,6 +27,9 @@ const ClientAppointmentPage: React.FC = () => {
   const [showSendConsentForm, setShowSendConsentForm] = useState(false);
   const [showDeleteAppointment, setShowDeleteAppointment] = useState(false);
   const [appointmentToDelete, setAppointmentToDelete] = useState<string | null>(
+    null
+  );
+  const [linkAppointmentId, setLinkAppointmentId] = useState<string | null>(
     null
   );
 
@@ -121,6 +126,8 @@ const ClientAppointmentPage: React.FC = () => {
                 appointment={appointment}
                 onViewForms={onViewForms}
                 onDeleteAppointment={onDeleteAppointment}
+                onShareFormLink={setLinkAppointmentId}
+                onStartFilling={startFillingOnThisDevice}
               />
             ))}
           </div>
@@ -135,6 +142,14 @@ const ClientAppointmentPage: React.FC = () => {
             headerText="Delete Appointment"
             shorterText="Are you sure you want to delete this appointment?"
             handleDelete={handleDeleteConfirm}
+          />
+        )}
+
+        {linkAppointmentId && (
+          <ShareFormLinkModal
+            appointmentId={linkAppointmentId}
+            clientName={clientName}
+            onClose={() => setLinkAppointmentId(null)}
           />
         )}
 

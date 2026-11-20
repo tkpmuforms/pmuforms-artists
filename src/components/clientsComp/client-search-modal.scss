@@ -30,6 +30,33 @@
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   }
 
+  &__title {
+    margin: 0 0 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  &__add-new {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: -8px 0 20px;
+    padding: 12px 14px;
+    border: 1px dashed var(--pmu-primary-light);
+    border-radius: 12px;
+    background: var(--pmu-background-light);
+    color: var(--pmu-primary);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover {
+      border-style: solid;
+    }
+  }
+
   &__search {
     position: relative;
     margin-bottom: 24px;

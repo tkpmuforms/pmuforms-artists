@@ -9,7 +9,8 @@ import toast from "react-hot-toast";
 
 interface AddClientModalProps {
   onClose: () => void;
-  onSuccess?: () => void;
+  // receives the new client, e.g. to continue a flow with them selected
+  onSuccess?: (client?: { id: string; name: string }) => void;
 }
 
 type FieldErrors = {
@@ -57,10 +58,10 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
       primaryPhone: formData.phone,
       email: formData.email.trim(),
     })
-      .then(() => {
+      .then((response) => {
         toast.success("Client added successfully!");
         setFormData({ firstName: "", lastName: "", email: "", phone: "" });
-        onSuccess?.();
+        onSuccess?.(response?.data?.customer);
       })
       .catch((error) => {
         console.error("Error adding client:", error);

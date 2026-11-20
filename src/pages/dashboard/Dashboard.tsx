@@ -20,6 +20,9 @@ import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
 import FormLinkModal from "../../components/dashboardComp/FormLinkModal";
 import MetricsCard from "../../components/dashboardComp/MetricsCard";
 import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
+import StartNewFormFlow, {
+  StartFormIcon,
+} from "../../components/dashboardComp/StartNewFormFlow";
 import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
 import FormCard from "../../components/formsComp/FormCard";
 import { LoadingSmall } from "../../components/loading/Loading";
@@ -48,6 +51,7 @@ const Dashboard: React.FC = () => {
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
   const [showFormLinkModal, setShowFormLinkModal] = useState(false);
   const [showAddClient, setShowAddClient] = useState(false);
+  const [showStartNewForm, setShowStartNewForm] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -89,17 +93,18 @@ const Dashboard: React.FC = () => {
 
   const quickActions = [
     {
-      title: "Add New Client",
-      icon: CreateNewClientIcon,
-      onClick: () => setShowAddClient(true),
+      title: "Share Forms Without Login",
+      icon: StartFormIcon,
+      onClick: () => {
+        if (!hasActiveSubscription) {
+          setShowSubscriptionModal(true);
+        } else {
+          setShowStartNewForm(true);
+        }
+      },
     },
     {
-      title: "Manage Forms",
-      icon: CreateNewFormIcon,
-      onClick: () => navigate("/forms"),
-    },
-    {
-      title: "Send Form",
+      title: "Share Bussiness Link",
       icon: SendFormIcon,
       onClick: () => {
         if (!hasActiveSubscription) {
@@ -108,6 +113,16 @@ const Dashboard: React.FC = () => {
           setShowFormLinkModal(true);
         }
       },
+    },
+    {
+      title: "Add New Client",
+      icon: CreateNewClientIcon,
+      onClick: () => setShowAddClient(true),
+    },
+    {
+      title: "Manage Forms",
+      icon: CreateNewFormIcon,
+      onClick: () => navigate("/forms"),
     },
   ];
 
@@ -518,6 +533,13 @@ const Dashboard: React.FC = () => {
         <AddClientModal
           onClose={handleModalFlow.closeAddClient}
           onSuccess={handleModalFlow.closeAddClientAndRefresh}
+        />
+      )}
+
+      {showStartNewForm && (
+        <StartNewFormFlow
+          onClose={() => setShowStartNewForm(false)}
+          onAppointmentCreated={refreshMetrics}
         />
       )}
 

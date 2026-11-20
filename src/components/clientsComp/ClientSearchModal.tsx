@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
-import { Search, ChevronRight } from "lucide-react";
+import { Search, ChevronRight, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./client-search-modal.scss";
 import { searchCustomers } from "../../services/artistServices";
@@ -11,6 +11,10 @@ import { generateInitials } from "../../utils/utils";
 
 interface ClientSearchModalProps {
   onClose: () => void;
+  // pick mode: hand the chosen client back instead of opening their page
+  onSelect?: (client: { id: string; name: string }) => void;
+  onAddNew?: () => void;
+  title?: string;
 }
 
 interface RecentSearch {
@@ -27,12 +31,49 @@ interface SearchResult {
   initials: string;
 }
 
-const ClientSearchModal: React.FC<ClientSearchModalProps> = ({ onClose }) => {
+// same name fallback as the Clients page: clients added by the artist may only
+// have info.client_name
+const toSearchResult = (
+  customer: CustomerResponse["customers"][0],
+): SearchResult => {
+  const name =
+    customer?.name?.trim() ||
+    customer?.info?.client_name?.trim() ||
+    "No name provided";
+  return {
+    id: customer?.id,
+    name,
+    email: customer?.email || "No email provided",
+    initials: generateInitials(name),
+  };
+};
+
+const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
+  onClose,
+  onSelect,
+  onAddNew,
+  title,
+}) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [allClients, setAllClients] = useState<SearchResult[]>([]);
+  const isPicking = Boolean(onSelect);
+
+  // in pick mode, show the client list before anything is typed
+  useEffect(() => {
+    if (!isPicking) return;
+    // the search endpoint with no query returns the flat, alphabetical list the
+    // Clients page uses; /my-customers nests each client under "customer"
+    searchCustomers(undefined, 1, 20)
+      .then((response) => {
+        const data: CustomerResponse = response.data;
+        setAllClients((data?.customers || []).map(toSearchResult));
+      })
+      .catch((error) => console.error("Error loading clients:", error));
+  }, [isPicking]);
 
   useEffect(() => {
     const stored = localStorage.getItem("recentClientSearches");
@@ -53,12 +94,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({ onClose }) => {
           const response = await searchCustomers(searchQuery.trim(), 1, 10);
           const data: CustomerResponse = response.data;
 
-          const results = data.customers.map((customer) => ({
-            id: customer.id,
-            name: customer.name,
-            email: customer.email || "No email provided",
-            initials: generateInitials(customer.name),
-          }));
+          const results = (data?.customers || []).map(toSearchResult);
 
           setSearchResults(results);
         } catch (error) {
@@ -92,19 +128,30 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({ onClose }) => {
 
   const handleClientClick = (client: SearchResult | RecentSearch) => {
     saveToRecentSearches(client);
+    if (onSelect) {
+      onSelect({ id: client.id, name: client.name });
+      return;
+    }
     navigate(`/clients/${client.id}`);
     onClose();
   };
 
-  const displayItems = searchQuery.trim() ? searchResults : recentSearches;
+  const displayItems = searchQuery.trim()
+    ? searchResults
+    : isPicking && allClients.length > 0
+      ? allClients
+      : recentSearches;
   const sectionTitle = searchQuery.trim()
     ? "Search Results"
-    : "Recent searches";
+    : isPicking && allClients.length > 0
+      ? "Your clients"
+      : "Recent searches";
 
   return (
     <div className="client-search-modal">
       <div className="client-search-modal__overlay" onClick={onClose} />
       <div className="client-search-modal__content">
+        {title && <h2 className="client-search-modal__title">{title}</h2>}
         <div className="client-search-modal__search">
           <Search size={20} className="search-icon" />
           <input
@@ -116,6 +163,17 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({ onClose }) => {
             autoFocus
           />
         </div>
+
+        {onAddNew && (
+          <button
+            type="button"
+            className="client-search-modal__add-new"
+            onClick={onAddNew}
+          >
+            <UserPlus size={18} />
+            Add new client
+          </button>
+        )}
 
         <div className="client-search-modal__results">
           <h3>{sectionTitle}</h3>

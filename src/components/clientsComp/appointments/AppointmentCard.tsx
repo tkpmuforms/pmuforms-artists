@@ -1,4 +1,12 @@
-import { Calendar, Clock, FileText, MoreVertical, Trash2 } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  ExternalLink,
+  FileText,
+  Link2,
+  MoreVertical,
+  Trash2,
+} from "lucide-react";
 import type React from "react";
 import {
   AppointmentSvg,
@@ -13,12 +21,16 @@ interface AppointmentCardProps {
   appointment: ClientAppointmentData;
   onViewForms: (appointmentId: string) => void;
   onDeleteAppointment: (appointmentId: string) => void;
+  onShareFormLink?: (appointmentId: string) => void;
+  onStartFilling?: (appointmentId: string) => void;
 }
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({
   appointment,
   onViewForms,
   onDeleteAppointment,
+  onShareFormLink,
+  onStartFilling,
 }) => {
   const primaryService = appointment.serviceDetails?.[0];
   const serviceName = primaryService?.service || "Unknown Service";
@@ -56,8 +68,9 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
             )}
           </div>
         </div>
-        <div className="dropdown">
-          <button className="dropdown-trigger">
+        {/* menu clicks must not also trigger the card's own click */}
+        <div className="dropdown" onClick={(e) => e.stopPropagation()}>
+          <button className="dropdown-trigger" aria-label="Appointment actions">
             <MoreVertical size={16} />
           </button>
           <div className="dropdown-menu">
@@ -65,6 +78,19 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
               <FileText size={16} />
               View Forms
             </button>
+            {/* signed appointments can't take new answers */}
+            {!appointment.signed && onShareFormLink && (
+              <button onClick={() => onShareFormLink(appointment.id)}>
+                <Link2 size={16} />
+                Share consent form link
+              </button>
+            )}
+            {!appointment.signed && onStartFilling && (
+              <button onClick={() => onStartFilling(appointment.id)}>
+                <ExternalLink size={16} />
+                Share consent forms
+              </button>
+            )}
             <button
               onClick={() => onDeleteAppointment(appointment.id)}
               className="delete-option"

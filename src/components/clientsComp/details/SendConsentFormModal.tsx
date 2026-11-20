@@ -8,9 +8,14 @@ import "./send-consent-form-modal.scss";
 
 interface SendConsentFormModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  // receives the new appointment's id
+  onSuccess: (appointmentId?: string) => void;
   clientName: string;
   clientId: string | undefined;
+  title?: string;
+  // overrides the default "send the consent form to ..." subtitle;
+  // pass null to hide it
+  description?: React.ReactNode | null;
 }
 
 const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
@@ -18,6 +23,8 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
   onSuccess,
   clientName,
   clientId,
+  title = "Send Consent Form",
+  description,
 }) => {
   const { user } = useAuth();
   const [appointmentDate, setAppointmentDate] = useState("");
@@ -56,11 +63,15 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
           </button>
 
           <div className="send-consent-form-modal__header">
-            <h2>Send Consent Form</h2>
-            <p>
-              Select the date and service to send the consent form to{" "}
-              {clientName}.
-            </p>
+            <h2>{title}</h2>
+            {description === undefined ? (
+              <p>
+                Select the date and service to send the consent form to{" "}
+                {clientName}.
+              </p>
+            ) : (
+              description !== null && <p>{description}</p>
+            )}
           </div>
 
           <div className="send-consent-form-modal__body">
@@ -121,7 +132,7 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
           selectedServices={getSelectedServiceNames()}
           selectedServiceIds={selectedServices}
           onClose={() => setShowPreviewAppointment(false)}
-          onSuccess={onSuccess}
+          onSuccess={(_url, appointmentId) => onSuccess(appointmentId)}
         />
       )}
     </>

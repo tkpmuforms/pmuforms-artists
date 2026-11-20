@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 
 interface PreviewAppointmentModalProps {
   onClose: () => void;
-  onSuccess: (appointmentUrl?: string) => void;
+  onSuccess: (appointmentUrl?: string, appointmentId?: string) => void;
   clientName: string;
   clientId: string;
   appointmentDate: string;
@@ -102,7 +102,7 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
           "https://business.pmuforms.com";
         const appointmentUrl = `${baseUrl}/#/appointment/${appointmentId}`;
 
-        onSuccess(appointmentUrl);
+        onSuccess(appointmentUrl, appointmentId);
         toast.success("Appointment booked successfully");
       } else {
         console.error("No appointment ID returned from API");
@@ -126,7 +126,10 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
     if (formsToSend.length === 0) {
       return (
         <div className="no-forms">
-          <span>No forms available for selected services</span>
+          <span>
+            No forms are set up for the selected services. Add forms to these
+            services under Manage Forms, then try again.
+          </span>
         </div>
       );
     }

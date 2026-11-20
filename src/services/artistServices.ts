@@ -59,6 +59,16 @@ export const getArtistAppointmentsPaginated = async (
   );
 };
 
+export interface FormLink {
+  url: string;
+  expiresAt: string;
+}
+
+// A no-login link to one appointment's forms in the customer app. Each link
+// lasts 24 hours from when it is generated.
+export const createFormLink = async (appointmentId: string) =>
+  axiosInstance.post<FormLink>("/api/form-links", { appointmentId });
+
 export const bookAppointment = async (data: {
   appointmentDate: string;
   customerId: string;
