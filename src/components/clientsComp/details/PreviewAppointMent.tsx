@@ -87,6 +87,7 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
       const bookingData = {
         appointmentDate,
         customerId: clientId,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         services: selectedServiceIds
           .map((id) => parseInt(id, 10))
           .filter((id) => !isNaN(id)),

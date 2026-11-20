@@ -261,3 +261,14 @@
     }
   }
 }
+
+// emails keep their line breaks; the body is plain text from the email
+.editor-preview__text--record {
+  white-space: pre-wrap;
+}
+
+.editor-preview__record-note {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: #64748b;
+}

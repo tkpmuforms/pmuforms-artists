@@ -254,3 +254,16 @@
     }
   }
 }
+
+.preview-dynamic-forms {
+  .filled-form + .filled-form {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px dashed #e2e8f0;
+  }
+
+  .all-forms-link {
+    color: #8e2d8e;
+    font-weight: 500;
+  }
+}

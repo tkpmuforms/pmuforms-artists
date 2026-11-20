@@ -104,3 +104,61 @@
     }
   }
 }
+
+// app-written records: emails sent and photos from the client
+.note-record {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 12px;
+    font-weight: 500;
+
+    &--photo {
+      background: #ecfdf5;
+      color: #047857;
+    }
+  }
+
+  &__appointment {
+    font-size: 12px;
+    color: #64748b;
+  }
+}
+
+.note-card__text--record {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.note-record__badge--scheduled {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.note-cancel-btn {
+  border: 1px solid #fecaca;
+  background: white;
+  color: #dc2626;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    background: #fef2f2;
+  }
+}

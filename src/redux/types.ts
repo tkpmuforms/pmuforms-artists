@@ -121,12 +121,15 @@ export interface CustomerResponse {
   }>;
 }
 
+// "pre-care" forms are instructions emailed before the appointment, never filled out
+export type FormType = "consent" | "care" | "pre-care";
+
 export interface Form {
   id: string;
   title: string;
   lastUpdated: string;
   usedFor: string;
-  type: "consent" | "care";
+  type: FormType;
   services: number[];
   createdAt: string;
   updatedAt: string;
@@ -140,7 +143,7 @@ export interface SingleForm {
   title: string;
   sections: Section[];
   services?: number[];
-  type: "consent" | "care";
+  type: FormType;
   order?: number;
   versionNumber?: number;
   createdAt?: string;
@@ -178,6 +181,8 @@ export interface ClientAppointmentData {
   updatedAt: string;
   formsToFillCount: number;
   serviceDetails: ServiceDetail[];
+  // set once the artist marks the procedure done
+  completedAt?: string;
 }
 
 interface ServiceDetail {
@@ -225,6 +230,16 @@ export interface Note {
   artistId: string;
   _id: string;
   imageUrl?: string;
+  // "email" and "client-photo" notes are written by the app as a record of
+  // communication with the client, and can't be edited or deleted
+  // "scheduled-email" is waiting to go out and can be cancelled; once sent it
+  // is replaced by an "email" note
+  kind?: "note" | "email" | "client-photo" | "scheduled-email";
+  appointmentId?: string;
+  subject?: string;
+  messageType?: string;
+  messageId?: string;
+  sendAt?: string;
 }
 
 export interface Card {

@@ -11,7 +11,11 @@ import {
   getAppointmentsForCustomer,
   getCustomerById,
 } from "../../../services/artistServices";
-import AppointmentCard from "../../../components/clientsComp/appointments/AppointmentCard";
+import AppointmentCard, {
+  CareAction,
+} from "../../../components/clientsComp/appointments/AppointmentCard";
+import CareMessageModal from "../../../components/clientsComp/appointments/CareMessageModal";
+import HealingCheckInModal from "../../../components/clientsComp/appointments/HealingCheckInModal";
 import ShareFormLinkModal from "../../../components/clientsComp/appointments/ShareFormLinkModal";
 import { startFillingOnThisDevice } from "../../../utils/formLinks";
 import { LoadingSmall } from "../../../components/loading/Loading";
@@ -32,6 +36,10 @@ const ClientAppointmentPage: React.FC = () => {
   const [linkAppointmentId, setLinkAppointmentId] = useState<string | null>(
     null
   );
+  const [careAction, setCareAction] = useState<{
+    appointmentId: string;
+    action: CareAction;
+  } | null>(null);
 
   const onSendConsentForm = () => {
     setShowSendConsentForm(true);
@@ -128,6 +136,9 @@ const ClientAppointmentPage: React.FC = () => {
                 onDeleteAppointment={onDeleteAppointment}
                 onShareFormLink={setLinkAppointmentId}
                 onStartFilling={startFillingOnThisDevice}
+                onCareAction={(appointmentId, action) =>
+                  setCareAction({ appointmentId, action })
+                }
               />
             ))}
           </div>
@@ -150,6 +161,37 @@ const ClientAppointmentPage: React.FC = () => {
             appointmentId={linkAppointmentId}
             clientName={clientName}
             onClose={() => setLinkAppointmentId(null)}
+          />
+        )}
+
+        {careAction?.action === "check-in" && (
+          <HealingCheckInModal
+            appointmentId={careAction.appointmentId}
+            clientName={clientName}
+            onClose={() => setCareAction(null)}
+            onDone={() => setCareAction(null)}
+          />
+        )}
+
+        {careAction && careAction.action !== "check-in" && (
+          <CareMessageModal
+            appointmentId={careAction.appointmentId}
+            clientName={clientName}
+            kind={careAction.action === "pre-care" ? "pre-care" : "aftercare"}
+            mode={careAction.action === "complete" ? "complete" : "send"}
+            onClose={() => setCareAction(null)}
+            onDone={({ completedAt }) => {
+              if (completedAt) {
+                setAppointments((prev) =>
+                  prev.map((apt) =>
+                    apt.id === careAction.appointmentId
+                      ? { ...apt, completedAt }
+                      : apt
+                  )
+                );
+              }
+              setCareAction(null);
+            }}
           />
         )}
 

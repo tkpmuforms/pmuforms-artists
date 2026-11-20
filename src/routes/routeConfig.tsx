@@ -125,6 +125,12 @@ export const authorizedRoutes: RouteProps[] = [
     breadcrumbs: ["Clients", "Client Details", "Appointments", "Signature"],
   },
   {
+    // every filled form for the appointment, one PDF for all of them
+    path: "/clients/:id/appointments/:appointmentId/forms/all",
+    element: <FIlledFormsPreviewPage />,
+    breadcrumbs: ["Clients", "Client Details", "Appointments", "Forms", "All Forms"],
+  },
+  {
     path: "/clients/:id/appointments/:appointmentId/forms/:templateId",
     element: <FIlledFormsPreviewPage />,
     breadcrumbs: [

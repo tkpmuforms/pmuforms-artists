@@ -73,6 +73,8 @@ export const bookAppointment = async (data: {
   appointmentDate: string;
   customerId: string;
   services: number[];
+  // lets the API email the client at sensible local hours
+  timeZone?: string;
 }) =>
   axiosInstance.post(
     "/api/appointments/artist/book-appointment?notify_customer=1",
@@ -363,3 +365,140 @@ export const updateBusinessInfo = async (data: {
 }) => {
   return axiosInstance.patch("/api/artists/update-business-info", data);
 };
+
+export type CareKind = "pre-care" | "aftercare";
+
+export interface CareContent {
+  subject: string;
+  intro: string;
+  sections: { heading: string; items: string[] }[];
+  closing: string;
+}
+
+export interface CareDraft {
+  content: CareContent | null;
+  source: "ai" | "template" | "artist" | null;
+  hasForm: boolean;
+  // the forms the instructions came from
+  formTitles: string[];
+  // AI was asked for but failed, so this is the form as written
+  aiFailed: boolean;
+  aiAvailable: boolean;
+  to: string | null;
+}
+
+export interface ClientMessage {
+  id: string;
+  type: "form-nudge-48h" | "form-nudge-24h" | CareKind | "healing-check-in";
+  trigger: "auto" | "manual";
+  status:
+    | "scheduled"
+    | "cancelled"
+    | "sending"
+    | "sent"
+    | "failed"
+    | "skipped";
+  subject?: string;
+  to?: string;
+  sentAt?: string;
+  // when a scheduled check-in goes out
+  sendAt?: string;
+  checkIn?: { message: string; requestPhoto: boolean };
+  // healing photos the client sent back
+  photoUrls?: string[];
+  createdAt: string;
+}
+
+// what would be emailed; `ai` asks OpenAI to write it from the form
+export const previewCareMessage = async (
+  appointmentId: string,
+  type: CareKind,
+  ai?: boolean,
+) =>
+  axiosInstance.get<CareDraft>(
+    `/api/appointments/${appointmentId}/client-messages/preview`,
+    { params: { type, ...(ai === undefined ? {} : { ai: ai ? "1" : "0" }) } },
+  );
+
+export const sendCareMessage = async (
+  appointmentId: string,
+  data: { type: CareKind; content?: CareContent },
+) =>
+  axiosInstance.post<{ message: ClientMessage }>(
+    `/api/appointments/${appointmentId}/client-messages`,
+    data,
+  );
+
+export const getClientMessages = async (appointmentId: string) =>
+  axiosInstance.get<{ messages: ClientMessage[] }>(
+    `/api/appointments/${appointmentId}/client-messages`,
+  );
+
+export const completeAppointment = async (
+  appointmentId: string,
+  data: {
+    sendAftercare: boolean;
+    aftercare?: CareContent;
+    // scheduled in the same step
+    checkIn?: CheckInDelay & { subject: string; message: string };
+  },
+) =>
+  axiosInstance.post<{
+    appointment: { id: string; completedAt: string };
+    aftercare: ClientMessage | null;
+    aftercareError: string | null;
+    checkIn?: ClientMessage | null;
+    checkInError?: string | null;
+  }>(`/api/appointments/${appointmentId}/complete`, data);
+
+export type DelayUnit = "days" | "weeks" | "months";
+
+// how far ahead a check-in can go, per unit (the API enforces the same)
+export const CHECK_IN_DELAY_LIMITS: Record<DelayUnit, number> = {
+  days: 90,
+  weeks: 26,
+  months: 12,
+};
+
+export interface CheckInDelay {
+  amount: number;
+  unit: DelayUnit;
+  requestPhoto: boolean;
+}
+
+export interface CheckInDraft {
+  subject: string;
+  message: string;
+  source: "ai" | "template";
+  aiAvailable: boolean;
+  aiFailed: boolean;
+  to: string | null;
+  sendAt: string;
+}
+
+// a message for the check-in; `useAi: false` gives the standard one
+export const draftCheckIn = async (
+  appointmentId: string,
+  data: CheckInDelay & { useAi?: boolean },
+) =>
+  axiosInstance.post<CheckInDraft>(
+    `/api/appointments/${appointmentId}/healing-check-ins/draft`,
+    data,
+  );
+
+export const scheduleCheckIn = async (
+  appointmentId: string,
+  data: CheckInDelay & { subject: string; message: string },
+) =>
+  axiosInstance.post<{ message: ClientMessage }>(
+    `/api/appointments/${appointmentId}/healing-check-ins`,
+    data,
+  );
+
+export const cancelScheduledMessage = async (
+  appointmentId: string,
+  messageId: string,
+) =>
+  axiosInstance.delete<{ message: ClientMessage }>(
+    `/api/appointments/${appointmentId}/client-messages/${messageId}`,
+  );

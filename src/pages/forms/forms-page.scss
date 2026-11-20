@@ -111,8 +111,15 @@
 
   &__tabs {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 32px;
+  }
+
+  &__tab-hint {
+    margin: -16px 0 24px;
+    font-size: 14px;
+    color: #64748b;
   }
 
   &__tab {

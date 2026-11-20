@@ -13,14 +13,18 @@ import ImageViewerModal from "../../../components/clientsComp/notes/ImageViewerM
 import NotesModal from "../../../components/clientsComp/notes/NotesModal";
 import useAuth from "../../../context/useAuth";
 import { storage } from "../../../firebase/firebase";
-import { Note } from "../../../redux/types";
+import { ClientAppointmentData, Note } from "../../../redux/types";
 import {
   addCustomerNote,
+  cancelScheduledMessage,
   deleteCustomerNote,
+  getAppointmentsForCustomer,
   getCustomerNotes,
   updateCustomerNote,
 } from "../../../services/artistServices";
 import { formatDate } from "../../../utils/utils";
+import { getApiErrorMessage } from "../../../utils/formLinks";
+import { formatSendAt } from "../../../utils/notes";
 import "./client-notes.scss";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import { Plus } from "lucide-react";
@@ -41,12 +45,51 @@ const ClientNotesPage: React.FC = () => {
   const [editImageUrl, setEditImageUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [viewerImageUrl, setViewerImageUrl] = useState<string | null>(null);
+  const [scheduledToCancel, setScheduledToCancel] = useState<Note | null>(
+    null,
+  );
+  // "Nov 20, 2026 · Microblading" by appointment id, to label emails and
+  // photos with the appointment they belong to
+  const [appointmentLabels, setAppointmentLabels] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     if (clientId) {
       loadNotes();
+      loadAppointmentLabels();
     }
   }, [clientId]);
+
+  const loadAppointmentLabels = async () => {
+    try {
+      const response = await getAppointmentsForCustomer(clientId!);
+      const appointments: ClientAppointmentData[] =
+        response.data?.appointments || [];
+      setAppointmentLabels(
+        Object.fromEntries(
+          appointments.map((apt) => [
+            apt.id,
+            [
+              new Date(apt.date).toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }),
+              apt.serviceDetails?.map((s) => s.service).join(", "),
+            ]
+              .filter(Boolean)
+              .join(" · "),
+          ]),
+        ),
+      );
+    } catch {
+      // labels are a nicety; the notes still show without them
+    }
+  };
+
+  const labelFor = (note: Note | null) =>
+    note?.appointmentId ? appointmentLabels[note.appointmentId] : undefined;
 
   const loadNotes = async () => {
     try {
@@ -175,6 +218,23 @@ const ClientNotesPage: React.FC = () => {
     setSelectedNote(null);
   };
 
+  const confirmCancelScheduled = async () => {
+    const note = scheduledToCancel;
+    setScheduledToCancel(null);
+    if (!note?.appointmentId || !note.messageId) return;
+
+    try {
+      await cancelScheduledMessage(note.appointmentId, note.messageId);
+      setNotes((prev) => prev.filter((n) => n.id !== note.id));
+      if (selectedNote?.id === note.id) setSelectedNote(null);
+      toast.success("Scheduled email cancelled");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Could not cancel the email."));
+      // it may have just been sent; show the latest
+      loadNotes();
+    }
+  };
+
   const handleSaveNote = async (content: string, imageUrl?: string) => {
     if (!clientId) return;
 
@@ -202,7 +262,7 @@ const ClientNotesPage: React.FC = () => {
         <div className="appointment-info__header">
           <h2 className="appointment-info__title">{clientName}</h2>
           <p className="appointment-info__subtitle">
-            Important notes for your client
+            Your notes, plus every email sent or scheduled for {clientName?.split(" ")[0] || "your client"} and photos they send back
           </p>
         </div>
         <button className="add-note-btn" onClick={handleAddNote}>
@@ -228,6 +288,8 @@ const ClientNotesPage: React.FC = () => {
                   onDeleteNote={handleDeleteNote}
                   onImageClick={setViewerImageUrl}
                   formatDate={formatDate}
+                  appointmentLabel={labelFor(note)}
+                  onCancelScheduled={setScheduledToCancel}
                 />
               ))}
             </div>
@@ -247,6 +309,8 @@ const ClientNotesPage: React.FC = () => {
             onImageClick={setViewerImageUrl}
             formatDate={formatDate}
             isUploading={isUploading}
+            appointmentLabel={labelFor(selectedNote)}
+            onCancelScheduled={setScheduledToCancel}
           />
         </div>
       )}
@@ -268,6 +332,17 @@ const ClientNotesPage: React.FC = () => {
           headerText="Delete this Note"
           shorterText="Are you sure you want to delete this note?"
           handleDelete={confirmDelete}
+        />
+      )}
+
+      {scheduledToCancel && (
+        <DeleteModal
+          onClose={() => setScheduledToCancel(null)}
+          headerText="Cancel this email?"
+          shorterText={`"${scheduledToCancel.subject ?? "This email"}" won't be sent ${formatSendAt(scheduledToCancel.sendAt)}.`}
+          confirmLabel="Cancel email"
+          cancelLabel="Keep it"
+          handleDelete={confirmCancelScheduled}
         />
       )}
 

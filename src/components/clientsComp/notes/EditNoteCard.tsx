@@ -4,6 +4,13 @@ import { Camera, Edit3, Save, Trash2, Upload } from "lucide-react";
 import type React from "react";
 import { useRef } from "react";
 import { Note } from "../../../redux/types";
+import {
+  formatSendAt,
+  isRecordNote,
+  isScheduledNote,
+  recordDateLabel,
+} from "../../../utils/notes";
+import NoteRecordBadge from "./NoteRecordBadge";
 import "./editNoteCard.scss";
 
 interface EditCardProps {
@@ -16,10 +23,12 @@ interface EditCardProps {
   onEditClick: () => void;
   onSaveEdit: () => void;
   onCancelEdit: () => void;
-  onImageUpload: (file: File) => Promise<void>;
+  onImageUpload: (file: File) => Promise<unknown>;
   onImageClick?: (imageUrl: string) => void;
   formatDate: (date: string) => string;
   isUploading?: boolean;
+  appointmentLabel?: string;
+  onCancelScheduled?: (note: Note) => void;
 }
 
 const EditCard: React.FC<EditCardProps> = ({
@@ -36,7 +45,10 @@ const EditCard: React.FC<EditCardProps> = ({
   onImageClick,
   formatDate,
   isUploading = false,
+  appointmentLabel,
+  onCancelScheduled,
 }) => {
+  const isRecord = !!selectedNote && isRecordNote(selectedNote);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (
@@ -71,6 +83,7 @@ const EditCard: React.FC<EditCardProps> = ({
   };
 
   const getDateLabel = (note: Note) => {
+    if (isRecordNote(note)) return recordDateLabel(note);
     if (note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt) {
       return "Updated";
     } else {
@@ -85,7 +98,17 @@ const EditCard: React.FC<EditCardProps> = ({
           <h3 className="editor-card__title">Note</h3>
 
           <div className="editor-card__actions">
-            {selectedNote && (
+            {selectedNote &&
+              isScheduledNote(selectedNote) &&
+              onCancelScheduled && (
+                <button
+                  className="editor-action-btn editor-action-btn--cancel"
+                  onClick={() => onCancelScheduled(selectedNote)}
+                >
+                  Cancel email
+                </button>
+              )}
+            {selectedNote && !isRecord && (
               <>
                 {isEditing ? (
                   <>
@@ -175,6 +198,19 @@ const EditCard: React.FC<EditCardProps> = ({
                 </>
               ) : (
                 <>
+                  <NoteRecordBadge
+                    note={selectedNote}
+                    appointmentLabel={appointmentLabel}
+                  />
+                  {isRecord && (
+                    <p className="editor-preview__record-note">
+                      {selectedNote.kind === "email"
+                        ? "A copy of an email sent to your client, kept as a record. It can't be edited or deleted."
+                        : selectedNote.kind === "scheduled-email"
+                          ? `Not sent yet. It goes out ${formatSendAt(selectedNote.sendAt)}, then this becomes a record of the sent email. Cancel it if you don't want it sent.`
+                          : "Sent by your client from a healing check-in. It can't be edited or deleted."}
+                    </p>
+                  )}
                   {selectedNote.imageUrl && (
                     <div
                       className="editor-preview__image editor-preview__image--clickable"
@@ -191,12 +227,21 @@ const EditCard: React.FC<EditCardProps> = ({
                       />
                     </div>
                   )}
-                  <p className="editor-preview__text">{selectedNote.note}</p>
+                  <p
+                    className={`editor-preview__text${
+                      isRecord ? " editor-preview__text--record" : ""
+                    }`}
+                  >
+                    {selectedNote.note}
+                  </p>
                 </>
               )}
               <div className="editor-preview__meta">
                 <p className="editor-preview__date">
-                  {getDateLabel(selectedNote)}: {getDisplayDate(selectedNote)}
+                  {getDateLabel(selectedNote)}:{" "}
+                  {selectedNote.kind === "scheduled-email"
+                    ? formatSendAt(selectedNote.sendAt)
+                    : getDisplayDate(selectedNote)}
                 </p>
               </div>
             </div>

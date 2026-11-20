@@ -92,7 +92,7 @@ export const transformFormData = (apiForm: any): Form => {
     title: apiForm.title,
     lastUpdated: formatLastUpdated(apiForm.updatedAt),
     usedFor: formatUsedFor(apiForm.services || []),
-    type: apiForm.type as "consent" | "care",
+    type: apiForm.type as Form["type"],
     services: apiForm.services || [],
     createdAt: apiForm.createdAt,
     updatedAt: apiForm.updatedAt,

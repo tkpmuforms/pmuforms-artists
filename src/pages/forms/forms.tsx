@@ -7,14 +7,20 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import FormCard from "../../components/formsComp/FormCard";
 import { Loading } from "../../components/loading/Loading";
-import { Form } from "../../redux/types";
+import { Form, FormType } from "../../redux/types";
 import { getArtistForms } from "../../services/artistServices";
 import { transformFormData } from "../../utils/utils";
 import "./forms-page.scss";
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
 
+const FORM_TABS: { type: FormType; label: string }[] = [
+  { type: "consent", label: "Consent" },
+  { type: "pre-care", label: "Pre-care" },
+  { type: "care", label: "Aftercare" },
+];
+
 const FormsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"consent" | "care">("consent");
+  const [activeTab, setActiveTab] = useState<FormType>("consent");
   const [showAddMoreServicesModal, setShowAddMoreServicesModal] =
     useState(false);
   const [forms, setForms] = useState<Form[]>([]);
@@ -93,23 +99,26 @@ const FormsPage: React.FC = () => {
         </div>
 
         <div className="forms-page__tabs">
-          <button
-            className={`forms-page__tab ${
-              activeTab === "consent" ? "forms-page__tab--active" : ""
-            }`}
-            onClick={() => setActiveTab("consent")}
-          >
-            Consent ({forms.filter((f) => f.type === "consent").length})
-          </button>
-          <button
-            className={`forms-page__tab ${
-              activeTab === "care" ? "forms-page__tab--active" : ""
-            }`}
-            onClick={() => setActiveTab("care")}
-          >
-            Care ({forms.filter((f) => f.type === "care").length})
-          </button>
+          {FORM_TABS.map((tab) => (
+            <button
+              key={tab.type}
+              className={`forms-page__tab ${
+                activeTab === tab.type ? "forms-page__tab--active" : ""
+              }`}
+              onClick={() => setActiveTab(tab.type)}
+            >
+              {tab.label} ({forms.filter((f) => f.type === tab.type).length})
+            </button>
+          ))}
         </div>
+
+        {activeTab === "pre-care" && (
+          <p className="forms-page__tab-hint">
+            Pre-care instructions are emailed to clients about 3 days before
+            their appointment, so they arrive ready. Edit a form to make it
+            your own.
+          </p>
+        )}
 
         <div className="forms-page__grid">
           {filteredForms.length > 0 ? (
@@ -124,7 +133,8 @@ const FormsPage: React.FC = () => {
           ) : (
             <div className="forms-page__empty">
               <p>
-                No {activeTab} forms found
+                No {FORM_TABS.find((t) => t.type === activeTab)?.label.toLowerCase()}{" "}
+                forms found
                 {searchTerm ? ` matching "${searchTerm}"` : ""}.
               </p>
               <button

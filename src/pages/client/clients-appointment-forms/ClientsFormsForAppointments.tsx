@@ -1,11 +1,11 @@
 "use client";
-import { FileText } from "lucide-react";
+import { CheckCircle2, FileText, Files } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FilledForm } from "../../../redux/types";
 import {
-  getAppointmentsForCustomer,
+  getAppointmentById,
   getCustomerById,
   getFilledFormsByAppointment,
 } from "../../../services/artistServices";
@@ -19,7 +19,11 @@ const ClientsFormsForAppointments: React.FC = () => {
   const [forms, setForms] = useState<FilledForm[]>([]);
   const [loading, setLoading] = useState(false);
   const [clientName, setClientName] = useState<string>("");
-  const [appointments, setAppointments] = useState<any[]>([]);
+  // loaded fresh so a just-signed appointment never shows "Sign" again
+  const [appointment, setAppointment] = useState<{
+    signed: boolean;
+    allFormsCompleted: boolean;
+  } | null>(null);
   const navigate = useNavigate();
 
   const onViewForm = (formId: string) => {
@@ -28,7 +32,13 @@ const ClientsFormsForAppointments: React.FC = () => {
 
   const onSignForms = () => {
     navigate(`/clients/${id}/appointments/${appointmentId}/signature`, {
-      state: { clientName, forms, appointments },
+      state: { clientName },
+    });
+  };
+
+  const onViewAllForms = () => {
+    navigate(`/clients/${id}/appointments/${appointmentId}/forms/all`, {
+      state: { clientName },
     });
   };
 
@@ -39,7 +49,6 @@ const ClientsFormsForAppointments: React.FC = () => {
       setLoading(true);
       try {
         const stateClientName = location.state?.clientName;
-        const stateAppointments = location.state?.appointments;
 
         if (!stateClientName) {
           const clientResponse = await getCustomerById(id);
@@ -50,15 +59,12 @@ const ClientsFormsForAppointments: React.FC = () => {
           setClientName(stateClientName);
         }
 
-        if (!stateAppointments) {
-          const appointmentsResponse = await getAppointmentsForCustomer(id);
-          setAppointments(appointmentsResponse?.data?.appointments || []);
-        } else {
-          setAppointments(stateAppointments);
-        }
-
-        const formsResponse = await getFilledFormsByAppointment(appointmentId);
+        const [formsResponse, appointmentResponse] = await Promise.all([
+          getFilledFormsByAppointment(appointmentId),
+          getAppointmentById(appointmentId),
+        ]);
         setForms(formsResponse.data?.filledForms || []);
+        setAppointment(appointmentResponse.data?.appointment ?? null);
       } catch (error) {
         console.error("Error fetching data:", error);
         setForms([]);
@@ -70,9 +76,11 @@ const ClientsFormsForAppointments: React.FC = () => {
     fetchData();
   }, [appointmentId, id, location.state]);
 
-  const isAllformsCompleted = forms.every(
-    (form) => form.status === "complete" || form.status === "completed"
-  );
+  const isAllformsCompleted =
+    appointment?.allFormsCompleted ??
+    forms.every(
+      (form) => form.status === "complete" || form.status === "completed"
+    );
 
   if (loading) {
     return <LoadingSmall />;
@@ -89,14 +97,29 @@ const ClientsFormsForAppointments: React.FC = () => {
               {clientName?.split(" ")[0]} right here!
             </p>
           </div>
-          <button
-            onClick={onSignForms}
-            className="sign-forms-btn"
-            disabled={forms.length === 0 || !isAllformsCompleted}
-          >
-            <FileText size={16} />
-            Sign Appointment Forms
-          </button>
+          <div className="header-actions">
+            {forms.length > 0 && (
+              <button onClick={onViewAllForms} className="all-forms-btn">
+                <Files size={16} />
+                View Forms
+              </button>
+            )}
+            {appointment?.signed ? (
+              <span className="signed-chip">
+                <CheckCircle2 size={16} />
+                Signed
+              </span>
+            ) : (
+              <button
+                onClick={onSignForms}
+                className="sign-forms-btn"
+                disabled={forms.length === 0 || !isAllformsCompleted}
+              >
+                <FileText size={16} />
+                Sign Forms
+              </button>
+            )}
+          </div>
         </div>
 
         {forms.length === 0 ? (

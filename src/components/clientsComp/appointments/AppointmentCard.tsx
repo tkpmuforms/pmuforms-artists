@@ -1,10 +1,15 @@
 import {
+  MessageCircleHeart,
   Calendar,
+  CheckCircle2,
   Clock,
   ExternalLink,
   FileText,
+  HeartPulse,
   Link2,
   MoreVertical,
+  PenLine,
+  Send,
   Trash2,
 } from "lucide-react";
 import type React from "react";
@@ -23,7 +28,10 @@ interface AppointmentCardProps {
   onDeleteAppointment: (appointmentId: string) => void;
   onShareFormLink?: (appointmentId: string) => void;
   onStartFilling?: (appointmentId: string) => void;
+  onCareAction?: (appointmentId: string, action: CareAction) => void;
 }
+
+export type CareAction = "complete" | "pre-care" | "aftercare" | "check-in";
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({
   appointment,
@@ -31,6 +39,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   onDeleteAppointment,
   onShareFormLink,
   onStartFilling,
+  onCareAction,
 }) => {
   const primaryService = appointment.serviceDetails?.[0];
   const serviceName = primaryService?.service || "Unknown Service";
@@ -60,8 +69,17 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           <div className="service-content">
             <h3>{serviceName}</h3>
           </div>
+          {appointment.completedAt && (
+            <span className="completed-chip">
+              <CheckCircle2 size={12} /> Completed
+            </span>
+          )}
           <div className="form-status">
-            {appointment.allFormsCompleted ? (
+            {appointment.signed ? (
+              <span className="status-pill status-pill--signed">
+                <PenLine size={12} /> Forms Signed
+              </span>
+            ) : appointment.allFormsCompleted ? (
               <FormsCompletedSvg />
             ) : (
               <FormNotCompletedSvg />
@@ -89,6 +107,40 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
               <button onClick={() => onStartFilling(appointment.id)}>
                 <ExternalLink size={16} />
                 Share consent forms
+              </button>
+            )}
+            {onCareAction && (
+              <button onClick={() => onCareAction(appointment.id, "pre-care")}>
+                <Send size={16} />
+                Send pre-care instructions
+              </button>
+            )}
+            {onCareAction && (
+              <button onClick={() => onCareAction(appointment.id, "aftercare")}>
+                <HeartPulse size={16} />
+                Send aftercare instructions
+              </button>
+            )}
+            {onCareAction && (
+              <button onClick={() => onCareAction(appointment.id, "check-in")}>
+                <MessageCircleHeart size={16} />
+                Send healing check-in
+              </button>
+            )}
+            {/* actions that end the appointment, set apart at the bottom */}
+            <div className="dropdown-divider" role="separator" />
+            {onCareAction && !appointment.completedAt && (
+              <button
+                onClick={() => onCareAction(appointment.id, "complete")}
+                className="complete-option"
+                // the procedure comes after the client's forms are signed
+                disabled={!appointment.signed}
+                title={
+                  appointment.signed ? undefined : "Sign the forms first"
+                }
+              >
+                <CheckCircle2 size={16} />
+                Mark as complete
               </button>
             )}
             <button
@@ -121,6 +173,16 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* the step after signing: the procedure itself */}
+      {onCareAction && appointment.signed && !appointment.completedAt && (
+        <div className="next-step" onClick={(e) => e.stopPropagation()}>
+          <span>Forms signed. Procedure done?</span>
+          <button onClick={() => onCareAction(appointment.id, "complete")}>
+            Mark as complete
+          </button>
+        </div>
+      )}
     </div>
   );
 };

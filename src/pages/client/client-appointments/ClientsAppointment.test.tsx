@@ -1,0 +1,140 @@
+import { render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import ClientAppointmentPage from "./ClientsAppointment";
+import * as api from "../../../services/artistServices";
+
+vi.mock("../../../services/artistServices", async (importOriginal) => ({
+  ...(await importOriginal<typeof api>()),
+  getCustomerById: vi.fn(),
+  getAppointmentsForCustomer: vi.fn(),
+  DeleteAppointment: vi.fn(),
+  previewCareMessage: vi.fn(),
+  sendCareMessage: vi.fn(),
+  getClientMessages: vi.fn(),
+  completeAppointment: vi.fn(),
+  draftCheckIn: vi.fn(),
+  scheduleCheckIn: vi.fn(),
+  cancelScheduledMessage: vi.fn(),
+}));
+vi.mock("react-hot-toast", () => ({
+  default: { error: vi.fn(), success: vi.fn() },
+}));
+
+const mocked = vi.mocked(api);
+
+const renderPage = () =>
+  render(
+    <MemoryRouter
+      initialEntries={[
+        { pathname: "/clients/cust-1/appointments", state: { clientName: "Jane Doe" } },
+      ]}
+    >
+      <Routes>
+        <Route path="/clients/:id/appointments" element={<ClientAppointmentPage />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+
+describe("ClientAppointmentPage: mark as complete", () => {
+  beforeEach(() => {
+    mocked.getAppointmentsForCustomer.mockResolvedValue({
+      data: {
+        appointments: [
+          {
+            _id: "a",
+            id: "appt-1",
+            customerId: "cust-1",
+            artistId: "artist-1",
+            date: "2026-11-20T05:00:00.000Z",
+            services: [1],
+            serviceDetails: [{ _id: "s", id: 1, service: "Microblading" }],
+            signed: true,
+            allFormsCompleted: true,
+            deleted: false,
+            formsToFillCount: 1,
+            createdAt: "2026-11-18T10:00:00.000Z",
+            updatedAt: "2026-11-18T10:00:00.000Z",
+          },
+        ],
+      },
+    } as never);
+    mocked.getClientMessages.mockResolvedValue({ data: { messages: [] } } as never);
+    mocked.previewCareMessage.mockResolvedValue({
+      data: {
+        content: {
+          subject: "Aftercare for your Microblading",
+          intro: "Hi Jane,",
+          sections: [{ heading: "First 7 days", items: ["Keep it dry"] }],
+          closing: "Questions? Reply.",
+        },
+        source: "template",
+        hasForm: true,
+        formTitles: ["Microblading Aftercare"],
+        aiFailed: false,
+        aiAvailable: true,
+        to: "jane@example.com",
+      },
+    } as never);
+    mocked.completeAppointment.mockResolvedValue({
+      data: {
+        appointment: { id: "appt-1", completedAt: "2026-11-19T20:00:00Z" },
+        aftercare: {},
+        aftercareError: null,
+      },
+    } as never);
+  });
+
+  it("completes, sends aftercare and schedules the check-in from one modal", async () => {
+    mocked.draftCheckIn.mockResolvedValue({
+      data: {
+        subject: "Checking in",
+        message: "Hi Jane",
+        source: "template",
+        aiAvailable: true,
+        aiFailed: false,
+        to: "jane@example.com",
+        sendAt: "2026-12-03T20:00:00.000Z",
+      },
+    } as never);
+    const user = userEvent.setup();
+    renderPage();
+
+    const prompt = await screen.findByText("Forms signed. Procedure done?");
+    await user.click(
+      within(prompt.closest(".next-step") as HTMLElement).getByRole("button", {
+        name: "Mark as complete",
+      }),
+    );
+    await user.click(screen.getByRole("checkbox", { name: /email aftercare/i }));
+    await user.click(
+      screen.getByRole("checkbox", {
+        name: "Schedule a healing check-in for later",
+      }),
+    );
+    await screen.findByLabelText("Subject");
+    // no AI unless asked
+    expect(mocked.previewCareMessage).toHaveBeenCalledWith(
+      "appt-1",
+      "aftercare",
+      false,
+    );
+    await user.type(screen.getByRole("spinbutton", { name: "How many" }), "1");
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Days, weeks or months" }),
+      "weeks",
+    );
+    await waitFor(() =>
+      expect(screen.getByLabelText("Check-in message")).toHaveValue("Hi Jane"),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Mark as complete, send & schedule" }),
+    );
+
+    expect(mocked.completeAppointment).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(screen.getByText("Completed")).toBeInTheDocument());
+    // everything happened in that one step
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+});

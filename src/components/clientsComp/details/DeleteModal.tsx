@@ -10,6 +10,8 @@ interface DeleteModalProps {
   headerText: string;
   shorterText: string;
   handleDelete?: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
@@ -17,6 +19,8 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   headerText,
   shorterText,
   handleDelete,
+  confirmLabel = "Delete",
+  cancelLabel = "Cancel",
 }) => {
   return (
     <div className="delete-client-confirm-modal">
@@ -40,13 +44,13 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
             className="delete-client-confirm-modal__cancel"
             onClick={onClose}
           >
-            Cancel
+            {cancelLabel}
           </button>
           <button
             className="delete-client-confirm-modal__confirm"
             onClick={handleDelete}
           >
-            Delete
+            {confirmLabel}
           </button>
         </div>
       </div>

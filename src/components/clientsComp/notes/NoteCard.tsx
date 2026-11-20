@@ -2,18 +2,15 @@
 
 import { Camera, Eye, Trash2 } from "lucide-react";
 import type React from "react";
+import { Note } from "../../../redux/types";
+import {
+  formatSendAt,
+  isRecordNote,
+  isScheduledNote,
+  recordDateLabel,
+} from "../../../utils/notes";
+import NoteRecordBadge from "./NoteRecordBadge";
 import "./noteCard.scss";
-
-interface Note {
-  id: string;
-  note: string;
-  createdAt?: string;
-  updatedAt?: string;
-  date: string;
-  artistId: string;
-  _id: string;
-  imageUrl?: string;
-}
 
 interface NoteCardProps {
   note: Note;
@@ -22,6 +19,9 @@ interface NoteCardProps {
   onDeleteNote: (note: Note) => void;
   onImageClick?: (imageUrl: string) => void;
   formatDate: (date: string) => string;
+  appointmentLabel?: string;
+  // cancels a scheduled email
+  onCancelScheduled?: (note: Note) => void;
 }
 
 const NoteCard: React.FC<NoteCardProps> = ({
@@ -31,7 +31,11 @@ const NoteCard: React.FC<NoteCardProps> = ({
   onDeleteNote,
   onImageClick,
   formatDate,
+  appointmentLabel,
+  onCancelScheduled,
 }) => {
+  const isRecord = isRecordNote(note);
+
   const getDisplayDate = (note: Note) => {
     const isUpdated =
       note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt;
@@ -43,6 +47,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
   };
 
   const getDateLabel = (note: Note) => {
+    if (isRecord) return recordDateLabel(note);
     return note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt
       ? "Updated"
       : "Created";
@@ -53,6 +58,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
       className={`note-card ${isSelected ? "note-card--selected" : ""}`}
       onClick={() => onNoteClick(note)}
     >
+      <NoteRecordBadge note={note} appointmentLabel={appointmentLabel} />
       <div className="note-card__content">
         {note.imageUrl && (
           <div
@@ -73,21 +79,47 @@ const NoteCard: React.FC<NoteCardProps> = ({
             </div>
           </div>
         )}
-        <p className="note-card__text">{note.note}</p>
-        <div className="note-card__actions">
-          <button
-            className="note-action-btn note-action-btn--delete"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteNote(note);
-            }}
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
+        {note.kind === "email" || note.kind === "scheduled-email" ? (
+          <p className="note-card__text note-card__text--record">
+            {note.subject || note.note}
+          </p>
+        ) : (
+          <p className="note-card__text">{note.note}</p>
+        )}
+        {/* records of communication with the client can't be deleted */}
+        {!isRecord && (
+          <div className="note-card__actions">
+            <button
+              className="note-action-btn note-action-btn--delete"
+              aria-label="Delete note"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteNote(note);
+              }}
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        )}
+        {isScheduledNote(note) && onCancelScheduled && (
+          <div className="note-card__actions">
+            <button
+              className="note-cancel-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCancelScheduled(note);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
       <p className="note-card__timestamp">
-        {getDateLabel(note)}: {getDisplayDate(note)}
+        {getDateLabel(note)}:{" "}
+        {note.kind === "scheduled-email"
+          ? formatSendAt(note.sendAt)
+          : getDisplayDate(note)}
       </p>
     </div>
   );
