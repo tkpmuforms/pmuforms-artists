@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import useAuth from "../../../context/useAuth";
+import { dateInputToISO, todayDateInputValue } from "../../../utils/utils";
 import PreviewAppointmentModal from "./PreviewAppointMent";
 import "./send-consent-form-modal.scss";
 
@@ -83,7 +84,7 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
                   value={appointmentDate}
                   onChange={(e) => setAppointmentDate(e.target.value)}
                   className="form-input"
-                  min={new Date().toISOString().split("T")[0]}
+                  min={todayDateInputValue()}
                 />
               </div>
             </div>
@@ -128,7 +129,7 @@ const SendConsentFormModal: React.FC<SendConsentFormModalProps> = ({
         <PreviewAppointmentModal
           clientName={clientName}
           clientId={clientId || ""}
-          appointmentDate={appointmentDate}
+          appointmentDate={dateInputToISO(appointmentDate)}
           selectedServices={getSelectedServiceNames()}
           selectedServiceIds={selectedServices}
           onClose={() => setShowPreviewAppointment(false)}

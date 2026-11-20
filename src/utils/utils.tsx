@@ -33,6 +33,21 @@ export const generateInitials = (name: string): string => {
     .join("");
 };
 
+// <input type="date"> gives "YYYY-MM-DD", which `new Date()` and the API
+// read as midnight UTC, so anywhere west of UTC it lands on the previous
+// day. Anchor it to local midnight instead.
+export const dateInputToISO = (value: string) => {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day).toISOString();
+};
+
+// today's date in the user's timezone, as an <input type="date"> value
+export const todayDateInputValue = () => {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
+
 export const formatAppointmentTime = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleString("en-US", {
