@@ -7,7 +7,11 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"), // <-- THIS fixes @ imports
+      "@": path.resolve(__dirname, "./src"),
     },
+  },
+  server: {
+    host: true,
+    allowedHosts: ['artist.pmuforms.com'],
   },
 })
