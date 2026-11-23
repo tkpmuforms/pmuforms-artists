@@ -122,7 +122,8 @@ $tablet: 1024px;
   }
 
   &__nav {
-    padding: 16px 0;
+    // room to scroll the last items clear of the footer (support + logout)
+    padding: 16px 0 130px;
     overflow-y: auto;
     height: calc(100vh - 120px);
     transition: $transition;
@@ -250,6 +251,58 @@ $tablet: 1024px;
     padding: 0 12px;
   }
 
+  &__support {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    margin-bottom: 4px;
+    border-radius: 12px;
+    color: $text-secondary;
+    text-decoration: none;
+    transition: $transition;
+    min-width: 0;
+
+    &:hover {
+      background: $hover-bg;
+      color: $text-primary;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent-color;
+      outline-offset: 2px;
+    }
+  }
+
+  &__support-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__support-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.3;
+  }
+
+  &__support-label {
+    font-size: 12px;
+  }
+
+  &__support-email {
+    font-size: 13px;
+    font-weight: 500;
+    color: #8e2d8e;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   &__logout-button {
     display: flex;
     align-items: center;
@@ -344,6 +397,11 @@ $tablet: 1024px;
     }
 
     .sidebar__logout-button {
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .sidebar__support {
       justify-content: center;
       padding: 12px;
     }

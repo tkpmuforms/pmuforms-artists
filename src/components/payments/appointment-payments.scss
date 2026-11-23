@@ -1,0 +1,65 @@
+.appointment-payments {
+  margin-top: 24px;
+
+  h3 {
+    margin: 0;
+  }
+
+  &__sub {
+    margin: 4px 0 0;
+    font-size: 13px;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+  }
+
+  &__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 0;
+
+    & + & {
+      border-top: 1px solid #eee;
+    }
+
+    p {
+      margin: 4px 0 0;
+    }
+  }
+
+  &__main {
+    min-width: 0;
+    flex: 1 1 260px;
+  }
+
+  &__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    a.inv-btn {
+      text-decoration: none;
+    }
+  }
+
+  .inv-banner p {
+    margin: 0 0 10px;
+  }
+
+  .inv-segmented {
+    margin-bottom: 16px;
+  }
+}

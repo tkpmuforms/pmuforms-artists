@@ -12,6 +12,7 @@ import {
 import ClientFormsCard from "../../../components/clientsComp/filled-forms/ClientFormsCard";
 import "./appointment-forms-page.scss";
 import { LoadingSmall } from "../../../components/loading/Loading";
+import AppointmentPayments from "../../../components/payments/AppointmentPayments";
 
 const ClientsFormsForAppointments: React.FC = () => {
   const { id, appointmentId } = useParams();
@@ -142,6 +143,13 @@ const ClientsFormsForAppointments: React.FC = () => {
               />
             ))}
           </div>
+        )}
+
+        {appointmentId && (
+          <AppointmentPayments
+            appointmentId={appointmentId}
+            clientName={clientName}
+          />
         )}
       </div>
     </div>

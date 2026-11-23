@@ -62,6 +62,8 @@ interface IntegrationStatus {
   provider: string;
   status: "connected" | "disconnected" | "error";
   externalAccountName?: string | null;
+  /** false when connected before payments existed: reconnect to grant them */
+  paymentsEnabled?: boolean;
 }
 
 const IntegrationsPage: React.FC = () => {
@@ -249,6 +251,26 @@ const IntegrationsPage: React.FC = () => {
                           }
                         >
                           {statuses[integration.provider]?.externalAccountName}
+                        </p>
+                      )}
+                    {integration.id === "square" &&
+                      isConnected(integration) &&
+                      statuses[integration.provider]?.paymentsEnabled ===
+                        false && (
+                        <p className="integrations-page__notice">
+                          Reconnect to request deposits and payments from
+                          clients.{" "}
+                          <button
+                            type="button"
+                            className="integrations-page__notice-btn"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleConnect(integration);
+                            }}
+                            disabled={connectingSquare}
+                          >
+                            {connectingSquare ? "Reconnecting..." : "Reconnect"}
+                          </button>
                         </p>
                       )}
                   </div>

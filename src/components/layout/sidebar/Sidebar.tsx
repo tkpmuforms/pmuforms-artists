@@ -3,7 +3,8 @@
 import type React from "react";
 import { useState, forwardRef, useImperativeHandle } from "react";
 import { Menu, type MenuItem } from "../menu";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mail } from "lucide-react";
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "../../../utils/support";
 import "./sidebar.scss";
 import {
   ClientIcon,
@@ -161,6 +162,22 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
           </nav>
 
           <div className="sidebar__footer">
+            <a
+              className="sidebar__support"
+              href={SUPPORT_MAILTO}
+              title={`Email support: ${SUPPORT_EMAIL}`}
+              aria-label={`Need help? Email ${SUPPORT_EMAIL}`}
+            >
+              <span className="sidebar__support-icon">
+                <Mail size={18} />
+              </span>
+              {!isCollapsed && (
+                <span className="sidebar__support-text">
+                  <span className="sidebar__support-label">Need help?</span>
+                  <span className="sidebar__support-email">{SUPPORT_EMAIL}</span>
+                </span>
+              )}
+            </a>
             <button
               className="sidebar__logout-button"
               onClick={logout}
