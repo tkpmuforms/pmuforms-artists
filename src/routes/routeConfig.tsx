@@ -36,6 +36,7 @@ const SignaturePage = lazy(
 const ReminderPage = lazy(
   () => import("../pages/client/client-reminders/ClientReminders.tsx")
 );
+const ReferPage = lazy(() => import("../pages/refer/ReferPage.tsx"));
 const IntegrationsPage = lazy(
   () => import("../pages/profile/IntegrationsPage.tsx")
 );
@@ -237,6 +238,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/integrations/square/mapping",
     element: <SquareServicesMappingPage />,
     breadcrumbs: ["Integrations", "Services Mapping"],
+  },
+  {
+    path: "/refer",
+    element: <ReferPage />,
+    breadcrumbs: ["Refer & Earn"],
   },
   {
     path: "/profile/payment",

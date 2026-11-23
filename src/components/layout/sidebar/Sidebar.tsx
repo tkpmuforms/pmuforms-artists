@@ -15,6 +15,7 @@ import {
 } from "../../../assets/svgs/DashboardSvg.tsx";
 import { IntegrationsIcon } from "../../../assets/svgs/IntegrationsSvg.tsx";
 import { InventoryIcon } from "../../../assets/svgs/InventorySvg.tsx";
+import { ReferIcon } from "../../../assets/svgs/ReferSvg.tsx";
 import useAuth from "../../../context/useAuth.ts";
 import { Avatar } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -76,6 +77,7 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
         services: ServicesIcon,
         inventory: InventoryIcon,
         integrations: IntegrationsIcon,
+        refer: ReferIcon,
         profile: ProfileIcon,
       };
       const IconComponent = iconMap[iconName];

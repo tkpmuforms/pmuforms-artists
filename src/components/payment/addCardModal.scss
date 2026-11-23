@@ -395,6 +395,14 @@
       font-size: 12px;
     }
   }
+
+  .referral-discount {
+    margin-bottom: 10px;
+
+    .coupon-applied__savings {
+      flex-wrap: wrap;
+    }
+  }
 }
 
 .no-cards-message {

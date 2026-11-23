@@ -73,6 +73,13 @@ describe("CareMessageModal", () => {
       ).toBeEnabled();
     });
 
+    it("has no summary when completing is all that happens", () => {
+      renderModal({ mode: "complete" });
+      // the button already says it; the list only adds emails and check-ins
+      expect(screen.queryByRole("list", { name: "What happens" })).toBeNull();
+      expect(screen.queryByText("The appointment is marked complete")).toBeNull();
+    });
+
     it("marks complete without emailing the client by default", async () => {
       mocked.completeAppointment.mockResolvedValue({
         data: {
@@ -276,7 +283,7 @@ describe("CareMessageModal", () => {
       );
 
       const summary = screen.getByRole("list", { name: "What happens" });
-      expect(summary).toHaveTextContent("The appointment is marked complete");
+      expect(summary).not.toHaveTextContent("The appointment is marked complete");
       expect(summary).toHaveTextContent(
         "Aftercare is emailed to jane@example.com now",
       );

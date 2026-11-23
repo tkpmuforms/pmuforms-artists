@@ -1,7 +1,41 @@
 import axiosInstance from "../utils/axios/axiosSetup";
+import { type Attribution, readAttribution } from "../utils/attribution";
 
-export const createArtist = async (accessToken: string) =>
-  axiosInstance.post("/api/auth/artist/create", { accessToken });
+/**
+ * Signs in, creating the account the first time. `signup` (where the artist
+ * came from) is only used by the API when it creates the account.
+ */
+export const createArtist = async (
+  accessToken: string,
+  signup?: { attribution?: Attribution | null; platform?: "web" },
+) =>
+  axiosInstance.post("/api/auth/artist/create", {
+    accessToken,
+    ...(signup?.attribution ? { attribution: signup.attribution } : {}),
+    ...(signup?.platform ? { platform: signup.platform } : {}),
+  });
+
+/** For sign-ins from this web app's login page. */
+export const webSignup = () => ({
+  attribution: readAttribution(),
+  platform: "web" as const,
+});
+
+export interface ReferralSummary {
+  code: string;
+  link: string;
+  rewardCents: number;
+  invited: number;
+  paid: number;
+  rewardsEarned: number;
+  creditEarnedCents: number;
+  maxRewardsPerYear: number;
+  /** this artist was invited and their discount is still unused */
+  referralDiscountAvailable: boolean;
+}
+
+export const getReferralSummary = async () =>
+  axiosInstance.get<ReferralSummary>("/api/referrals/me");
 
 export const updateServices = async (data: { services: number[] }) =>
   axiosInstance.put("/api/services/update-services", data);

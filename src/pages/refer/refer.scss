@@ -1,0 +1,160 @@
+.refer-page {
+  padding: 24px 40px;
+  max-width: 880px;
+
+  @media (max-width: 1024px) {
+    padding: 20px 24px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px 4px;
+  }
+
+  &__header {
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 30px;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0 0 8px 0;
+
+      @media (max-width: 768px) {
+        font-size: 24px;
+      }
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #64748b;
+      margin: 0;
+      max-width: 640px;
+    }
+  }
+
+  &__error {
+    color: #b42318;
+  }
+}
+
+.refer-card {
+  background: #fff;
+  border: 1px solid #ececf1;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+  }
+}
+
+.refer-link {
+  display: flex;
+  gap: 10px;
+
+  @media (max-width: 560px) {
+    flex-direction: column;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid #d9d9e3;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #1e293b;
+    background: var(--pmu-background-light);
+  }
+}
+
+.refer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid #d9d9e3;
+  border-radius: 8px;
+  background: #fff;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: var(--pmu-primary);
+    color: var(--pmu-primary);
+  }
+
+  &--primary {
+    background: var(--pmu-primary);
+    border-color: var(--pmu-primary);
+    color: #fff;
+
+    &:hover {
+      background: var(--pmu-primary-dark);
+      color: #fff;
+    }
+  }
+}
+
+.refer-share {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.refer-muted {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748b;
+  margin: 12px 0 0 0;
+}
+
+.refer-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.refer-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--pmu-background-light);
+
+  &__value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--pmu-primary);
+  }
+
+  &__label {
+    font-size: 13px;
+    color: #4b5563;
+  }
+}
+
+.refer-steps {
+  margin: 0;
+  padding-left: 20px;
+
+  li {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #334155;
+    margin-bottom: 10px;
+  }
+}

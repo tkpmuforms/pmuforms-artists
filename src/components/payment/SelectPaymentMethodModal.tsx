@@ -8,7 +8,9 @@ import {
   listPaymentMethods,
   changeSubscriptionPlan,
   validateCoupon,
+  getReferralSummary,
 } from "../../services/artistServices";
+import { trackPurchase } from "../../utils/analytics";
 import AddCardModal from "./AddCardModal";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
@@ -58,7 +60,26 @@ const SelectPaymentMethodModal = ({
     percentOff?: number | null;
     amountOff?: number | null;
   } | null>(null);
+  // invited by another artist: the API takes this off the first payment
+  // automatically, unless a coupon code is used instead
+  const [referralDiscountCents, setReferralDiscountCents] = useState<
+    number | null
+  >(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    let active = true;
+    getReferralSummary()
+      .then(({ data }) => {
+        if (active && data?.referralDiscountAvailable && data.rewardCents > 0) {
+          setReferralDiscountCents(data.rewardCents);
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (initialCards.length === 0) {
@@ -171,6 +192,14 @@ const SelectPaymentMethodModal = ({
       } else {
         const response = await createSubscription(priceId, selectedCard, coupon);
         toast.success("Payment successful! Subscription activated.");
+        trackPurchase(
+          priceId === import.meta.env.VITE_YEARLY_PRICE_ID
+            ? "yearly"
+            : priceId === import.meta.env.VITE_MONTHLY_PRICE_ID
+              ? "monthly"
+              : "other",
+          planAmount ?? 0,
+        );
 
         if (response.data) {
           saveSubscriptionToStorage(response.data);
@@ -322,6 +351,34 @@ const SelectPaymentMethodModal = ({
             </div>
           ) : (
             <>
+              {referralDiscountCents != null && !hasActiveSubscription && (
+                <div className="coupon-applied referral-discount">
+                  <div className="coupon-applied__top">
+                    <span className="coupon-applied__text">
+                      🎁 Referral discount: ${(referralDiscountCents / 100).toFixed(2)}{" "}
+                      off your first payment
+                    </span>
+                  </div>
+                  {planAmount != null && (
+                    <div className="coupon-applied__savings">
+                      <span className="coupon-applied__original">
+                        ${planAmount.toFixed(2)}
+                      </span>
+                      <span className="coupon-applied__arrow">→</span>
+                      <span className="coupon-applied__new-total">
+                        $
+                        {Math.max(
+                          0,
+                          planAmount - referralDiscountCents / 100,
+                        ).toFixed(2)}
+                      </span>
+                      <span className="coupon-applied__save-label">
+                        Applied automatically. A coupon code replaces it.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="coupon-input-row">
                 <input
                   className="coupon-input"

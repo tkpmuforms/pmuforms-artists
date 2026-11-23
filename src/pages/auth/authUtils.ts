@@ -1,8 +1,10 @@
 import { auth, signInWithPopup } from "../../firebase/firebase";
 import {
   createArtist,
+  webSignup,
   sendEmailVerification,
 } from "../../services/artistServices";
+import { trackSignUp } from "../../utils/analytics";
 import type { AuthProvider, UserCredential, User } from "firebase/auth";
 
 export type OnboardingStep =
@@ -73,7 +75,7 @@ export const HandleSocialLogin = async (
     localStorage.setItem("userEmail", user.email ?? "");
     localStorage.setItem("userName", user.displayName ?? "");
 
-    const res = await createArtist(userToken);
+    const res = await createArtist(userToken, webSignup());
 
     localStorage.setItem("userId", res.data?.artist?.id ?? "");
     localStorage.setItem("accessToken", res.data?.access_token ?? "");
@@ -81,6 +83,10 @@ export const HandleSocialLogin = async (
 
     const artist = res?.data?.artist;
     const onboardingStep = determineOnboardingStep(artist);
+
+    if (res.data.userCreated === true) {
+      trackSignUp(provider.providerId || "social");
+    }
 
     if (res.data.userCreated === true || onboardingStep !== "completed") {
       navigate("/profile", {
@@ -120,7 +126,7 @@ export const SignInSuccessWithAuthResult = async (
     localStorage.setItem("userEmail", user.email ?? "");
     localStorage.setItem("userName", user.displayName ?? "");
 
-    const res = await createArtist(userToken);
+    const res = await createArtist(userToken, webSignup());
 
     localStorage.setItem("userId", res.data?.artist?.id ?? "");
     localStorage.setItem("accessToken", res.data?.access_token ?? "");
@@ -128,6 +134,10 @@ export const SignInSuccessWithAuthResult = async (
 
     const artist = res?.data?.artist;
     const onboardingStep = determineOnboardingStep(artist);
+
+    if (res.data.userCreated === true) {
+      trackSignUp(authResult.providerId || "password");
+    }
 
     if (res.data.userCreated === true || onboardingStep !== "completed") {
       navigate("/profile", {

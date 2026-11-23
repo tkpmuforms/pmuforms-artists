@@ -414,9 +414,9 @@ const CareMessageModal: React.FC<CareMessageModalProps> = ({
           </>
         )}
 
-        {mode === "complete" && (
+        {/* only worth listing when more happens than the button already says */}
+        {mode === "complete" && (sendEmail || scheduleCheckInToo) && (
           <ul className="care-message-modal__summary" aria-label="What happens">
-            <li>The appointment is marked complete</li>
             {sendEmail && (
               <li>Aftercare is emailed to {draft?.to ?? firstName} now</li>
             )}

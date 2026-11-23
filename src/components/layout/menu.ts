@@ -43,6 +43,12 @@ export const Menu: MenuItem[] = [
     icon: "integrations",
   },
   {
+    name: "Refer & Earn",
+    basePath: "/refer",
+    TSKey: "Refer",
+    icon: "refer",
+  },
+  {
     name: "Profile",
     basePath: "/profile",
     TSKey: "Profile",
