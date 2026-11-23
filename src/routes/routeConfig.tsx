@@ -43,6 +43,23 @@ const SquareServicesMappingPage = lazy(
   () => import("../pages/profile/SquareServicesMappingPage.tsx")
 );
 
+const InventoryPage = lazy(() => import("../pages/inventory/InventoryPage.tsx"));
+const ProductFormPage = lazy(
+  () => import("../pages/inventory/ProductFormPage.tsx")
+);
+const ProductDetailPage = lazy(
+  () => import("../pages/inventory/ProductDetailPage.tsx")
+);
+const ReceiveStockPage = lazy(
+  () => import("../pages/inventory/ReceiveStockPage.tsx")
+);
+const BatchDetailPage = lazy(
+  () => import("../pages/inventory/BatchDetailPage.tsx")
+);
+const InventorySettingsPage = lazy(
+  () => import("../pages/inventory/InventorySettingsPage.tsx")
+);
+
 const AllAppointments = lazy(
   () => import("../pages/appointments/Appointment.tsx")
 );
@@ -175,6 +192,41 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/profile/business-information",
     element: <BusinessInformationPage />,
     breadcrumbs: ["Profile", "Business Information"],
+  },
+  {
+    path: "/inventory",
+    element: <InventoryPage />,
+    breadcrumbs: ["Inventory"],
+  },
+  {
+    path: "/inventory/products/new",
+    element: <ProductFormPage />,
+    breadcrumbs: ["Inventory", "New Product"],
+  },
+  {
+    path: "/inventory/products/:productId",
+    element: <ProductDetailPage />,
+    breadcrumbs: ["Inventory", "Product"],
+  },
+  {
+    path: "/inventory/products/:productId/edit",
+    element: <ProductFormPage />,
+    breadcrumbs: ["Inventory", "Product", "Edit"],
+  },
+  {
+    path: "/inventory/receive",
+    element: <ReceiveStockPage />,
+    breadcrumbs: ["Inventory", "Receive Stock"],
+  },
+  {
+    path: "/inventory/batches/:batchId",
+    element: <BatchDetailPage />,
+    breadcrumbs: ["Inventory", "Batch"],
+  },
+  {
+    path: "/inventory/settings",
+    element: <InventorySettingsPage />,
+    breadcrumbs: ["Inventory", "Settings"],
   },
   {
     path: "/integrations",
