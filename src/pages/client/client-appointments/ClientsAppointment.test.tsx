@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ClientAppointmentPage from "./ClientsAppointment";
 import * as api from "../../../services/artistServices";
+import * as payments from "../../../services/paymentServices";
 
 vi.mock("../../../services/artistServices", async (importOriginal) => ({
   ...(await importOriginal<typeof api>()),
@@ -18,11 +19,33 @@ vi.mock("../../../services/artistServices", async (importOriginal) => ({
   scheduleCheckIn: vi.fn(),
   cancelScheduledMessage: vi.fn(),
 }));
+vi.mock("../../../services/paymentServices", async (importOriginal) => ({
+  ...(await importOriginal<typeof payments>()),
+  getSquarePaymentStatus: vi.fn(),
+  createPaymentRequest: vi.fn(),
+}));
 vi.mock("react-hot-toast", () => ({
   default: { error: vi.fn(), success: vi.fn() },
 }));
 
 const mocked = vi.mocked(api);
+const mockedPayments = vi.mocked(payments);
+
+const squareStatus = (overrides: Partial<payments.SquarePaymentStatus> = {}) =>
+  ({
+    data: {
+      connected: true,
+      reconnectRequired: false,
+      paymentsEnabled: true,
+      accountName: "Glow Studio",
+      locationName: "Main",
+      currency: "USD",
+      ...overrides,
+    },
+  }) as never;
+
+const notConnected = () =>
+  squareStatus({ connected: false, paymentsEnabled: false, accountName: null, currency: null });
 
 const renderPage = () =>
   render(
@@ -33,12 +56,105 @@ const renderPage = () =>
     >
       <Routes>
         <Route path="/clients/:id/appointments" element={<ClientAppointmentPage />} />
+        <Route path="/integrations" element={<p>Integrations page</p>} />
       </Routes>
     </MemoryRouter>,
   );
 
+const oneAppointment = () =>
+  mocked.getAppointmentsForCustomer.mockResolvedValue({
+    data: {
+      appointments: [
+        {
+          _id: "a",
+          id: "appt-1",
+          customerId: "cust-1",
+          artistId: "artist-1",
+          date: "2026-11-20T05:00:00.000Z",
+          services: [1],
+          serviceDetails: [{ _id: "s", id: 1, service: "Microblading" }],
+          signed: false,
+          allFormsCompleted: false,
+          deleted: false,
+          formsToFillCount: 1,
+          createdAt: "2026-11-18T10:00:00.000Z",
+          updatedAt: "2026-11-18T10:00:00.000Z",
+        },
+      ],
+    },
+  } as never);
+
+const menuButton = async (name: string) => {
+  const card = (await screen.findByText("Microblading")).closest(".appointment-card") as HTMLElement;
+  const menu = card.querySelector(".dropdown-menu") as HTMLElement;
+  return within(menu).queryByRole("button", { name });
+};
+
+describe("ClientAppointmentPage: request payment from the menu", () => {
+  beforeEach(() => {
+    oneAppointment();
+  });
+
+  it("opens the payment form and creates a link for that appointment", async () => {
+    mockedPayments.getSquarePaymentStatus.mockResolvedValue(squareStatus());
+    mockedPayments.createPaymentRequest.mockResolvedValue({
+      data: {
+        request: { id: "pr-1", sentTo: "jane@example.com" },
+        emailSent: true,
+        emailError: null,
+      },
+    } as never);
+    const user = userEvent.setup();
+    renderPage();
+
+    await waitFor(async () => expect(await menuButton("Request payment")).not.toBeNull());
+    await user.click((await menuButton("Request payment"))!);
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText("From Jane Doe through Square")).toBeInTheDocument();
+    await user.type(within(dialog).getByLabelText(/Amount \(USD\)/), "50");
+    await user.click(within(dialog).getByRole("button", { name: "Create & email link" }));
+
+    await waitFor(() =>
+      expect(mockedPayments.createPaymentRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          appointmentId: "appt-1",
+          kind: "deposit",
+          amount: "50",
+          sendEmail: true,
+        }),
+      ),
+    );
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("doesn't offer payments without Square", async () => {
+    mockedPayments.getSquarePaymentStatus.mockResolvedValue(notConnected());
+    renderPage();
+
+    await screen.findByText("Microblading");
+    await waitFor(() => expect(mockedPayments.getSquarePaymentStatus).toHaveBeenCalled());
+    expect(await menuButton("Request payment")).toBeNull();
+  });
+
+  it("sends artists who need to reconnect Square to Integrations", async () => {
+    mockedPayments.getSquarePaymentStatus.mockResolvedValue(
+      squareStatus({ paymentsEnabled: false, reconnectRequired: true }),
+    );
+    const user = userEvent.setup();
+    renderPage();
+
+    await waitFor(async () => expect(await menuButton("Request payment")).not.toBeNull());
+    await user.click((await menuButton("Request payment"))!);
+
+    expect(await screen.findByText("Integrations page")).toBeInTheDocument();
+    expect(mockedPayments.createPaymentRequest).not.toHaveBeenCalled();
+  });
+});
+
 describe("ClientAppointmentPage: mark as complete", () => {
   beforeEach(() => {
+    mockedPayments.getSquarePaymentStatus.mockResolvedValue(notConnected());
     mocked.getAppointmentsForCustomer.mockResolvedValue({
       data: {
         appointments: [

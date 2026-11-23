@@ -3,6 +3,7 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
+  CreditCard,
   ExternalLink,
   FileText,
   HeartPulse,
@@ -29,6 +30,8 @@ interface AppointmentCardProps {
   onShareFormLink?: (appointmentId: string) => void;
   onStartFilling?: (appointmentId: string) => void;
   onCareAction?: (appointmentId: string, action: CareAction) => void;
+  /** Only passed when the artist has Square connected (payments need Square). */
+  onRequestPayment?: (appointmentId: string) => void;
 }
 
 export type CareAction = "complete" | "pre-care" | "aftercare" | "check-in";
@@ -40,6 +43,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   onShareFormLink,
   onStartFilling,
   onCareAction,
+  onRequestPayment,
 }) => {
   const primaryService = appointment.serviceDetails?.[0];
   const serviceName = primaryService?.service || "Unknown Service";
@@ -125,6 +129,12 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
               <button onClick={() => onCareAction(appointment.id, "check-in")}>
                 <MessageCircleHeart size={16} />
                 Send healing check-in
+              </button>
+            )}
+            {onRequestPayment && (
+              <button onClick={() => onRequestPayment(appointment.id)}>
+                <CreditCard size={16} />
+                Request payment
               </button>
             )}
             {/* actions that end the appointment, set apart at the bottom */}

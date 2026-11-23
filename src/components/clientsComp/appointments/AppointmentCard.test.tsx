@@ -125,4 +125,38 @@ describe("AppointmentCard", () => {
     expect(screen.queryByText("Mark as complete")).toBeNull();
     expect(menuLabels(menu).slice(-2)).toEqual(["---", "Delete"]);
   });
+
+  it("offers Request payment when the page passes a handler", async () => {
+    const user = userEvent.setup();
+    const onRequestPayment = vi.fn();
+    const { container } = render(
+      <AppointmentCard
+        appointment={appointment({ signed: true })}
+        onViewForms={vi.fn()}
+        onDeleteAppointment={vi.fn()}
+        onCareAction={vi.fn()}
+        onRequestPayment={onRequestPayment}
+      />,
+    );
+    const menu = container.querySelector(".dropdown-menu") as HTMLElement;
+
+    // with the other client actions, above the divider
+    expect(menuLabels(menu)).toEqual([
+      "View Forms",
+      "Send pre-care instructions",
+      "Send aftercare instructions",
+      "Send healing check-in",
+      "Request payment",
+      "---",
+      "Mark as complete",
+      "Delete",
+    ]);
+    await user.click(within(menu).getByRole("button", { name: "Request payment" }));
+    expect(onRequestPayment).toHaveBeenCalledWith("appt-1");
+  });
+
+  it("has no Request payment without a handler (no Square)", () => {
+    const { menu } = renderCard(appointment({ signed: true }));
+    expect(within(menu).queryByRole("button", { name: "Request payment" })).toBeNull();
+  });
 });

@@ -1,6 +1,7 @@
 "use client";
 import type React from "react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { SendConsentFormSvg } from "../../../assets/svgs/ClientsSvg";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
@@ -19,6 +20,11 @@ import HealingCheckInModal from "../../../components/clientsComp/appointments/He
 import ShareFormLinkModal from "../../../components/clientsComp/appointments/ShareFormLinkModal";
 import { startFillingOnThisDevice } from "../../../utils/formLinks";
 import { LoadingSmall } from "../../../components/loading/Loading";
+import { RequestPaymentModal } from "../../../components/payments/AppointmentPayments";
+import {
+  type SquarePaymentStatus,
+  getSquarePaymentStatus,
+} from "../../../services/paymentServices";
 import "./client-appointments.scss";
 
 const ClientAppointmentPage: React.FC = () => {
@@ -36,6 +42,11 @@ const ClientAppointmentPage: React.FC = () => {
   const [linkAppointmentId, setLinkAppointmentId] = useState<string | null>(
     null
   );
+  // payments need Square: the menu item only appears for Square-connected artists
+  const [square, setSquare] = useState<SquarePaymentStatus | null>(null);
+  const [paymentAppointmentId, setPaymentAppointmentId] = useState<
+    string | null
+  >(null);
   const [careAction, setCareAction] = useState<{
     appointmentId: string;
     action: CareAction;
@@ -67,6 +78,24 @@ const ClientAppointmentPage: React.FC = () => {
       });
     }
   };
+
+  useEffect(() => {
+    getSquarePaymentStatus()
+      .then(({ data }) => setSquare(data))
+      .catch(() => setSquare(null));
+  }, []);
+
+  const onRequestPayment =
+    square?.paymentsEnabled
+      ? setPaymentAppointmentId
+      : square?.reconnectRequired
+        ? () => {
+            toast.error(
+              "Reconnect Square to request payments. It needs permission to create payment links.",
+            );
+            navigate("/integrations");
+          }
+        : undefined;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -139,6 +168,7 @@ const ClientAppointmentPage: React.FC = () => {
                 onCareAction={(appointmentId, action) =>
                   setCareAction({ appointmentId, action })
                 }
+                onRequestPayment={onRequestPayment}
               />
             ))}
           </div>
@@ -153,6 +183,16 @@ const ClientAppointmentPage: React.FC = () => {
             headerText="Delete Appointment"
             shorterText="Are you sure you want to delete this appointment?"
             handleDelete={handleDeleteConfirm}
+          />
+        )}
+
+        {paymentAppointmentId && square?.paymentsEnabled && (
+          <RequestPaymentModal
+            appointmentId={paymentAppointmentId}
+            clientName={clientName}
+            currency={square.currency}
+            onClose={() => setPaymentAppointmentId(null)}
+            onCreated={() => setPaymentAppointmentId(null)}
           />
         )}
 

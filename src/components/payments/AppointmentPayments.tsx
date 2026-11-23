@@ -281,7 +281,8 @@ const AppointmentPayments: React.FC<Props> = ({ appointmentId, clientName }) => 
 
 // ----------------------------------------------------------------- dialog
 
-const RequestPaymentModal: React.FC<{
+/** Also opened from the appointment card's ⋯ menu (ClientsAppointment page). */
+export const RequestPaymentModal: React.FC<{
   appointmentId: string;
   clientName: string;
   currency: string | null;
