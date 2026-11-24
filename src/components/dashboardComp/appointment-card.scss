@@ -21,6 +21,30 @@
     gap: 12px;
   }
 
+  &__status {
+    align-self: flex-start;
+    margin-top: 10px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+
+    &--pending {
+      background: #fff7ed;
+      color: #9a3412;
+    }
+
+    &--signed {
+      background: #f4eaf4;
+      color: #8e2d8e;
+    }
+
+    &--completed {
+      background: #ecfdf5;
+      color: #047857;
+    }
+  }
+
   &__avatar {
     width: 28px;
     height: 28px;
@@ -59,6 +83,25 @@
     font-size: 14px;
     color: #424242;
     font-weight: 500;
+  }
+
+  &__services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #8e2d8e1a;
+      color: #424242;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
   }
 
   &__time {

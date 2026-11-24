@@ -19,6 +19,12 @@ export const Menu: MenuItem[] = [
     icon: "clients",
   },
   {
+    name: "Appointments",
+    basePath: "/appointments",
+    TSKey: "Appointments",
+    icon: "appointments",
+  },
+  {
     name: "Forms",
     basePath: "/forms",
     TSKey: "Forms",

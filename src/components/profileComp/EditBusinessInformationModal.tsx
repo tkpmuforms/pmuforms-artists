@@ -1,15 +1,11 @@
 "use client";
 
-import { Avatar } from "@mui/material";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { X } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { EditBusinessLogoSvg } from "../../assets/svgs/ProfileSvg";
 import useAuth from "../../context/useAuth";
-import { storage } from "../../firebase/firebase";
 import { updateBusinessInfo } from "../../services/artistServices";
 import { refreshAuthUser } from "../../utils/authUtils";
 import "./edit-business-information-modal.scss";
@@ -36,26 +32,7 @@ const EditBusinessInformationModal: React.FC<
   );
   const [address, setAddress] = useState(user?.businessAddress || "");
   const [website, setWebsite] = useState(user?.website || "");
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState(user?.logoUrl || "");
-  const [removeLogo, setRemoveLogo] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setLogoFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setLogoPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleEditLogoClick = () => {
-    document.getElementById("logo-upload")?.click();
-  };
 
   const handleSave = async () => {
     if (!businessName.trim()) {
@@ -78,14 +55,6 @@ const EditBusinessInformationModal: React.FC<
     };
 
     try {
-      if (logoFile) {
-        const storageRef = ref(storage, `logos/artists/${user?._id}`);
-        const snapshot = await uploadBytes(storageRef, logoFile);
-        businessData.logoUrl = await getDownloadURL(snapshot.ref);
-      } else if (removeLogo) {
-        businessData.removeLogoUrl = true;
-      }
-
       await updateBusinessInfo(businessData);
       await refreshAuthUser(dispatch);
       toast.success("Business information updated successfully!");
@@ -130,61 +99,6 @@ const EditBusinessInformationModal: React.FC<
         <h2>Edit Business Information</h2>
 
         <div className="edit-business-information-modal__form">
-          <div className="logo-upload-section">
-            <div className="logo-preview">
-              <div className="logo-container">
-                <Avatar
-                  src={logoPreview}
-                  alt="Business Logo"
-                  sx={{
-                    width: 100,
-                    height: 100,
-                    backgroundColor: !logoPreview ? "#8E2D8E1A" : undefined,
-                  }}
-                >
-                  <p
-                    style={{
-                      color: "#7D7D7D",
-                      fontWeight: "20px",
-                    }}
-                  >
-                    Upload Business Logo
-                  </p>
-                </Avatar>
-                <button
-                  className="edit-logo-btn"
-                  onClick={handleEditLogoClick}
-                  type="button"
-                >
-                  <EditBusinessLogoSvg />
-                </button>
-              </div>
-            </div>
-            {logoPreview && !removeLogo && (
-              <button
-                className="remove-logo-btn"
-                type="button"
-                onClick={() => {
-                  setRemoveLogo(true);
-                  setLogoFile(null);
-                  setLogoPreview("");
-                }}
-              >
-                Remove Logo
-              </button>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                setRemoveLogo(false);
-                handleLogoChange(e);
-              }}
-              className="logo-input"
-              id="logo-upload"
-            />
-          </div>
-
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="businessName">Business Name</label>

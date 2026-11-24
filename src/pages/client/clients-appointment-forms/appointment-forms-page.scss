@@ -225,4 +225,57 @@
       }
     }
   }
+
+  .appointment-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 40px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    background: #f6f7f7;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+
+    &__item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    &__label {
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    &__value {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #111827;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &__services {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      li {
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: #8e2d8e1a;
+        color: #424242;
+        font-size: 13px;
+        font-weight: 500;
+      }
+    }
+  }
 }

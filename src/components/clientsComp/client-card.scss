@@ -51,6 +51,33 @@
     white-space: nowrap;
   }
 
+  &__visit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    margin-top: 8px;
+  }
+
+  &__visit-text {
+    font-size: 12px;
+    color: #64748b;
+
+    &--next {
+      color: var(--pmu-primary);
+      font-weight: 600;
+    }
+  }
+
+  &__pill {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #9a3412;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
   &__arrow {
     color: #94a3b8;
     flex-shrink: 0;

@@ -36,6 +36,25 @@
       .action-buttons {
         display: flex;
         gap: 12px;
+        align-items: center;
+
+        .save-status {
+          font-size: 13px;
+          color: #64748b;
+
+          &--saved {
+            color: #15803d;
+          }
+
+          &--error {
+            color: #b91c1c;
+          }
+        }
+
+        .save-btn:disabled {
+          opacity: 0.6;
+          cursor: default;
+        }
 
         .save-btn {
           background-color: var(--pmu-primary, #6a0dad);
@@ -320,5 +339,23 @@
         }
       }
     }
+  }
+}
+
+// a field that was just added
+.field-container--new {
+  animation: field-added 2.5s ease-out;
+  border-radius: 8px;
+}
+
+@keyframes field-added {
+  0%,
+  40% {
+    background-color: #f4e3f4;
+    box-shadow: 0 0 0 4px #f4e3f4;
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 4px transparent;
   }
 }

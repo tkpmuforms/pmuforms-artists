@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import { cloneElement, isValidElement } from "react";
 import {
   SmallDeleteIconSvg,
   SmallEditIConSvg,
@@ -21,6 +22,8 @@ interface RenderEditFormsFieldsProps {
   onEditField: (field: any) => void;
   onDeleteField: (fieldId: string) => void;
   onAddParagraph: (fieldId: string) => void;
+  /** a field that was just added, to highlight */
+  highlightId?: string | null;
 }
 
 const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
@@ -29,6 +32,7 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
   onEditField,
   onDeleteField,
   onAddParagraph,
+  highlightId,
 }) => {
   const previewInputStyle = {
     backgroundColor: "#f9f9f9",
@@ -66,7 +70,8 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
 
     const isRequired = field?.required;
 
-    if (!field.type) {
+    // older edits saved read-only text as "paragraph"
+    if (!field.type || field.type === "paragraph") {
       return (
         <div key={field.id} className="read-only-field field-container">
           <div className="field-header">
@@ -225,7 +230,23 @@ const RenderEditFormsFields: React.FC<RenderEditFormsFieldsProps> = ({
     }
   };
 
-  return <>{fields.map(renderField)}</>;
+  return (
+    <>
+      {fields.map((field) => {
+        const element = renderField(field);
+        if (!isValidElement<{ className?: string }>(element)) return element;
+        return cloneElement(element, {
+          "data-field-id": field.id,
+          className: [
+            element.props.className,
+            field.id === highlightId ? "field-container--new" : "",
+          ]
+            .filter(Boolean)
+            .join(" "),
+        } as { className: string });
+      })}
+    </>
+  );
 };
 
 export default RenderEditFormsFields;

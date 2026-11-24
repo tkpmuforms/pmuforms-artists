@@ -1,10 +1,10 @@
 "use client";
 
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, X } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import FormCard from "../../components/formsComp/FormCard";
 import { Loading } from "../../components/loading/Loading";
 import { Form, FormType } from "../../redux/types";
@@ -12,6 +12,22 @@ import { getArtistForms } from "../../services/artistServices";
 import { transformFormData } from "../../utils/utils";
 import "./forms-page.scss";
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
+import useAuth from "../../context/useAuth";
+import {
+  FORM_SOURCES,
+  FormSort,
+  FormSource,
+  countByType,
+  matchesFilters,
+  servicesOf,
+  sortForms,
+  sourceOf,
+} from "../../utils/formFilters";
+
+const SOURCE_BADGES: Partial<Record<FormSource, string>> = {
+  mine: "Made by you",
+  edited: "Edited",
+};
 
 const FORM_TABS: { type: FormType; label: string }[] = [
   { type: "consent", label: "Consent" },
@@ -20,21 +36,66 @@ const FORM_TABS: { type: FormType; label: string }[] = [
 ];
 
 const FormsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<FormType>("consent");
+  const { user } = useAuth();
+  const artistServices = useMemo(() => user?.services ?? [], [user?.services]);
+  // filters live in the address, so going back to the page keeps them
+  const [params, setParams] = useSearchParams();
+  const activeTab: FormType =
+    FORM_TABS.find((t) => t.type === params.get("type"))?.type ?? "consent";
+  const searchTerm = params.get("q") ?? "";
+  const service = params.get("service") ?? "";
+  const source: FormSource =
+    FORM_SOURCES.find((s) => s.value === params.get("source"))?.value ?? "all";
+  const sort: FormSort = params.get("sort") === "az" ? "az" : "recent";
+
+  const setParam = (key: string, value: string, fallback = "") => {
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (value && value !== fallback) next.set(key, value);
+        else next.delete(key);
+        return next;
+      },
+      { replace: true },
+    );
+  };
+  const clearFilters = () =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams();
+        if (prev.get("type")) next.set("type", prev.get("type")!);
+        return next;
+      },
+      { replace: true },
+    );
+
   const [showAddMoreServicesModal, setShowAddMoreServicesModal] =
     useState(false);
   const [forms, setForms] = useState<Form[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
-  const filteredForms = forms.filter((form) => {
-    const matchesTab = form.type === activeTab;
-    const matchesSearch =
-      searchTerm === "" ||
-      form.title?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesTab && matchesSearch;
-  });
+  const filters = { search: searchTerm, service, source };
+  const hasFilters = !!(searchTerm.trim() || service || source !== "all");
+  // every type's matches, so each tab can say how many it has
+  const matching = forms.filter((form) =>
+    matchesFilters(form, filters, artistServices),
+  );
+  const tabCounts = countByType(matching);
+  const filteredForms = sortForms(
+    matching.filter((form) => form.type === activeTab),
+    sort,
+  );
+  const inTab = forms.filter((form) => form.type === activeTab);
+  const unassignedCount = inTab.filter(
+    (form) => servicesOf(form, artistServices).length === 0,
+  ).length;
+  const serviceCount = (id: number) =>
+    inTab.filter((form) =>
+      servicesOf(form, artistServices).some((s) => s.id === id),
+    ).length;
+  const tabLabel =
+    FORM_TABS.find((t) => t.type === activeTab)?.label.toLowerCase() ?? "";
 
   useEffect(() => {
     const fetchForms = async () => {
@@ -77,40 +138,130 @@ const FormsPage: React.FC = () => {
             <h1>Preview Forms</h1>
             <p>Preview and manage all forms</p>
           </div>
-          <button
-            className="forms-page__create-btn"
-            onClick={() => setShowAddMoreServicesModal(true)}
-          >
-            <Plus size={16} />
-            Unlock More Forms
-          </button>
+          <div className="forms-page__title-actions">
+            <button
+              className="forms-page__create-btn"
+              onClick={() => navigate("/forms/new")}
+            >
+              <Plus size={16} />
+              Create a Form
+            </button>
+            <button
+              className="forms-page__create-btn forms-page__create-btn--outline"
+              onClick={() => setShowAddMoreServicesModal(true)}
+            >
+              <Plus size={16} />
+              Unlock More Forms
+            </button>
+          </div>
         </div>
 
         <div className="forms-page__search">
           <div className="forms-page__search-input">
             <Search size={20} />
             <input
-              type="text"
-              placeholder="Search forms by title..."
+              type="search"
+              aria-label="Search forms by title or service"
+              placeholder="Search by form title or service..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => setParam("q", e.target.value)}
             />
+          </div>
+          <div className="forms-page__selects">
+            <select
+              aria-label="Where the form came from"
+              value={source}
+              onChange={(e) => setParam("source", e.target.value, "all")}
+            >
+              {FORM_SOURCES.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            <select
+              aria-label="Sort forms"
+              value={sort}
+              onChange={(e) => setParam("sort", e.target.value, "recent")}
+            >
+              <option value="recent">Recently updated</option>
+              <option value="az">Title A–Z</option>
+            </select>
           </div>
         </div>
 
-        <div className="forms-page__tabs">
+        <div className="forms-page__tabs" role="tablist" aria-label="Form type">
           {FORM_TABS.map((tab) => (
             <button
               key={tab.type}
+              role="tab"
+              aria-selected={activeTab === tab.type}
               className={`forms-page__tab ${
                 activeTab === tab.type ? "forms-page__tab--active" : ""
               }`}
-              onClick={() => setActiveTab(tab.type)}
+              onClick={() => setParam("type", tab.type, "consent")}
             >
-              {tab.label} ({forms.filter((f) => f.type === tab.type).length})
+              {tab.label} ({tabCounts[tab.type] ?? 0})
             </button>
           ))}
         </div>
+
+        {(artistServices.length > 0 || unassignedCount > 0) && (
+          <div
+            className="forms-page__service-chips"
+            role="group"
+            aria-label="Filter by service"
+          >
+            <button
+              type="button"
+              aria-pressed={!service}
+              className={`forms-page__chip ${!service ? "forms-page__chip--active" : ""}`}
+              onClick={() => setParam("service", "")}
+            >
+              All services
+            </button>
+            {artistServices.map((s) => {
+              const active = service === String(s.id);
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  aria-pressed={active}
+                  className={`forms-page__chip ${active ? "forms-page__chip--active" : ""}`}
+                  onClick={() => setParam("service", active ? "" : String(s.id))}
+                >
+                  {s.service}
+                  <span className="forms-page__chip-count">{serviceCount(s.id)}</span>
+                </button>
+              );
+            })}
+            {unassignedCount > 0 && (
+              <button
+                type="button"
+                aria-pressed={service === "none"}
+                className={`forms-page__chip forms-page__chip--muted ${
+                  service === "none" ? "forms-page__chip--active" : ""
+                }`}
+                onClick={() => setParam("service", service === "none" ? "" : "none")}
+              >
+                Not on a service
+                <span className="forms-page__chip-count">{unassignedCount}</span>
+              </button>
+            )}
+          </div>
+        )}
+
+        {hasFilters && (
+          <div className="forms-page__result-bar" aria-live="polite">
+            <span>
+              {filteredForms.length} of {inTab.length} {tabLabel} forms
+            </span>
+            <button type="button" className="forms-page__clear" onClick={clearFilters}>
+              <X size={14} />
+              Clear filters
+            </button>
+          </div>
+        )}
 
         {activeTab === "pre-care" && (
           <p className="forms-page__tab-hint">
@@ -126,24 +277,32 @@ const FormsPage: React.FC = () => {
               <FormCard
                 key={form.id}
                 {...form}
+                serviceNames={servicesOf(form, artistServices).map(
+                  (s) => s.service,
+                )}
+                sourceLabel={SOURCE_BADGES[sourceOf(form)]}
                 onPreview={() => handlePreview(form.id)}
                 onEdit={() => handleEdit(form.id)}
               />
             ))
+          ) : hasFilters ? (
+            <div className="forms-page__empty">
+              <p>No {tabLabel} forms match these filters.</p>
+              <button className="forms-page__create-btn" onClick={clearFilters}>
+                <X size={16} />
+                Clear filters
+              </button>
+            </div>
           ) : (
             <div className="forms-page__empty">
-              <p>
-                No {FORM_TABS.find((t) => t.type === activeTab)?.label.toLowerCase()}{" "}
-                forms found
-                {searchTerm ? ` matching "${searchTerm}"` : ""}.
-              </p>
+              <p>No {tabLabel} forms found.</p>
               <button
                 className="forms-page__create-btn"
                 onClick={() => setShowAddMoreServicesModal(true)}
               >
                 <Plus size={16} />
-                Unlock Your Forms
-                {activeTab?.charAt(0).toUpperCase() + activeTab.slice(1)} Form
+                Unlock More {FORM_TABS.find((t) => t.type === activeTab)?.label}{" "}
+                Forms
               </button>
             </div>
           )}

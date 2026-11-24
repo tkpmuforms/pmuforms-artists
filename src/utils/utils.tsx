@@ -96,6 +96,8 @@ export const transformFormData = (apiForm: any): Form => {
     services: apiForm.services || [],
     createdAt: apiForm.createdAt,
     updatedAt: apiForm.updatedAt,
+    versionNumber: apiForm.versionNumber,
+    rootFormTemplateId: apiForm.rootFormTemplateId ?? null,
   };
 };
 

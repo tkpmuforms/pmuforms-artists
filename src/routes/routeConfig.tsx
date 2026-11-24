@@ -12,6 +12,7 @@ const PreviewForms = lazy(
   () => import("../pages/forms/previewForms/PreviewForms.tsx")
 );
 const EditForms = lazy(() => import("../pages/forms/editForms/EditForms.tsx"));
+const NewFormPage = lazy(() => import("../pages/forms/newForm/NewFormPage.tsx"));
 const ClientsAppointment = lazy(
   () => import("../pages/client/client-appointments/ClientsAppointment.tsx")
 );
@@ -173,6 +174,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/forms/preview/:formId",
     element: <PreviewForms />,
     breadcrumbs: ["Forms", "Preview Form"],
+  },
+  {
+    path: "/forms/new",
+    element: <NewFormPage />,
+    breadcrumbs: ["Forms", "New Form"],
   },
   {
     path: "/forms/edit/:formId",

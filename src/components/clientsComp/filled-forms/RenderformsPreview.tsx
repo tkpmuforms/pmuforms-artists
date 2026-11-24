@@ -28,7 +28,7 @@ export const RenderFilledFormFields = ({ fields, filledData }: RenderFilledFormF
         fontWeight: "500",
       };
 
-      if (!field.type) {
+      if (!field.type || field.type === "paragraph") {
         return (
           <div key={field.id} className="read-only-field">
             <label>{field.title}</label>

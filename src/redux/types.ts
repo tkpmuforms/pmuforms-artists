@@ -5,7 +5,6 @@ export interface User {
   phoneNumber?: string;
   businessPhoneNumber?: string;
   avatarUrl?: string;
-  logoUrl?: string;
   documentPath?: string;
   documentId?: string;
   userId?: string;
@@ -40,10 +39,21 @@ export interface Service {
   _id: string;
   id: number;
   service: string;
+  /** a service this artist created; only they see it */
+  custom?: boolean;
   documentPath?: string;
   documentId?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+/** a client's appointments with this artist, sent with the client list */
+export interface ClientSummary {
+  appointmentCount: number;
+  lastVisit: string | null;
+  nextAppointment: string | null;
+  formsPending: boolean;
+  services: number[];
 }
 
 export interface Client {
@@ -52,6 +62,7 @@ export interface Client {
   email: string;
   initials: string;
   color: string;
+  summary?: ClientSummary;
 }
 
 export interface Appointment {
@@ -67,6 +78,13 @@ export interface Appointment {
   createdAt: string;
   updatedAt: string;
   formsToFillCount: number;
+  // set when the artist marks the procedure done
+  completedAt?: string | null;
+  // sent with the appointment list
+  customer?: {
+    id: string;
+    info?: { client_name?: string; avatar_url?: string };
+  } | null;
   filledForms: Array<{
     _id: string;
     appointmentId: string;
@@ -116,6 +134,7 @@ export interface CustomerResponse {
       referred?: string;
     };
     notes: Array<Note>;
+    summary?: ClientSummary;
     createdAt: string;
     updatedAt: string;
   }>;
@@ -136,6 +155,8 @@ export interface Form {
   sections?: Section[];
   versionNumber?: number;
   isDeleted?: boolean;
+  /** the library form this one started from; "custom-…" for the artist's own */
+  rootFormTemplateId?: string | null;
 }
 
 export interface SingleForm {
@@ -206,6 +227,8 @@ export interface FilledForm {
     title: string;
     type: string;
     sections: any[];
+    /** the services this form is used for */
+    services?: number[];
   };
   id: string;
 }

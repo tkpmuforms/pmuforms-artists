@@ -35,6 +35,7 @@ import {
   getMyMetrics,
 } from "../../services/artistServices";
 import { formatAppointmentTime, transformFormData } from "../../utils/utils";
+import { servicesOf } from "../../utils/formFilters";
 import "./dashboard.scss";
 
 interface Metrics {
@@ -93,7 +94,7 @@ const Dashboard: React.FC = () => {
 
   const quickActions = [
     {
-      title: "Share Forms Without Login",
+      title: "Send Forms Link",
       icon: StartFormIcon,
       onClick: () => {
         if (!hasActiveSubscription) {
@@ -331,11 +332,15 @@ const Dashboard: React.FC = () => {
           }
           avatar={getCustomerAvatar(appointment.customerId)}
           time={formatAppointmentTime(appointment.date)}
-          service={
-            appointment.serviceDetails[0]?.service || "Service not specified"
-          }
-          onClickViewFullSchedule={() =>
-            navigate(`/clients/${appointment.customerId}/appointments`)
+          services={(appointment.serviceDetails ?? []).map((s) => s.service)}
+          onViewForms={() =>
+            navigate(
+              `/clients/${appointment.customerId}/appointments/${appointment.id}/forms`,
+              {
+                // a real name saves the forms page a lookup
+                state: { clientName: customers[appointment.customerId]?.name },
+              },
+            )
           }
         />
       ));
@@ -352,6 +357,7 @@ const Dashboard: React.FC = () => {
         <FormCard
           key={form.id}
           {...form}
+          serviceNames={servicesOf(form, user?.services).map((s) => s.service)}
           onPreview={() => handlePreview(form.id)}
           onEdit={() => handleEdit(form.id)}
         />

@@ -98,8 +98,98 @@
     }
   }
 
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: -16px 0 24px;
+
+    select {
+      padding: 10px 12px;
+      border: 1px solid var(--border-color, #e5e5e5);
+      border-radius: 8px;
+      background: white;
+      font-size: 0.9rem;
+      color: var(--text-primary, #1a1a1a);
+      min-height: 42px;
+
+      &:focus-visible {
+        outline: 2px solid var(--pmu-primary, #a858f0);
+        outline-offset: 1px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      margin-top: -16px;
+
+      select {
+        flex: 1 1 140px;
+      }
+    }
+  }
+
+  &__segmented {
+    display: inline-flex;
+    border: 1px solid var(--border-color, #e5e5e5);
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+
+    button {
+      padding: 10px 16px;
+      min-height: 42px;
+      border: none;
+      background: transparent;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--text-primary, #1a1a1a);
+
+      & + button {
+        border-left: 1px solid var(--border-color, #e5e5e5);
+      }
+
+      &.is-active {
+        background: var(--pmu-primary, #8e2d8e);
+        color: white;
+        font-weight: 600;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--pmu-primary, #a858f0);
+        outline-offset: -2px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      width: 100%;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+
+  &__clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border: none;
+    background: none;
+    color: var(--pmu-primary, #8e2d8e);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
   &__content {
     min-height: 400px;
+    transition: opacity 0.15s;
+
+    &.is-refreshing {
+      opacity: 0.55;
+    }
   }
 
   &__loading {
@@ -256,7 +346,11 @@
     cursor: pointer;
     transition: all 0.2s;
 
-    &:hover:not([style*="not-allowed"]) {
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
       border-color: var(--pmu-primary, #a858f0);
       color: var(--pmu-primary, #a858f0);
     }

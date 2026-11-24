@@ -12,18 +12,25 @@ interface FormData {
 }
 
 const LIMITS = {
-  firstName: 50,
+  firstName: 100,
   subject: 100,
   message: 1000,
 } as const;
 
 type LimitedField = keyof typeof LIMITS;
 
+// prefilled with the whole name on the account
+const fullName = (user?: { firstName?: string; lastName?: string } | null) =>
+  [user?.firstName, user?.lastName]
+    .filter(Boolean)
+    .join(" ")
+    .slice(0, LIMITS.firstName);
+
 const ContactUs: React.FC = () => {
   const { user } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     email: user?.email || "",
-    firstName: user?.firstName || "",
+    firstName: fullName(user),
     subject: "",
     message: "",
   });
@@ -65,7 +72,7 @@ const ContactUs: React.FC = () => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
 
     if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required";
+      newErrors.firstName = "Name is required";
     } else if (formData.firstName.length > LIMITS.firstName) {
       newErrors.firstName = `Maximum ${LIMITS.firstName} characters reached`;
     }
@@ -93,7 +100,7 @@ const ContactUs: React.FC = () => {
       await sendMessage(formData);
       setFormData({
         email: user?.email || "",
-        firstName: user?.firstName || "",
+        firstName: fullName(user),
         subject: "",
         message: "",
       });
@@ -124,23 +131,25 @@ const ContactUs: React.FC = () => {
   return (
     <div className="contact-us">
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            disabled={!!user?.email}
-            placeholder="Enter your email"
-            maxLength={254}
-          />
-        </div>
+        {/* the account's email is sent but not shown; only ask if there isn't one */}
+        {!user?.email && (
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="Enter your email"
+              maxLength={254}
+            />
+          </div>
+        )}
 
         <div className="form-group">
-          <label htmlFor="firstName">First Name:</label>
+          <label htmlFor="firstName">Name:</label>
           <input
             type="text"
             id="firstName"
@@ -148,7 +157,7 @@ const ContactUs: React.FC = () => {
             value={formData.firstName}
             onChange={handleChange}
             required
-            placeholder="Enter your first name"
+            placeholder="Enter your name"
             maxLength={LIMITS.firstName}
             className={errors.firstName ? "error" : ""}
           />

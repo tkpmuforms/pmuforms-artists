@@ -10,17 +10,23 @@ interface AppointmentCardProps {
   name?: string;
   avatar?: string;
   time?: string;
-  service?: string;
-  onClickViewFullSchedule?: () => void;
+  /** every service on the appointment */
+  services?: string[];
+  /** opens this appointment's forms */
+  onViewForms?: () => void;
+  /** e.g. Forms pending, on the appointments page */
+  status?: { label: string; tone: "pending" | "signed" | "completed" };
 }
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({
   name,
   avatar,
   time,
-  service,
-  onClickViewFullSchedule,
+  services = [],
+  onViewForms,
+  status,
 }) => {
+  const names = services.filter(Boolean);
   return (
     <div className="appointment-card-dashboard">
       <div className="appointment-card-dashboard__header">
@@ -30,13 +36,32 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         <h3 className="appointment-card-dashboard__name">{name}</h3>
       </div>
 
+      {status && (
+        <span
+          className={`appointment-card-dashboard__status appointment-card-dashboard__status--${status.tone}`}
+        >
+          {status.label}
+        </span>
+      )}
+
       <div className="appointment-card-dashboard__service">
         <span className="appointment-card-dashboard__service-icon">
           <DashboardServiceIcon />
         </span>
-        <span className="appointment-card-dashboard__service-text">
-          {service}
-        </span>
+        {names.length ? (
+          <ul
+            className="appointment-card-dashboard__services"
+            aria-label="Services"
+          >
+            {names.map((name, i) => (
+              <li key={`${name}-${i}`}>{name}</li>
+            ))}
+          </ul>
+        ) : (
+          <span className="appointment-card-dashboard__service-text">
+            Service not specified
+          </span>
+        )}
       </div>
 
       <div className="appointment-card-dashboard__time">
@@ -48,9 +73,10 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
 
       <button
         className="appointment-card-dashboard__schedule-button"
-        onClick={onClickViewFullSchedule}
+        onClick={onViewForms}
+        aria-label={`View appointment forms for ${name}`}
       >
-        View Full Schedule
+        View appointment forms
       </button>
     </div>
   );

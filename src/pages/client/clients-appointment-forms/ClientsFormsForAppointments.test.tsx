@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -65,7 +65,10 @@ describe("ClientsFormsForAppointments", () => {
     } as never);
     renderPage();
 
-    expect(await screen.findByText("Signed")).toBeInTheDocument();
+    // the appointment's chip (each form card also says Signed)
+    expect(
+      await screen.findByText("Signed", { selector: ".signed-chip" }),
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Sign Forms" }),
     ).toBeNull();
@@ -82,7 +85,7 @@ describe("ClientsFormsForAppointments", () => {
     renderPage();
 
     await user.click(
-      await screen.findByRole("button", { name: "View Forms" }),
+      await screen.findByRole("button", { name: "View all forms" }),
     );
     expect(await screen.findByText("All forms page")).toBeInTheDocument();
   });
@@ -115,5 +118,76 @@ describe("ClientsFormsForAppointments", () => {
     expect(
       await screen.findByRole("button", { name: "Sign Forms" }),
     ).toBeDisabled();
+  });
+
+  it("shows the appointment and which service each form is for", async () => {
+    mocked.getFilledFormsByAppointment.mockResolvedValue({
+      data: {
+        filledForms: [
+          {
+            id: "f1",
+            title: "Microblading Aftercare",
+            formTemplateId: "t1",
+            status: "completed",
+            formTemplate: { services: [1] },
+            createdAt: "2026-11-18T10:00:00.000Z",
+            updatedAt: "2026-11-19T10:00:00.000Z",
+          },
+          {
+            id: "f2",
+            title: "Freckles Consent",
+            formTemplateId: "t2",
+            status: "incomplete",
+            formTemplate: { services: [7, 100001] },
+            createdAt: "2026-11-18T10:00:00.000Z",
+            updatedAt: "2026-11-18T10:00:00.000Z",
+          },
+          {
+            id: "f3",
+            title: "Client Intake",
+            formTemplateId: "t3",
+            status: "incomplete",
+            formTemplate: { services: [] },
+            createdAt: "2026-11-18T10:00:00.000Z",
+            updatedAt: "2026-11-18T10:00:00.000Z",
+          },
+        ],
+      },
+    } as never);
+    mocked.getAppointmentById.mockResolvedValue({
+      data: {
+        appointment: {
+          signed: false,
+          allFormsCompleted: false,
+          date: "2026-12-01T15:00:00.000Z",
+          serviceDetails: [
+            { _id: "a", id: 1, service: "Microblading" },
+            { _id: "b", id: 100001, service: "Freckles" },
+          ],
+        },
+      },
+    } as never);
+    renderPage();
+
+    expect(
+      await screen.findByRole("heading", { name: "Forms for Jane Doe's appointment" }),
+    ).toBeInTheDocument();
+    const summary = screen.getByRole("region", { name: "Appointment" });
+    expect(within(summary).getByText("Microblading")).toBeInTheDocument();
+    expect(within(summary).getByText("Freckles")).toBeInTheDocument();
+    expect(within(summary).getByText(/Dec 1/)).toBeInTheDocument();
+    expect(within(summary).getByText("1 of 3 filled")).toBeInTheDocument();
+
+    const aftercare = screen.getByRole("button", { name: /Open Microblading Aftercare/ });
+    expect(aftercare).toHaveTextContent("For Microblading");
+    expect(aftercare).toHaveAccessibleName("Open Microblading Aftercare, Filled");
+    // only this appointment's services, not every service the form covers
+    const consent = screen.getByRole("button", { name: /Open Freckles Consent/ });
+    expect(consent).toHaveTextContent("For Freckles");
+    expect(consent).toHaveTextContent("Waiting for client");
+    expect(consent).toHaveTextContent("Not yet");
+    expect(screen.getByRole("button", { name: /Open Client Intake/ })).toHaveTextContent(
+      "For this appointment",
+    );
   });
 });

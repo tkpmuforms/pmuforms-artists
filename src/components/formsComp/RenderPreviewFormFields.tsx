@@ -19,7 +19,7 @@ export const renderPreviewFormFields = (fields: any[]) =>
       color: "#999",
     };
 
-    if (!field.type) {
+    if (!field.type || field.type === "paragraph") {
       return (
         <div key={field.id} className="read-only-field">
           <label>{field.title}</label>

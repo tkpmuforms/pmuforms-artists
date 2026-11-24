@@ -1,6 +1,5 @@
 "use client";
 
-import { Avatar } from "@mui/material";
 import { Edit } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
@@ -52,19 +51,6 @@ const BusinessInformationPage: React.FC = () => {
             <div className="section-content">
               <label>Business Name</label>
               <div className="business-name-container">
-                <Avatar
-                  src={user?.logoUrl || ""}
-                  alt="Profile Avatar"
-                  sx={{
-                    width: 60,
-                    height: 60,
-                    backgroundColor: !user?.logoUrl ? "#8E2D8E1A" : undefined,
-                  }}
-                >
-                  {user?.firstName && user?.lastName
-                    ? (user.firstName + user.lastName).slice(0, 2).toUpperCase()
-                    : "Logo"}
-                </Avatar>
                 <div className="business-name">{user?.businessName}</div>
               </div>
 

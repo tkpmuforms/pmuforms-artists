@@ -4,7 +4,15 @@ import { describe, expect, it, vi } from "vitest";
 import Sidebar from "./Sidebar";
 
 vi.mock("../../../context/useAuth.ts", () => ({
-  default: () => ({ user: { userId: "artist-1", firstName: "Ada" }, logout: vi.fn() }),
+  default: () => ({
+    user: {
+      userId: "artist-1",
+      firstName: "Ada",
+      businessName: "Brow Studio",
+      avatarUrl: "https://example.com/photo.jpg",
+    },
+    logout: vi.fn(),
+  }),
 }));
 
 describe("Sidebar", () => {
@@ -19,5 +27,15 @@ describe("Sidebar", () => {
     expect(link).toHaveTextContent("contact@pmuforms.com");
     // directly above the logout button
     expect(link.nextElementSibling).toBe(screen.getByRole("button", { name: /Logout/ }));
+  });
+
+  it("shows the business name without a logo or photo", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <Sidebar />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole("heading", { name: "Brow Studio" })).toBeInTheDocument();
+    expect(container.querySelector("img")).toBeNull();
   });
 });

@@ -16,8 +16,8 @@ import {
 import { IntegrationsIcon } from "../../../assets/svgs/IntegrationsSvg.tsx";
 import { InventoryIcon } from "../../../assets/svgs/InventorySvg.tsx";
 import { ReferIcon } from "../../../assets/svgs/ReferSvg.tsx";
+import { AppointmentsIcon } from "../../../assets/svgs/AppointmentsSvg.tsx";
 import useAuth from "../../../context/useAuth.ts";
-import { Avatar } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface SidebarProps {
@@ -73,6 +73,7 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
       const iconMap: { [key: string]: React.FC<{ isActive?: boolean }> } = {
         dashboard: DashboardIcon,
         clients: ClientIcon,
+        appointments: AppointmentsIcon,
         forms: FormsIcon,
         services: ServicesIcon,
         inventory: InventoryIcon,
@@ -117,15 +118,6 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
 
           <div className="sidebar__header">
             <div className="sidebar__user">
-              {!isCollapsed && (
-                <div className="sidebar__avatar">
-                  <Avatar
-                    src={user?.avatarUrl ?? ""}
-                    alt={user?.businessName ?? ""}
-                    sx={{ width: 40, height: 40 }}
-                  />
-                </div>
-              )}
               {!isCollapsed && (
                 <div className="sidebar__user-info">
                   <h3 className="sidebar__user-name">

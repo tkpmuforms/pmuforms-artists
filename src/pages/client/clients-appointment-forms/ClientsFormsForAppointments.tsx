@@ -1,9 +1,9 @@
 "use client";
-import { CheckCircle2, FileText, Files } from "lucide-react";
+import { Calendar, CheckCircle2, FileText, Files } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { FilledForm } from "../../../redux/types";
+import { Appointment, FilledForm } from "../../../redux/types";
 import {
   getAppointmentById,
   getCustomerById,
@@ -13,6 +13,8 @@ import ClientFormsCard from "../../../components/clientsComp/filled-forms/Client
 import "./appointment-forms-page.scss";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import AppointmentPayments from "../../../components/payments/AppointmentPayments";
+import { formServices, isFormFilled } from "../../../utils/appointmentForms";
+import { formatAppointmentTime } from "../../../utils/utils";
 
 const ClientsFormsForAppointments: React.FC = () => {
   const { id, appointmentId } = useParams();
@@ -21,10 +23,10 @@ const ClientsFormsForAppointments: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [clientName, setClientName] = useState<string>("");
   // loaded fresh so a just-signed appointment never shows "Sign" again
-  const [appointment, setAppointment] = useState<{
-    signed: boolean;
-    allFormsCompleted: boolean;
-  } | null>(null);
+  const [appointment, setAppointment] = useState<Pick<
+    Appointment,
+    "signed" | "allFormsCompleted" | "date" | "serviceDetails"
+  > | null>(null);
   const navigate = useNavigate();
 
   const onViewForm = (formId: string) => {
@@ -79,9 +81,12 @@ const ClientsFormsForAppointments: React.FC = () => {
 
   const isAllformsCompleted =
     appointment?.allFormsCompleted ??
-    forms.every(
-      (form) => form.status === "complete" || form.status === "completed"
-    );
+    forms.every((form) => isFormFilled(form.status));
+  const filledCount = forms.filter((form) => isFormFilled(form.status)).length;
+  const services = (appointment?.serviceDetails ?? []).filter(
+    (s) => s?.service,
+  );
+  const firstName = clientName?.split(" ")[0];
 
   if (loading) {
     return <LoadingSmall />;
@@ -92,17 +97,17 @@ const ClientsFormsForAppointments: React.FC = () => {
       <div className="container">
         <div className="header">
           <div className="header-content">
-            <h1>{clientName}'s Appointment Form</h1>
+            <h1>Forms for {clientName}'s appointment</h1>
             <p>
-              Check out all your appointments and forms with{" "}
-              {clientName?.split(" ")[0]} right here!
+              The forms {firstName || "your client"} needs to fill for this
+              appointment.
             </p>
           </div>
           <div className="header-actions">
             {forms.length > 0 && (
               <button onClick={onViewAllForms} className="all-forms-btn">
                 <Files size={16} />
-                View Forms
+                View all forms
               </button>
             )}
             {appointment?.signed ? (
@@ -123,6 +128,43 @@ const ClientsFormsForAppointments: React.FC = () => {
           </div>
         </div>
 
+        {appointment && (
+          <section className="appointment-summary" aria-label="Appointment">
+            {appointment.date && (
+              <div className="appointment-summary__item">
+                <span className="appointment-summary__label">Date</span>
+                <span className="appointment-summary__value">
+                  <Calendar size={16} />
+                  {formatAppointmentTime(appointment.date)}
+                </span>
+              </div>
+            )}
+            <div className="appointment-summary__item">
+              <span className="appointment-summary__label">Services</span>
+              {services.length ? (
+                <ul className="appointment-summary__services">
+                  {services.map((s) => (
+                    <li key={s.id}>{s.service}</li>
+                  ))}
+                </ul>
+              ) : (
+                <span className="appointment-summary__value">
+                  Not specified
+                </span>
+              )}
+            </div>
+            {forms.length > 0 && (
+              <div className="appointment-summary__item">
+                <span className="appointment-summary__label">Forms</span>
+                <span className="appointment-summary__value">
+                  {filledCount} of {forms.length} filled
+                  {appointment.signed ? " · signed" : ""}
+                </span>
+              </div>
+            )}
+          </section>
+        )}
+
         {forms.length === 0 ? (
           <div className="no-forms">
             <div className="empty-state">
@@ -140,6 +182,7 @@ const ClientsFormsForAppointments: React.FC = () => {
                 key={form.id || form._id}
                 form={form}
                 onViewForm={onViewForm}
+                services={formServices(form, services)}
               />
             ))}
           </div>

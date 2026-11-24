@@ -84,13 +84,33 @@ export const getAppointmentsForCustomer = async (customerId: string) =>
 
 export const getArtistAppointments = async () =>
   axiosInstance.get("/api/appointments/artist");
+export interface AppointmentFilters {
+  /** part of a client's name or email, or of a service name */
+  search?: string;
+  /** pending: forms not signed; signed: signed, not done; completed: done */
+  status?: "pending" | "signed" | "completed";
+  service?: number;
+  /** ISO dates: on or after `from`, before `to` */
+  from?: string;
+  to?: string;
+  sort?: "asc" | "desc";
+}
+
 export const getArtistAppointmentsPaginated = async (
   page: number = 1,
   perPage: number = 10,
+  filters: AppointmentFilters = {},
 ) => {
-  return axiosInstance.get(
-    `/api/appointments/artist?page=${page}&perPage=${perPage}`,
-  );
+  const params = new URLSearchParams({
+    page: String(page),
+    perPage: String(perPage),
+  });
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== null && value !== "") {
+      params.set(key, String(value));
+    }
+  }
+  return axiosInstance.get(`/api/appointments/artist?${params.toString()}`);
 };
 
 export interface FormLink {
@@ -235,10 +255,28 @@ export const deleteCustomerNote = async (
     `/api/customers/my-customers/${customerId}/notes/${noteId}`,
   );
 
+export type ClientActivity =
+  | "upcoming"
+  | "no-upcoming"
+  | "lapsed"
+  | "never"
+  | "new";
+export type ClientSort = "name" | "recent" | "last-visit" | "next";
+
+export interface ClientFilters {
+  activity?: ClientActivity;
+  /** clients who've booked this service */
+  service?: number;
+  /** clients with an appointment whose forms aren't signed yet */
+  formsPending?: boolean;
+  sort?: ClientSort;
+}
+
 export const searchCustomers = async (
   name?: string,
   page?: number,
   limit?: number,
+  filters: ClientFilters = {},
 ) => {
   const params = new URLSearchParams();
   if (name) params.append("name", name);
@@ -246,6 +284,11 @@ export const searchCustomers = async (
     params.append("page", page.toString());
   if (limit !== null && limit !== undefined)
     params.append("limit", limit.toString());
+  if (filters.activity) params.append("activity", filters.activity);
+  if (filters.service !== undefined)
+    params.append("service", String(filters.service));
+  if (filters.formsPending) params.append("formsPending", "true");
+  if (filters.sort && filters.sort !== "name") params.append("sort", filters.sort);
 
   const queryString = params.toString() ? `?${params.toString()}` : "";
   return axiosInstance.get(`/api/customers/my-customers/search${queryString}`);
@@ -394,8 +437,6 @@ export const updateBusinessInfo = async (data: {
   businessPhoneNumber: string;
   businessAddress: string;
   website?: string;
-  logoUrl?: string;
-  removeLogoUrl?: boolean;
 }) => {
   return axiosInstance.patch("/api/artists/update-business-info", data);
 };

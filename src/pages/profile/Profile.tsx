@@ -1,6 +1,5 @@
 "use client";
 
-import { Avatar } from "@mui/material";
 import {
   Building2,
   Edit,
@@ -20,7 +19,6 @@ import type { OnboardingStep } from "../auth/authUtils";
 import { determineOnboardingStep } from "../auth/authUtils";
 import PaymentPage from "./payment-page/PaymentPage";
 import "./profile.scss";
-import { getAuthMe } from "../../services/artistServices";
 
 interface LocationState {
   newUser?: boolean;
@@ -40,7 +38,6 @@ const ProfilePage: React.FC = () => {
     locationState?.onboardingStep || "completed",
   );
   const [showPaymentPage, setShowPaymentPage] = useState(false);
-  const [freshAvatarUrl, setFreshAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -60,15 +57,6 @@ const ProfilePage: React.FC = () => {
       }
     }
   }, [user, isNewUser]);
-
-  useEffect(() => {
-    getAuthMe().then((res) => {
-      const profileAvatarUrl = res?.data?.user?.profile?.avatarUrl;
-      if (profileAvatarUrl) {
-        setFreshAvatarUrl(profileAvatarUrl);
-      }
-    });
-  }, []);
 
   const handleBusinessInfoSave = () => {
     setShowEditBusinessInfo(false);
@@ -141,14 +129,6 @@ const ProfilePage: React.FC = () => {
       <div className="profile-page__content">
         <div className="profile-page__header">
           <div className="profile-page__user">
-            <div className="profile-page__avatar">
-              <Avatar
-                src={user?.avatarUrl ?? freshAvatarUrl ?? ""}
-                alt={user?.businessName ?? ""}
-                sx={{ width: 60, height: 60 }}
-              />
-              x
-            </div>
             <div className="profile-page__user-info">
               <h1>{user?.businessName}</h1>
               <button

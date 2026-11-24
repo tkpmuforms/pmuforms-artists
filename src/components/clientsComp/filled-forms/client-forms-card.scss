@@ -6,6 +6,18 @@
   border: 1px solid #f3f4f6;
   cursor: pointer;
   transition: all 0.2s ease;
+  /* it's a button now: reset the browser's button look */
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--pmu-primary);
+    outline-offset: 2px;
+  }
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -37,6 +49,13 @@
           color: #111827;
           margin: 0;
           line-height: 1.3;
+        }
+
+        .form-for {
+          margin: 4px 0 0;
+          font-size: 13px;
+          color: var(--pmu-primary);
+          font-weight: 500;
         }
       }
     }
@@ -120,6 +139,13 @@
           }
         }
 
+        .detail-label {
+          color: #9ca3af;
+          font-size: 13px;
+          font-weight: 500;
+          text-align: center;
+        }
+
         .detail-value {
           font-size: 12px;
           font-weight: 500;
@@ -130,6 +156,17 @@
           text-align: center;
         }
       }
+    }
+
+    .view-form {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 12px;
+      color: var(--pmu-primary);
+      font-size: 14px;
+      font-weight: 600;
     }
   }
 

@@ -1,19 +1,81 @@
-import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { CircularProgress } from "@mui/material";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import AddClientModal from "../../components/clientsComp/AddClientModal";
 import ClientCard from "../../components/clientsComp/ClientCard";
 import ClientSearchModal from "../../components/clientsComp/ClientSearchModal";
 import { LoadingSmall } from "../../components/loading/Loading";
 import { Client, CustomerResponse } from "../../redux/types";
-import { searchCustomers } from "../../services/artistServices";
+import {
+  ClientActivity,
+  ClientFilters,
+  ClientSort,
+  searchCustomers,
+} from "../../services/artistServices";
+import useAuth from "../../context/useAuth";
 import { generateColor, generateInitials } from "../../utils/utils";
 import "./clients-page.scss";
 
+const ACTIVITY_OPTIONS: { value: ClientActivity | ""; label: string }[] = [
+  { value: "", label: "All clients" },
+  { value: "upcoming", label: "Upcoming appointment" },
+  { value: "lapsed", label: "Not back in 6+ months" },
+  { value: "new", label: "New this month" },
+  { value: "never", label: "Never booked" },
+  { value: "no-upcoming", label: "Nothing booked" },
+];
+
+const SORT_OPTIONS: { value: ClientSort; label: string }[] = [
+  { value: "name", label: "Name A–Z" },
+  { value: "recent", label: "Newest clients" },
+  { value: "last-visit", label: "Last visit" },
+  { value: "next", label: "Next appointment" },
+];
+
 const ClientsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const services = user?.services ?? [];
+  // filters live in the address, so coming back to the page keeps them
+  const [params, setParams] = useSearchParams();
+  const activity = (ACTIVITY_OPTIONS.find((o) => o.value === params.get("activity"))
+    ?.value || undefined) as ClientActivity | undefined;
+  const serviceParam = params.get("service");
+  const service =
+    serviceParam !== null && serviceParam !== "" && !isNaN(Number(serviceParam))
+      ? Number(serviceParam)
+      : undefined;
+  const formsPending = params.get("forms") === "pending";
+  const sort: ClientSort =
+    SORT_OPTIONS.find((o) => o.value === params.get("sort"))?.value ?? "name";
+  const filters: ClientFilters = { activity, service, formsPending, sort };
+  const filterKey = JSON.stringify(filters);
+  const filtering = !!(activity || service !== undefined || formsPending);
+  const setParam = (key: string, value: string) => {
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (value) next.set(key, value);
+        else next.delete(key);
+        return next;
+      },
+      { replace: true },
+    );
+    setCurrentPage(1);
+  };
+  const clearFilters = () => {
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        ["activity", "service", "forms"].forEach((key) => next.delete(key));
+        return next;
+      },
+      { replace: true },
+    );
+    setCurrentPage(1);
+  };
   const [showSearch, setShowSearch] = useState(false);
   const [showAddClient, setShowAddClient] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,6 +101,7 @@ const ClientsPage: React.FC = () => {
       email: customer?.email || "No email provided",
       initials: generateInitials(clientName),
       color: generateColor(clientName),
+      summary: customer?.summary,
     };
   };
 
@@ -50,7 +113,12 @@ const ClientsPage: React.FC = () => {
       setTotalClients(null);
       setError(null);
 
-      const response = await searchCustomers(searchName, page, itemsPerPage);
+      const response = await searchCustomers(
+        searchName,
+        page,
+        itemsPerPage,
+        filters,
+      );
       const data: CustomerResponse = response?.data;
 
       // A newer search/page request has superseded this response.
@@ -75,7 +143,9 @@ const ClientsPage: React.FC = () => {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [currentPage, itemsPerPage, searchQuery]);
+    // filterKey stands for the filters object
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, itemsPerPage, searchQuery, filterKey]);
 
   const handleSearchFocus = () => {
     setShowSearch(true);
@@ -137,9 +207,83 @@ const ClientsPage: React.FC = () => {
         </div>
       </div>
 
+      <div
+        className="clients-page__filters"
+        role="group"
+        aria-label="Filter clients"
+      >
+        <div className="clients-page__chips">
+          {ACTIVITY_OPTIONS.map((option) => {
+            const active = (activity ?? "") === option.value;
+            return (
+              <button
+                key={option.value || "all"}
+                type="button"
+                aria-pressed={active}
+                className={`clients-page__chip ${
+                  active ? "clients-page__chip--active" : ""
+                }`}
+                onClick={() => setParam("activity", option.value)}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            aria-pressed={formsPending}
+            className={`clients-page__chip clients-page__chip--warn ${
+              formsPending ? "clients-page__chip--active" : ""
+            }`}
+            onClick={() => setParam("forms", formsPending ? "" : "pending")}
+          >
+            Forms pending
+          </button>
+        </div>
+        <div className="clients-page__selects">
+          {services.length > 0 && (
+            <select
+              aria-label="Service booked"
+              value={service ?? ""}
+              onChange={(e) => setParam("service", e.target.value)}
+            >
+              <option value="">Any service</option>
+              {services.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.service}
+                </option>
+              ))}
+            </select>
+          )}
+          <select
+            aria-label="Sort clients"
+            value={sort}
+            onChange={(e) =>
+              setParam("sort", e.target.value === "name" ? "" : e.target.value)
+            }
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                Sort: {o.label}
+              </option>
+            ))}
+          </select>
+          {filtering && (
+            <button
+              type="button"
+              className="clients-page__clear"
+              onClick={clearFilters}
+            >
+              <X size={14} />
+              Clear filters
+            </button>
+          )}
+        </div>
+      </div>
+
       <div className="clients-page__stats">
         <span>
-          Total Clients:{" "}
+          {filtering ? "Matching clients" : "Total Clients"}:{" "}
           {totalClients === null ? (
             <CircularProgress
               size={14}
@@ -176,8 +320,20 @@ const ClientsPage: React.FC = () => {
           <p>
             {searchQuery
               ? `No clients found matching "${searchQuery}"`
-              : "No clients found. Add your first client to get started!"}
+              : filtering
+                ? "No clients match these filters."
+                : "No clients found. Add your first client to get started!"}
           </p>
+          {filtering && (
+            <button
+              type="button"
+              className="clients-page__clear"
+              onClick={clearFilters}
+            >
+              <X size={14} />
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="clients-page__grid">
