@@ -607,16 +607,25 @@
   }
 }
 
-// a code from a link or QR code, applied
-.subscription-modal__offer {
-  margin: 10px auto 0;
+// a code from a link or QR code, applied: a solid card so it stands out on
+// the purple header (nested to beat `.subscription-modal__header p`)
+.subscription-modal .subscription-modal__header .subscription-modal__offer {
+  margin: 14px auto 0;
   max-width: 420px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: #f4eaf4;
-  color: #4a1d4a;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #3b0f3b;
   font-size: 14px;
-  line-height: 1.45;
+  font-weight: 500;
+  line-height: 1.5;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+
+  strong {
+    color: #8e2d8e;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
 
   &--error {
     background: #fef2f2;
