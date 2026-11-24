@@ -16,6 +16,9 @@ import {
   SquarespaceLogo,
 } from "../../assets/svgs/IntegrationsSvg";
 import "./integrations.scss";
+import useAuth from "../../context/useAuth";
+import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
+import { isArtistSubscribed } from "../../utils/subscriptionUtils";
 
 interface Integration {
   id: string;
@@ -69,6 +72,9 @@ interface IntegrationStatus {
 const IntegrationsPage: React.FC = () => {
   const [connectingSquare, setConnectingSquare] = useState(false);
   const [disconnectingSquare, setDisconnectingSquare] = useState(false);
+  const { user } = useAuth();
+  const subscribed = isArtistSubscribed(user);
+  const [showPlans, setShowPlans] = useState(false);
   const [statuses, setStatuses] = useState<Record<string, IntegrationStatus>>(
     {},
   );
@@ -162,6 +168,11 @@ const IntegrationsPage: React.FC = () => {
       toast(`${integration.name} connection is coming soon.`);
       return;
     }
+    // connecting is part of the paid plan
+    if (!subscribed) {
+      setShowPlans(true);
+      return;
+    }
 
     setConnectingSquare(true);
     getSquareConnectUrl()
@@ -192,6 +203,28 @@ const IntegrationsPage: React.FC = () => {
           </p>
         </div>
 
+        {!subscribed && (
+          <div className="integrations-page__plan-banner" role="note">
+            <div>
+              <strong>Integrations are part of a PMU Forms subscription.</strong>
+              <p>
+                Subscribe to connect Square, bring bookings in automatically and
+                take deposits from clients.
+                {Object.values(statuses).some((s) => s?.status === "connected")
+                  ? " You can still disconnect a tool you connected before."
+                  : ""}
+              </p>
+            </div>
+            <button
+              type="button"
+              className="integrations-page__connect-btn"
+              onClick={() => setShowPlans(true)}
+            >
+              See plans
+            </button>
+          </div>
+        )}
+
         <h2 className="integrations-page__section-title">
           Available integrations
         </h2>
@@ -199,7 +232,9 @@ const IntegrationsPage: React.FC = () => {
         <div className="integrations-page__grid">
           {integrations.map((integration) => {
             const canManage =
-              isConnected(integration) && Boolean(integration.mappingPath);
+              subscribed &&
+              isConnected(integration) &&
+              Boolean(integration.mappingPath);
 
             return (
               <div
@@ -254,6 +289,7 @@ const IntegrationsPage: React.FC = () => {
                         </p>
                       )}
                     {integration.id === "square" &&
+                      subscribed &&
                       isConnected(integration) &&
                       statuses[integration.provider]?.paymentsEnabled ===
                         false && (
@@ -337,6 +373,7 @@ const IntegrationsPage: React.FC = () => {
           })}
         </div>
       </div>
+      {showPlans && <SubscriptionModal onClose={() => setShowPlans(false)} />}
     </div>
   );
 };

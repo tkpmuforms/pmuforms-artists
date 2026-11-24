@@ -14,6 +14,9 @@ import {
   SquareMappingRequest,
 } from "../../services/artistServices";
 import "./square-services-mapping.scss";
+import "../../components/inventoryComp/inventory.scss";
+import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
+import { isArtistSubscribed } from "../../utils/subscriptionUtils";
 
 // Shape returned by GET /api/integrations/square/services
 // (see pmuforms-api src/integrations/square/square.mapper.ts)
@@ -112,7 +115,7 @@ const formatDuration = (minutes: number) => {
   return parts.join(" ");
 };
 
-const SquareServicesMappingPage: React.FC = () => {
+const SquareServicesMapping: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const registeredServices: Service[] = user?.services || [];
@@ -515,6 +518,35 @@ const SquareServicesMappingPage: React.FC = () => {
         </button>
       </div>
       {renderBody()}
+    </div>
+  );
+};
+
+/** Matching services is part of the paid plan. */
+const SquareServicesMappingPage: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [showPlans, setShowPlans] = useState(false);
+  if (isArtistSubscribed(user)) return <SquareServicesMapping />;
+  return (
+    <div className="square-mapping-page">
+      <div className="inv-card inv-gate">
+        <h2>Match your Square services</h2>
+        <p>
+          Matching your Square services to your PMU Forms services is part of a
+          PMU Forms subscription.
+        </p>
+        <button
+          className="inv-btn inv-btn--primary"
+          onClick={() => setShowPlans(true)}
+        >
+          See plans
+        </button>{" "}
+        <button className="inv-btn" onClick={() => navigate("/integrations")}>
+          Back to Integrations
+        </button>
+      </div>
+      {showPlans && <SubscriptionModal onClose={() => setShowPlans(false)} />}
     </div>
   );
 };

@@ -1,4 +1,11 @@
-import { Copy, ExternalLink, Mail, Plus, RefreshCw, XCircle } from "lucide-react";
+import {
+  Copy,
+  ExternalLink,
+  Mail,
+  Plus,
+  RefreshCw,
+  XCircle,
+} from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -23,6 +30,9 @@ import {
 import { newRequestId } from "../../services/inventoryServices";
 import { formatWhen } from "../../utils/inventory";
 import { getApiErrorMessage } from "../../utils/formLinks";
+import useAuth from "../../context/useAuth";
+import { isArtistSubscribed } from "../../utils/subscriptionUtils";
+import SubscriptionModal from "../dashboardComp/SubScriptionModal";
 
 const STATUS: Record<
   PaymentRequestStatus,
@@ -48,11 +58,18 @@ interface Props {
  * Square payment links for one appointment. Only shown to artists who have
  * Square connected; taking payments needs Square.
  */
-const AppointmentPayments: React.FC<Props> = ({ appointmentId, clientName }) => {
+const AppointmentPayments: React.FC<Props> = ({
+  appointmentId,
+  clientName,
+}) => {
   const [square, setSquare] = useState<SquarePaymentStatus | null>(null);
   const [requests, setRequests] = useState<PaymentRequest[] | null>(null);
   const [creating, setCreating] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
+  const { user } = useAuth();
+  // requesting payments is part of the paid plan; past requests stay visible
+  const subscribed = isArtistSubscribed(user);
+  const [showPlans, setShowPlans] = useState(false);
 
   const load = useCallback(() => {
     getPaymentRequests(appointmentId)
@@ -151,20 +168,30 @@ const AppointmentPayments: React.FC<Props> = ({ appointmentId, clientName }) => 
             account{square.accountName ? ` (${square.accountName})` : ""}.
           </p>
         </div>
-        <button
-          className="inv-btn inv-btn--primary inv-btn--sm"
-          onClick={() => setCreating(true)}
-        >
-          <Plus size={14} /> Request payment
-        </button>
+        {subscribed ? (
+          <button
+            className="inv-btn inv-btn--primary inv-btn--sm"
+            onClick={() => setCreating(true)}
+          >
+            <Plus size={14} /> Request payment
+          </button>
+        ) : (
+          <button
+            className="inv-btn inv-btn--sm"
+            onClick={() => setShowPlans(true)}
+          >
+            See plans
+          </button>
+        )}
       </div>
 
       {requests === null ? (
         <div className="inv-loading">Loading…</div>
       ) : requests.length === 0 ? (
         <p className="inv-small">
-          No payment requests yet. Send {clientName.split(" ")[0] || "your client"}{" "}
-          a link to pay a deposit or the balance.
+          {subscribed
+            ? `No payment requests yet. Send ${clientName.split(" ")[0] || "your client"} a link to pay a deposit or the balance.`
+            : "Requesting deposits and payments is part of a PMU Forms subscription."}
         </p>
       ) : (
         <ul className="appointment-payments__list">
@@ -205,20 +232,22 @@ const AppointmentPayments: React.FC<Props> = ({ appointmentId, clientName }) => 
                 )}
                 {r.status === "pending" && (
                   <>
-                    <button
-                      className="inv-btn inv-btn--sm"
-                      disabled={busy === r.id}
-                      onClick={() =>
-                        run(
-                          r.id,
-                          () => resendPaymentRequest(r.id),
-                          (u) => `Link emailed to ${u.sentTo}`,
-                          "Couldn't email the link.",
-                        )
-                      }
-                    >
-                      <Mail size={14} /> Email again
-                    </button>
+                    {subscribed && (
+                      <button
+                        className="inv-btn inv-btn--sm"
+                        disabled={busy === r.id}
+                        onClick={() =>
+                          run(
+                            r.id,
+                            () => resendPaymentRequest(r.id),
+                            (u) => `Link emailed to ${u.sentTo}`,
+                            "Couldn't email the link.",
+                          )
+                        }
+                      >
+                        <Mail size={14} /> Email again
+                      </button>
+                    )}
                     <button
                       className="inv-btn inv-btn--sm"
                       disabled={busy === r.id}
@@ -263,7 +292,8 @@ const AppointmentPayments: React.FC<Props> = ({ appointmentId, clientName }) => 
         </ul>
       )}
 
-      {creating && (
+      {showPlans && <SubscriptionModal onClose={() => setShowPlans(false)} />}
+      {creating && subscribed && (
         <RequestPaymentModal
           appointmentId={appointmentId}
           clientName={clientName}
@@ -350,7 +380,11 @@ export const RequestPaymentModal: React.FC<{
             onClick={submit}
             disabled={saving}
           >
-            {saving ? "Creating…" : sendEmail ? "Create & email link" : "Create link"}
+            {saving
+              ? "Creating…"
+              : sendEmail
+                ? "Create & email link"
+                : "Create link"}
           </button>
         </>
       }

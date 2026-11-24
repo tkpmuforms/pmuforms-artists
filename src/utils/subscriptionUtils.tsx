@@ -94,3 +94,11 @@ export const getPlanName = (
 export const isSubscriptionActive = (status: string): boolean => {
   return ["active", "trialing"].includes(status.toLowerCase());
 };
+
+/** whether the artist has a paid plan, from the web (Stripe) or the app stores */
+export const isArtistSubscribed = (
+  user?: {
+    appStorePurchaseActive?: boolean;
+    stripeSubscriptionActive?: boolean;
+  } | null,
+): boolean => !!(user?.appStorePurchaseActive || user?.stripeSubscriptionActive);

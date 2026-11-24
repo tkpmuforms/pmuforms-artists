@@ -19,6 +19,11 @@ vi.mock("../../services/paymentServices", async (importOriginal) => {
   };
 });
 vi.mock("react-hot-toast", () => ({ default: { success: vi.fn(), error: vi.fn() } }));
+let mockUser: { stripeSubscriptionActive?: boolean } = { stripeSubscriptionActive: true };
+vi.mock("../../context/useAuth", () => ({ default: () => ({ user: mockUser }) }));
+vi.mock("../dashboardComp/SubScriptionModal", () => ({
+  default: () => <p>Plans</p>,
+}));
 
 const mocked = vi.mocked(api);
 const ok = <T,>(data: T) => Promise.resolve({ data }) as never;
@@ -65,6 +70,7 @@ const renderSection = () =>
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockUser = { stripeSubscriptionActive: true };
   mocked.getPaymentRequests.mockReturnValue(ok({ requests: [] }));
 });
 
@@ -225,5 +231,21 @@ describe("Appointment payments", () => {
     fireEvent.change(screen.getByLabelText("Amount (USD)"), { target: { value: "0.50" } });
     fireEvent.click(screen.getByRole("button", { name: "Create & email link" }));
     expect(await screen.findByText("Amount must be at least 100 cents")).toBeInTheDocument();
+  });
+
+  it("without a subscription, shows past requests but can't send new ones", async () => {
+    mockUser = { stripeSubscriptionActive: false };
+    mocked.getSquarePaymentStatus.mockReturnValue(ok(status()));
+    mocked.getPaymentRequests.mockReturnValue(ok({ requests: [request()] }));
+    renderSection();
+
+    // past requests still load and can be checked
+    expect(await screen.findByRole("button", { name: /Check status/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Request payment/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Email again/ })).toBeNull();
+    // still able to check on or turn off a link already sent
+    expect(screen.getByRole("button", { name: /Copy link/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "See plans" }));
+    expect(screen.getByText("Plans")).toBeInTheDocument();
   });
 });
