@@ -1,0 +1,101 @@
+// the ⋯ menu on appointment cards (AppointmentActionsMenu)
+.appt-actions {
+  position: relative;
+  margin-left: 12px;
+  flex-shrink: 0;
+  text-align: left;
+
+  .dropdown-trigger {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 6px;
+    color: #6b7280;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+      color: #374151;
+    }
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    padding: 4px 0;
+    min-width: 140px;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: all 0.2s ease;
+
+    .dropdown-divider {
+      height: 1px;
+      margin: 4px 0;
+      background: #e5e7eb;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px 16px;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #374151;
+      white-space: nowrap;
+      transition: background-color 0.15s;
+
+      &:hover {
+        background-color: #f3f4f6;
+      }
+
+      &.complete-option {
+        color: #15803d;
+
+        &:hover:not(:disabled) {
+          background-color: #f0fdf4;
+        }
+
+        &:disabled {
+          color: #9ca3af;
+          cursor: not-allowed;
+
+          &:hover {
+            background: none;
+          }
+        }
+      }
+
+      &.delete-option {
+        color: #dc2626;
+
+        &:hover {
+          background-color: #fef2f2;
+        }
+      }
+    }
+  }
+
+  // focus-within also opens it for keyboard and tap
+  &:hover .dropdown-menu,
+  &:focus-within .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}

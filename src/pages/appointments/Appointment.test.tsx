@@ -10,6 +10,11 @@ vi.mock("../../services/artistServices", async (importOriginal) => ({
   ...(await importOriginal<typeof artistApi>()),
   getArtistAppointmentsPaginated: vi.fn(),
   getCustomerById: vi.fn(),
+  DeleteAppointment: vi.fn(),
+}));
+vi.mock("../../services/paymentServices", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../services/paymentServices")>()),
+  getSquarePaymentStatus: vi.fn(() => Promise.reject(new Error("no Square"))),
 }));
 vi.mock("react-hot-toast", () => ({
   default: { success: vi.fn(), error: vi.fn() },
@@ -223,5 +228,47 @@ describe("Appointments page", () => {
     expect(screen.getByTestId("forms-page")).toHaveTextContent(
       "/clients/c2/appointments/a2/forms for Bea Lee",
     );
+  });
+
+  it("has the same ⋯ actions as the client's appointments", async () => {
+    mocked.getArtistAppointmentsPaginated.mockResolvedValue(
+      reply([appointment({ id: "a1" }), appointment({ id: "a2", signed: true })], 2),
+    );
+    mocked.DeleteAppointment.mockResolvedValue({} as never);
+    const user = userEvent.setup();
+    renderPage();
+
+    const menus = await screen.findAllByRole("button", {
+      name: "Actions for Ada Obi's appointment",
+    });
+    expect(menus).toHaveLength(2);
+    const first = menus[0].parentElement as HTMLElement;
+    for (const action of [
+      "View Forms",
+      "Share consent form link",
+      "Send pre-care instructions",
+      "Send aftercare instructions",
+      "Send healing check-in",
+      "Add products used",
+      "Mark as complete",
+      "Delete",
+    ]) {
+      expect(within(first).getByRole("button", { name: action })).toBeInTheDocument();
+    }
+    // a signed appointment can't be sent the forms again
+    const second = menus[1].parentElement as HTMLElement;
+    expect(within(second).queryByRole("button", { name: "Share consent form link" })).toBeNull();
+
+    await user.click(within(first).getByRole("button", { name: "Delete" }));
+    await user.click(
+      within(
+        document.querySelector(".delete-client-confirm-modal") as HTMLElement,
+      ).getByRole("button", { name: "Delete" }),
+    );
+    await waitFor(() => expect(screen.getAllByRole("button", {
+      name: "Actions for Ada Obi's appointment",
+    })).toHaveLength(1));
+    expect(mocked.DeleteAppointment).toHaveBeenCalledWith("a1");
+    expect(screen.getByText("Total: 1 appointment")).toBeInTheDocument();
   });
 });

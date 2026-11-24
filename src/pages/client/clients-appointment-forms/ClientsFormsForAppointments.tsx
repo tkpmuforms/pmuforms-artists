@@ -13,6 +13,7 @@ import ClientFormsCard from "../../../components/clientsComp/filled-forms/Client
 import "./appointment-forms-page.scss";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import AppointmentPayments from "../../../components/payments/AppointmentPayments";
+import AppointmentProducts from "../../../components/inventoryComp/AppointmentProducts";
 import { formServices, isFormFilled } from "../../../utils/appointmentForms";
 import { formatAppointmentTime } from "../../../utils/utils";
 
@@ -25,7 +26,7 @@ const ClientsFormsForAppointments: React.FC = () => {
   // loaded fresh so a just-signed appointment never shows "Sign" again
   const [appointment, setAppointment] = useState<Pick<
     Appointment,
-    "signed" | "allFormsCompleted" | "date" | "serviceDetails"
+    "signed" | "allFormsCompleted" | "date" | "serviceDetails" | "completedAt"
   > | null>(null);
   const navigate = useNavigate();
 
@@ -186,6 +187,15 @@ const ClientsFormsForAppointments: React.FC = () => {
               />
             ))}
           </div>
+        )}
+
+        {appointmentId && (
+          <AppointmentProducts
+            appointmentId={appointmentId}
+            clientName={clientName}
+            services={services}
+            completed={!!appointment?.completedAt}
+          />
         )}
 
         {appointmentId && (

@@ -5,6 +5,8 @@ import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
+import AppointmentActionsMenu from "../../components/clientsComp/appointments/AppointmentActionsMenu";
+import { useAppointmentActions } from "../../components/clientsComp/appointments/useAppointmentActions";
 import { LoadingSmall } from "../../components/loading/Loading";
 import useAuth from "../../context/useAuth";
 import {
@@ -105,6 +107,20 @@ const Appointment: React.FC = () => {
   // only the newest request may show its results
   const requestId = useRef(0);
 
+  // the same ⋯ menu as the client's appointments
+  const { handlersFor, modals } = useAppointmentActions({
+    onDeleted: (appointmentId) => {
+      setAppointments((prev) => prev.filter((apt) => apt.id !== appointmentId));
+      setMetadata((prev) => ({ ...prev, total: Math.max(0, prev.total - 1) }));
+    },
+    onCompleted: (appointmentId, completedAt) =>
+      setAppointments((prev) =>
+        prev.map((apt) =>
+          apt.id === appointmentId ? { ...apt, completedAt } : apt,
+        ),
+      ),
+  });
+
   const update = (changes: Record<string, string>, keepPage = false) => {
     setParams(
       (prev) => {
@@ -204,6 +220,19 @@ const Appointment: React.FC = () => {
       update({ page: String(page) }, true);
     }
   };
+
+  const openForms = (appointment: AppointmentType) =>
+    navigate(
+      `/clients/${appointment.customerId}/appointments/${appointment.id}/forms`,
+      {
+        // a real name saves the forms page a lookup
+        state: {
+          clientName:
+            appointment.customer?.info?.client_name ||
+            customers[appointment.customerId]?.name,
+        },
+      },
+    );
 
   const nameOf = (appointment: AppointmentType) =>
     appointment.customer?.info?.client_name ||
@@ -382,18 +411,19 @@ const Appointment: React.FC = () => {
                     (s) => s.service,
                   )}
                   status={statusOf(appointment)}
-                  onViewForms={() =>
-                    navigate(
-                      `/clients/${appointment.customerId}/appointments/${appointment.id}/forms`,
-                      {
-                        // a real name saves the forms page a lookup
-                        state: {
-                          clientName:
-                            appointment.customer?.info?.client_name ||
-                            customers[appointment.customerId]?.name,
-                        },
-                      },
-                    )
+                  onViewForms={() => openForms(appointment)}
+                  actions={
+                    <AppointmentActionsMenu
+                      signed={appointment.signed}
+                      completedAt={appointment.completedAt}
+                      label={`${nameOf(appointment)}'s appointment`}
+                      onViewForms={() => openForms(appointment)}
+                      {...handlersFor({
+                        appointmentId: appointment.id,
+                        clientName: nameOf(appointment),
+                        services: appointment.serviceDetails,
+                      })}
+                    />
                   }
                 />
               ))}
@@ -402,6 +432,7 @@ const Appointment: React.FC = () => {
           </>
         )}
       </div>
+      {modals}
     </div>
   );
 };

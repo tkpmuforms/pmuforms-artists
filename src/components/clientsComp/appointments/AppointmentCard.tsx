@@ -1,18 +1,4 @@
-import {
-  MessageCircleHeart,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  CreditCard,
-  ExternalLink,
-  FileText,
-  HeartPulse,
-  Link2,
-  MoreVertical,
-  PenLine,
-  Send,
-  Trash2,
-} from "lucide-react";
+import { Calendar, CheckCircle2, Clock, PenLine } from "lucide-react";
 import type React from "react";
 import {
   AppointmentSvg,
@@ -22,6 +8,9 @@ import {
 import { ClientAppointmentData } from "../../../redux/types";
 import { formatAppointmentTime } from "../../../utils/utils";
 import "./appointment-card.scss";
+import AppointmentActionsMenu, { type CareAction } from "./AppointmentActionsMenu";
+
+export type { CareAction };
 
 interface AppointmentCardProps {
   appointment: ClientAppointmentData;
@@ -32,9 +21,8 @@ interface AppointmentCardProps {
   onCareAction?: (appointmentId: string, action: CareAction) => void;
   /** Only passed when the artist has Square connected (payments need Square). */
   onRequestPayment?: (appointmentId: string) => void;
+  onAddProducts?: (appointmentId: string) => void;
 }
-
-export type CareAction = "complete" | "pre-care" | "aftercare" | "check-in";
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({
   appointment,
@@ -44,6 +32,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   onStartFilling,
   onCareAction,
   onRequestPayment,
+  onAddProducts,
 }) => {
   const primaryService = appointment.serviceDetails?.[0];
   const serviceName = primaryService?.service || "Unknown Service";
@@ -90,78 +79,24 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
             )}
           </div>
         </div>
-        {/* menu clicks must not also trigger the card's own click */}
-        <div className="dropdown" onClick={(e) => e.stopPropagation()}>
-          <button className="dropdown-trigger" aria-label="Appointment actions">
-            <MoreVertical size={16} />
-          </button>
-          <div className="dropdown-menu">
-            <button onClick={() => onViewForms(appointment.id)}>
-              <FileText size={16} />
-              View Forms
-            </button>
-            {/* signed appointments can't take new answers */}
-            {!appointment.signed && onShareFormLink && (
-              <button onClick={() => onShareFormLink(appointment.id)}>
-                <Link2 size={16} />
-                Share consent form link
-              </button>
-            )}
-            {!appointment.signed && onStartFilling && (
-              <button onClick={() => onStartFilling(appointment.id)}>
-                <ExternalLink size={16} />
-                Share consent forms
-              </button>
-            )}
-            {onCareAction && (
-              <button onClick={() => onCareAction(appointment.id, "pre-care")}>
-                <Send size={16} />
-                Send pre-care instructions
-              </button>
-            )}
-            {onCareAction && (
-              <button onClick={() => onCareAction(appointment.id, "aftercare")}>
-                <HeartPulse size={16} />
-                Send aftercare instructions
-              </button>
-            )}
-            {onCareAction && (
-              <button onClick={() => onCareAction(appointment.id, "check-in")}>
-                <MessageCircleHeart size={16} />
-                Send healing check-in
-              </button>
-            )}
-            {onRequestPayment && (
-              <button onClick={() => onRequestPayment(appointment.id)}>
-                <CreditCard size={16} />
-                Request payment
-              </button>
-            )}
-            {/* actions that end the appointment, set apart at the bottom */}
-            <div className="dropdown-divider" role="separator" />
-            {onCareAction && !appointment.completedAt && (
-              <button
-                onClick={() => onCareAction(appointment.id, "complete")}
-                className="complete-option"
-                // the procedure comes after the client's forms are signed
-                disabled={!appointment.signed}
-                title={
-                  appointment.signed ? undefined : "Sign the forms first"
-                }
-              >
-                <CheckCircle2 size={16} />
-                Mark as complete
-              </button>
-            )}
-            <button
-              onClick={() => onDeleteAppointment(appointment.id)}
-              className="delete-option"
-            >
-              <Trash2 size={16} />
-              Delete
-            </button>
-          </div>
-        </div>
+        <AppointmentActionsMenu
+          signed={appointment.signed}
+          completedAt={appointment.completedAt}
+          label={`${serviceName} on ${appointmentDate}`}
+          onViewForms={() => onViewForms(appointment.id)}
+          onShareFormLink={
+            onShareFormLink && (() => onShareFormLink(appointment.id))
+          }
+          onStartFilling={onStartFilling && (() => onStartFilling(appointment.id))}
+          onCareAction={
+            onCareAction && ((action) => onCareAction(appointment.id, action))
+          }
+          onRequestPayment={
+            onRequestPayment && (() => onRequestPayment(appointment.id))
+          }
+          onAddProducts={onAddProducts && (() => onAddProducts(appointment.id))}
+          onDelete={() => onDeleteAppointment(appointment.id)}
+        />
       </div>
 
       <div className="appointment-details">

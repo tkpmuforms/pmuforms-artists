@@ -15,6 +15,22 @@
     transform: translateY(-2px);
   }
 
+  // keep an open actions menu above the cards beside and below this one
+  position: relative;
+
+  &:hover,
+  &:focus-within {
+    z-index: 5;
+  }
+
+  &__actions {
+    margin-left: auto;
+
+    .appt-actions {
+      margin-left: 0;
+    }
+  }
+
   &__header {
     display: flex;
     align-items: center;

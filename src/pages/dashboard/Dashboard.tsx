@@ -16,6 +16,8 @@ import {
 } from "../../assets/svgs/DashboardSvg";
 import AddClientModal from "../../components/clientsComp/AddClientModal";
 import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
+import AppointmentActionsMenu from "../../components/clientsComp/appointments/AppointmentActionsMenu";
+import { useAppointmentActions } from "../../components/clientsComp/appointments/useAppointmentActions";
 import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
 import FormLinkModal from "../../components/dashboardComp/FormLinkModal";
 import MetricsCard from "../../components/dashboardComp/MetricsCard";
@@ -170,6 +172,18 @@ const Dashboard: React.FC = () => {
   const getCustomerName = (customerId: string) =>
     customers[customerId]?.name || `Client 1`;
 
+  // the same ⋯ menu as the appointments page
+  const { handlersFor, modals: appointmentModals } = useAppointmentActions({
+    onDeleted: (appointmentId) =>
+      setAppointments((prev) => prev.filter((apt) => apt.id !== appointmentId)),
+    onCompleted: (appointmentId, completedAt) =>
+      setAppointments((prev) =>
+        prev.map((apt) =>
+          apt.id === appointmentId ? { ...apt, completedAt } : apt,
+        ),
+      ),
+  });
+
   const getCustomerAvatar = (customerId: string) => {
     const customerAvatar = customers[customerId]?.avatar;
     if (customerAvatar) return customerAvatar;
@@ -322,28 +336,42 @@ const Dashboard: React.FC = () => {
     if (appointments.length === 0) return <div>No appointments found</div>;
     return appointments
       .slice(0, 4)
-      .map((appointment) => (
-        <AppointmentCard
-          key={appointment.id}
-          name={
-            appointment?.customerId
-              ? getCustomerName(appointment.customerId)
-              : "Unknown Client"
-          }
-          avatar={getCustomerAvatar(appointment.customerId)}
-          time={formatAppointmentTime(appointment.date)}
-          services={(appointment.serviceDetails ?? []).map((s) => s.service)}
-          onViewForms={() =>
-            navigate(
-              `/clients/${appointment.customerId}/appointments/${appointment.id}/forms`,
-              {
-                // a real name saves the forms page a lookup
-                state: { clientName: customers[appointment.customerId]?.name },
-              },
-            )
-          }
-        />
-      ));
+      .map((appointment) => {
+        const name = appointment?.customerId
+          ? getCustomerName(appointment.customerId)
+          : "Unknown Client";
+        const openForms = () =>
+          navigate(
+            `/clients/${appointment.customerId}/appointments/${appointment.id}/forms`,
+            {
+              // a real name saves the forms page a lookup
+              state: { clientName: customers[appointment.customerId]?.name },
+            },
+          );
+        return (
+          <AppointmentCard
+            key={appointment.id}
+            name={name}
+            avatar={getCustomerAvatar(appointment.customerId)}
+            time={formatAppointmentTime(appointment.date)}
+            services={(appointment.serviceDetails ?? []).map((s) => s.service)}
+            onViewForms={openForms}
+            actions={
+              <AppointmentActionsMenu
+                signed={appointment.signed}
+                completedAt={appointment.completedAt}
+                label={`${name}'s appointment`}
+                onViewForms={openForms}
+                {...handlersFor({
+                  appointmentId: appointment.id,
+                  clientName: customers[appointment.customerId]?.name || name,
+                  services: appointment.serviceDetails,
+                })}
+              />
+            }
+          />
+        );
+      });
   };
   const renderRecentForms = () => {
     if (recentForms.length === 0) return <div>No recent forms found</div>;
@@ -570,6 +598,7 @@ const Dashboard: React.FC = () => {
           onSubscribe={handleModalFlow.showSubscription}
         />
       )}
+      {appointmentModals}
     </div>
   );
 };

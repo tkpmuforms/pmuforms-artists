@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import toast from "react-hot-toast";
 import ClientAppointmentPage from "./ClientsAppointment";
 import * as api from "../../../services/artistServices";
 import * as payments from "../../../services/paymentServices";
@@ -26,6 +27,11 @@ vi.mock("../../../services/paymentServices", async (importOriginal) => ({
 }));
 vi.mock("react-hot-toast", () => ({
   default: { error: vi.fn(), success: vi.fn() },
+}));
+let mockUser: { stripeSubscriptionActive?: boolean } = { stripeSubscriptionActive: true };
+vi.mock("../../../context/useAuth", () => ({ default: () => ({ user: mockUser }) }));
+vi.mock("../../../components/dashboardComp/SubScriptionModal", () => ({
+  default: () => <p>Plans</p>,
 }));
 
 const mocked = vi.mocked(api);
@@ -252,5 +258,62 @@ describe("ClientAppointmentPage: mark as complete", () => {
     await waitFor(() => expect(screen.getByText("Completed")).toBeInTheDocument());
     // everything happened in that one step
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+});
+
+describe("ClientAppointmentPage: the ⋯ menu", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUser = { stripeSubscriptionActive: true };
+    oneAppointment();
+    mockedPayments.getSquarePaymentStatus.mockResolvedValue(squareStatus());
+  });
+
+  it("shows plans instead of the payment form without a subscription", async () => {
+    mockUser = {};
+    const user = userEvent.setup();
+    renderPage();
+
+    await waitFor(async () => expect(await menuButton("Request payment")).not.toBeNull());
+    await user.click((await menuButton("Request payment"))!);
+    expect(screen.getByText("Plans")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("says why when an appointment can't be deleted", async () => {
+    mocked.DeleteAppointment.mockRejectedValue({
+      message: "This appointment has products recorded on it.",
+    });
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click((await menuButton("Delete"))!);
+    await user.click(
+      within(
+        document.querySelector(".delete-client-confirm-modal") as HTMLElement,
+      ).getByRole("button", { name: "Delete" }),
+    );
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        "This appointment has products recorded on it.",
+      ),
+    );
+    // still listed
+    expect(screen.getByText("Microblading")).toBeInTheDocument();
+  });
+
+  it("removes the card once deleted", async () => {
+    mocked.DeleteAppointment.mockResolvedValue({} as never);
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click((await menuButton("Delete"))!);
+    await user.click(
+      within(
+        document.querySelector(".delete-client-confirm-modal") as HTMLElement,
+      ).getByRole("button", { name: "Delete" }),
+    );
+    await waitFor(() => expect(screen.queryByText("Microblading")).toBeNull());
+    expect(mocked.DeleteAppointment).toHaveBeenCalledWith("appt-1");
   });
 });

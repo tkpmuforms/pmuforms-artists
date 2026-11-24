@@ -16,6 +16,8 @@ interface AppointmentCardProps {
   onViewForms?: () => void;
   /** e.g. Forms pending, on the appointments page */
   status?: { label: string; tone: "pending" | "signed" | "completed" };
+  /** the ⋯ actions menu, top right */
+  actions?: React.ReactNode;
 }
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({
@@ -25,6 +27,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   services = [],
   onViewForms,
   status,
+  actions,
 }) => {
   const names = services.filter(Boolean);
   return (
@@ -34,6 +37,9 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           <img src={avatar || "/placeholder.svg"} alt={`${name}'s avatar`} />
         </div>
         <h3 className="appointment-card-dashboard__name">{name}</h3>
+        {actions && (
+          <div className="appointment-card-dashboard__actions">{actions}</div>
+        )}
       </div>
 
       {status && (

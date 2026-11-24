@@ -634,3 +634,64 @@ export const newRequestId = () =>
     : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
         (Number(c) ^ (Math.random() * 16) >> (Number(c) / 4)).toString(16),
       );
+
+// ------------------------------------------------- products used on clients
+
+/** A product used on a client at an appointment, as it was at the time. */
+export interface ProductUsage {
+  id: string;
+  appointmentId: string;
+  customerId: string;
+  productId: string;
+  batchId: string;
+  serviceId: number | null;
+  quantity: string;
+  unit: string;
+  usedAt: string;
+  providerId: string;
+  performedBy: string;
+  status: "pending" | "active" | "reversed" | "failed";
+  reversal: { at: string; by: string; reason: string | null } | null;
+  snapshot: {
+    productName: string;
+    brand?: string;
+    sku?: string;
+    manufacturerName?: string;
+    categoryName?: string;
+    lotNumber: string;
+    expirationDate: string;
+    serviceName?: string;
+  };
+  notes: string | null;
+}
+
+/** A batch of a product, and whether it can be used on a client right now. */
+export interface BatchForUse extends Batch {
+  usable: boolean;
+}
+
+export interface RecordUsageInput {
+  requestId: string;
+  batchId: string;
+  quantity: string;
+  serviceId?: number;
+  notes?: string;
+}
+
+export const getAppointmentUsages = (appointmentId: string) =>
+  axiosInstance.get<{ usages: ProductUsage[] }>(
+    `${BASE}/appointments/${appointmentId}/usages`,
+  );
+export const recordUsage = (appointmentId: string, data: RecordUsageInput) =>
+  axiosInstance.post<{ usage: ProductUsage }>(
+    `${BASE}/appointments/${appointmentId}/usages`,
+    data,
+  );
+export const reverseUsage = (usageId: string, reason?: string) =>
+  axiosInstance.post<{ usage: ProductUsage }>(`${BASE}/usages/${usageId}/reverse`, {
+    reason: reason?.trim() || undefined,
+  });
+export const getBatchesForUse = (productId: string) =>
+  axiosInstance.get<{ batches: BatchForUse[] }>(
+    `${BASE}/products/${productId}/batches-for-use`,
+  );
