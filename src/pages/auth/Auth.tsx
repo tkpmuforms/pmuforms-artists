@@ -25,8 +25,6 @@ type SignupStep = "email" | "password" | "verification";
 
 const Auth: React.FC = () => {
   const [page, setPage] = useState<AuthPage>("login");
-  const fromApp = new URLSearchParams(window.location.search).get("from") === "app";
-  const [showMobileAuth, setShowMobileAuth] = useState(fromApp);
   const [isMobile, setIsMobile] = useState(false);
   const [signupStep, setSignupStep] = useState<SignupStep>("email");
   const [signupEmail, setSignupEmail] = useState<string>("");
@@ -70,10 +68,6 @@ const Auth: React.FC = () => {
     setSignupEmail("");
   };
 
-  const handleGetStarted = () => {
-    setShowMobileAuth(true);
-  };
-
   const shouldHideSlider = () => {
     if (page === "login") return false;
     return ["password", "verification", "business", "services"].includes(
@@ -100,21 +94,11 @@ const Auth: React.FC = () => {
 
   if (isMobile) {
     return (
-      <>
+      <div className="auth-page">
         <Navbar />
         <div className="auth-main-container mobile">
-          {!showMobileAuth ? (
-            <div className="mobile-slider-view">
-              <div className="auth-slider-section">
-                <ImageSlider />
-              </div>
-
-              <button className="get-started-button" onClick={handleGetStarted}>
-                Get Started
-              </button>
-            </div>
-          ) : (
-            <div
+          {/* phones go straight to the form: no intro slides to tap through */}
+          <div
               className={`mobile-auth-view ${
                 shouldHideSlider() ? "full-screen-step" : ""
               }`}
@@ -205,14 +189,13 @@ const Auth: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
         </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <div style={{ width: "100%", backgroundColor: "#f8f9fa" }}>
+    <div className="auth-page">
       <Navbar />
       <div
         className={`auth-main-container desktop ${
