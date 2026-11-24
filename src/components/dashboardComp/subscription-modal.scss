@@ -385,6 +385,13 @@
     font-size: 12px;
     margin: 12px 0 0 0;
   }
+
+  &__code-hint {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 13px;
+    margin: 10px 0 0 0;
+  }
 }
 
 /* Alt monthly plan */

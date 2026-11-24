@@ -34,6 +34,8 @@ interface SelectPaymentMethodModalProps {
   onClose: () => void;
   priceId?: string;
   planAmount?: number;
+  /** for analytics; worked out from the price id when not given */
+  planName?: "monthly" | "yearly";
   onPaymentSuccess?: () => void;
   hasActiveSubscription?: boolean;
 }
@@ -43,6 +45,7 @@ const SelectPaymentMethodModal = ({
   onClose,
   priceId,
   planAmount,
+  planName,
   onPaymentSuccess,
   hasActiveSubscription = false,
 }: SelectPaymentMethodModalProps) => {
@@ -143,9 +146,14 @@ const SelectPaymentMethodModal = ({
       const amountOff = couponDetails?.amount_off;
       const name = couponDetails?.name || trimmed;
 
+      // "once" coupons only take money off the first payment
+      const firstOnly = couponDetails?.duration === "once";
+      const first = firstOnly ? " your first payment" : "";
       let description = name;
-      if (percentOff) description = `${name} — ${percentOff}% off`;
-      else if (amountOff) description = `${name} — $${(amountOff / 100).toFixed(2)} off`;
+      if (percentOff) description = `${name} — ${percentOff}% off${first}`;
+      else if (amountOff) {
+        description = `${name} — $${(amountOff / 100).toFixed(2)} off${first}`;
+      }
 
       setAppliedCoupon({ code: trimmed, description, percentOff, amountOff });
       setCouponCode("");
@@ -193,11 +201,12 @@ const SelectPaymentMethodModal = ({
         const response = await createSubscription(priceId, selectedCard, coupon);
         toast.success("Payment successful! Subscription activated.");
         trackPurchase(
-          priceId === import.meta.env.VITE_YEARLY_PRICE_ID
-            ? "yearly"
-            : priceId === import.meta.env.VITE_MONTHLY_PRICE_ID
-              ? "monthly"
-              : "other",
+          planName ??
+            (priceId === import.meta.env.VITE_YEARLY_PRICE_ID
+              ? "yearly"
+              : priceId === import.meta.env.VITE_MONTHLY_PRICE_ID
+                ? "monthly"
+                : "other"),
           planAmount ?? 0,
         );
 
@@ -338,7 +347,7 @@ const SelectPaymentMethodModal = ({
                     ? appliedCoupon.amountOff / 100
                     : null;
                 if (savings == null) return null;
-                const newTotal = planAmount - savings;
+                const newTotal = Math.max(0, planAmount - savings);
                 return (
                   <div className="coupon-applied__savings">
                     <span className="coupon-applied__original">${planAmount.toFixed(2)}</span>

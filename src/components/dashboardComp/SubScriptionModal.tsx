@@ -5,6 +5,7 @@ import { X, Check, Star } from "lucide-react";
 import { useState } from "react";
 import "./subscription-modal.scss";
 import SelectPaymentMethodModal from "../payment/SelectPaymentMethodModal";
+import { useSubscriptionPlans } from "../../utils/subscriptionPlans";
 
 interface SubscriptionModalProps {
   onClose: () => void;
@@ -18,7 +19,7 @@ const features = [
   "Digital signatures",
   "Secure cloud storage",
   "Instant PDF export",
-  "HIPAA compliant",
+  "Pre-care & aftercare emails",
 ];
 
 const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
@@ -30,17 +31,21 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
 
-  const monthlyPrice = Number(import.meta.env.VITE_MONTHLY_PRICE);
-  const yearlyPrice = Number(import.meta.env.VITE_YEARLY_PRICE);
+  const { plans, loading: plansLoading } = useSubscriptionPlans();
+  const monthlyPrice = plans?.monthly?.amount;
+  const yearlyPrice = plans?.yearly?.amount;
+  const monthlyPriceId = plans?.monthly?.priceId ?? "";
+  const yearlyPriceId = plans?.yearly?.priceId ?? "";
 
-  const yearlyPricePerWeek = yearlyPrice / 52;
-  const monthlyPricePerWeek = monthlyPrice / 4.33;
+  const yearlyPricePerWeek = yearlyPrice ? yearlyPrice / 52 : null;
+  const monthlyPricePerWeek = monthlyPrice ? monthlyPrice / 4.33 : null;
 
   const yearlyDiscount =
-    ((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100;
-
-  const yearlyPriceId = import.meta.env.VITE_YEARLY_PRICE_ID;
-  const monthlyPriceId = import.meta.env.VITE_MONTHLY_PRICE_ID;
+    monthlyPrice && yearlyPrice
+      ? ((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100
+      : 0;
+  const money = (value?: number | null) =>
+    value == null ? "…" : `$${value.toFixed(2).replace(/\.00$/, "")}`;
 
   const handleSubscribeClick = (priceId: string) => {
     setSelectedPriceId(priceId);
@@ -55,9 +60,9 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
     onClose();
   };
 
-  const isCurrentPlan = (priceId: string) => {
-    return currentPriceId === priceId;
-  };
+  // a missing plan id is never the artist's plan
+  const isCurrentPlan = (priceId: string) =>
+    !!priceId && !!currentPriceId && currentPriceId === priceId;
 
   const getButtonText = (planName: string, priceId: string) => {
     if (isCurrentPlan(priceId)) return "Current Plan";
@@ -94,7 +99,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             <div className="featured-plan">
               <div className="featured-plan__badges">
                 <span className="featured-plan__badge featured-plan__badge--popular">
-                  Overly Picked
+                  Most Popular
                 </span>
               </div>
 
@@ -103,11 +108,17 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               )}
 
               <div className="featured-plan__price-row">
-                <span className="featured-plan__amount">${monthlyPrice}</span>
+                <span className="featured-plan__amount">
+                  {money(monthlyPrice)}
+                </span>
                 <span className="featured-plan__period">/month</span>
               </div>
               <div className="featured-plan__subtitle">
-                Only ${monthlyPricePerWeek.toFixed(2)}/week
+                {monthlyPricePerWeek
+                  ? `Only ${money(monthlyPricePerWeek)}/week`
+                  : plansLoading
+                    ? "Loading prices…"
+                    : "Prices are unavailable right now. Please try again shortly."}
               </div>
 
               <ul className="featured-plan__features">
@@ -122,13 +133,20 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               <button
                 className="featured-plan__cta"
                 onClick={() =>
+                  monthlyPriceId &&
                   !isCurrentPlan(monthlyPriceId) &&
                   handleSubscribeClick(monthlyPriceId)
                 }
-                disabled={isCurrentPlan(monthlyPriceId)}
+                disabled={!monthlyPriceId || isCurrentPlan(monthlyPriceId)}
               >
                 {getButtonText("monthly", monthlyPriceId)}
               </button>
+
+              {!currentPriceId && (
+                <p className="featured-plan__code-hint">
+                  Have a discount code? You can add it on the next step.
+                </p>
+              )}
 
               <p className="featured-plan__guarantee">
                 Cancel anytime &middot; 7-day money-back guarantee
@@ -136,6 +154,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             </div>
           </div>
 
+          {yearlyPriceId && (
           <div className="subscription-modal__alt-plan">
             <div
               className={`alt-plan ${
@@ -154,14 +173,16 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                   <span className="featured-plan__badge featured-plan__badge--value">
                     Best Value
                   </span>
-                  <span className="featured-plan__badge featured-plan__badge--save">
-                    Save {Math.round(yearlyDiscount)}%
-                  </span>
+                  {yearlyDiscount > 0 && (
+                    <span className="featured-plan__badge featured-plan__badge--save">
+                      Save {Math.round(yearlyDiscount)}%
+                    </span>
+                  )}
                 </div>
                 <span className="alt-plan__name">Yearly</span>
-                <span className="alt-plan__price">${yearlyPrice}/year</span>
+                <span className="alt-plan__price">{money(yearlyPrice)}/year</span>
                 <span className="alt-plan__weekly">
-                  (${yearlyPricePerWeek.toFixed(2)}/week)
+                  ({money(yearlyPricePerWeek)}/week)
                 </span>
               </div>
               {isCurrentPlan(yearlyPriceId) ? (
@@ -173,6 +194,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               )}
             </div>
           </div>
+          )}
 
           <div className="subscription-modal__testimonial">
             <div className="testimonial">
@@ -204,6 +226,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           onClose={() => setShowPaymentModal(false)}
           priceId={selectedPriceId}
           planAmount={selectedPriceId === yearlyPriceId ? yearlyPrice : monthlyPrice}
+          planName={selectedPriceId === yearlyPriceId ? "yearly" : "monthly"}
           onPaymentSuccess={handlePaymentSuccess}
           hasActiveSubscription={!!currentPriceId}
         />

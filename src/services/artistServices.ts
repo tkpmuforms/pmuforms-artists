@@ -372,6 +372,22 @@ export const getAppointmentById = async (appointmentId: string) =>
 export const updateMySignature = async (data: { signature_url: string }) =>
   axiosInstance.patch("/api/artists/update-signature", data);
 
+export interface SubscriptionPlan {
+  priceId: string;
+  /** in dollars, e.g. 19.99 */
+  amount: number;
+  currency: string;
+}
+
+export interface SubscriptionPlans {
+  monthly: SubscriptionPlan | null;
+  yearly: SubscriptionPlan | null;
+}
+
+/** the monthly and yearly web plans, as set up in Stripe */
+export const getSubscriptionPlans = async () =>
+  axiosInstance.get<SubscriptionPlans>("/api/subscriptions/stripe/plans");
+
 export const validateCoupon = async (couponCode: string) => {
   return axiosInstance.post("/api/subscriptions/stripe/validate-coupon", {
     couponCode,

@@ -148,7 +148,7 @@ const CardForm = ({ onClose, onCardAdded }: AddCardModalProps) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="billingAddress">Billing Address (Optional)</label>
+            <label htmlFor="billingAddress">Billing Address</label>
             <input
               type="text"
               id="billingAddress"
@@ -156,11 +156,12 @@ const CardForm = ({ onClose, onCardAdded }: AddCardModalProps) => {
               placeholder="Enter your billing address"
               value={formData.billingAddress}
               onChange={handleChange}
+              required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="postalCode">Zip Code (Optional)</label>
+            <label htmlFor="postalCode">Zip Code</label>
             <input
               type="text"
               id="postalCode"
@@ -168,6 +169,7 @@ const CardForm = ({ onClose, onCardAdded }: AddCardModalProps) => {
               placeholder="Enter Zip code"
               value={formData.postalCode}
               onChange={handleChange}
+              required
             />
           </div>
 
