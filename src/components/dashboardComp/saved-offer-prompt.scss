@@ -1,0 +1,25 @@
+// a discount code from a link or QR code, waiting to be used
+.saved-offer-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #f4eaf4;
+  border: 1px solid #8e2d8e33;
+  color: #4a1d4a;
+  font-size: 14px;
+
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    background: #8e2d8e;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}

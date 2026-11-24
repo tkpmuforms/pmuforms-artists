@@ -72,7 +72,7 @@ describe("Subscription pop-up", () => {
     expect(screen.getByText("Most Popular")).toBeInTheDocument();
     expect(screen.queryByText(/HIPAA/i)).toBeNull();
     expect(
-      screen.getByText("Have a discount code? You can add it on the next step."),
+      screen.getByText("Have a discount or referral code? You can add it on the next step."),
     ).toBeInTheDocument();
   });
 
@@ -101,7 +101,7 @@ describe("Subscription pop-up", () => {
     render(<SubscriptionModal onClose={vi.fn()} />);
 
     await user.click(await screen.findByRole("button", { name: "Subscribe" }));
-    await user.type(await screen.findByPlaceholderText("Coupon code"), "glowacademy");
+    await user.type(await screen.findByPlaceholderText("Discount or referral code"), "glowacademy");
     await user.click(screen.getByRole("button", { name: "Apply" }));
 
     expect(

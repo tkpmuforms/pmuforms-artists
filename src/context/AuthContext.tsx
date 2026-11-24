@@ -16,6 +16,7 @@ import axiosInstance, {
 import { RootState } from "../redux/store";
 import { createArtist } from "../services/artistServices";
 import { mobileAuthHandoff } from "../utils/mobileAuth";
+import { resetSavedOfferChecks } from "../utils/savedOffer";
 
 const TESTING_MODE = false;
 
@@ -147,6 +148,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
 
     setAuthHeader();
+    // whether a saved code is usable depends on who's signed in
+    resetSavedOfferChecks();
     dispatch(setLoading(false));
     dispatch(setAuthenticated(false));
     dispatch(setUser({}));

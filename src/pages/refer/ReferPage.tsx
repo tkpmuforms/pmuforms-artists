@@ -11,8 +11,8 @@ import "./refer.scss";
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
-const shareText = (amount: string, link: string) =>
-  `I use PMU Forms for my consent forms, aftercare and client follow-ups. Sign up with my link and get ${amount} off your first payment: ${link}`;
+const shareText = (amount: string, link: string, code: string) =>
+  `I use PMU Forms for my consent forms, aftercare and client follow-ups. Sign up with my link and your first month is free (${amount} off your first payment): ${link} Or enter my code ${code} when you subscribe.`;
 
 /** Each artist's referral link, how it works, and what they've earned. */
 const ReferPage: React.FC = () => {
@@ -45,7 +45,7 @@ const ReferPage: React.FC = () => {
   }
 
   const amount = money(summary.rewardCents);
-  const message = shareText(amount, summary.link);
+  const message = shareText(amount, summary.link, summary.code);
 
   const copy = async (text: string, what: "link" | "message") => {
     try {
@@ -73,9 +73,9 @@ const ReferPage: React.FC = () => {
       <header className="refer-page__header">
         <h1>Refer an artist, get {amount}</h1>
         <p>
-          Know an artist still using paper forms? Share your link. They get{" "}
-          {amount} off their first payment, and you get {amount} in credit when
-          they pay.
+          Know an artist still using paper forms? Share your link or code. Their
+          first month is free ({amount} off their first payment), and you get{" "}
+          {amount} in credit when they pay.
         </p>
       </header>
 
@@ -97,7 +97,8 @@ const ReferPage: React.FC = () => {
           </button>
         </div>
         <p className="refer-muted">
-          Your code: <strong>{summary.code}</strong>
+          Your code: <strong>{summary.code}</strong>. Friends can also type it
+          on the payment step.
         </p>
 
         <div className="refer-share">

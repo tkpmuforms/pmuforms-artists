@@ -19,6 +19,7 @@ import type { OnboardingStep } from "../auth/authUtils";
 import { determineOnboardingStep } from "../auth/authUtils";
 import PaymentPage from "./payment-page/PaymentPage";
 import "./profile.scss";
+import { useSavedOffer } from "../../utils/savedOffer";
 
 interface LocationState {
   newUser?: boolean;
@@ -38,6 +39,11 @@ const ProfilePage: React.FC = () => {
     locationState?.onboardingStep || "completed",
   );
   const [showPaymentPage, setShowPaymentPage] = useState(false);
+  // a usable code from a link: the plans pop-up opens with it instead (see
+  // SavedOfferPrompt); otherwise, or if it can't be checked, the usual step
+  const savedOffer = useSavedOffer(isNewUser);
+  const offerTakesOver =
+    savedOffer.status === "checking" || savedOffer.status === "ready";
 
   useEffect(() => {
     if (!user) return;
@@ -182,7 +188,11 @@ const ProfilePage: React.FC = () => {
         />
       )}
 
-      {isNewUser && showPaymentPage && onboardingStep === "payment" && (
+      {/* with a code from a link, the plans open with it applied instead */}
+      {isNewUser &&
+        showPaymentPage &&
+        onboardingStep === "payment" &&
+        !offerTakesOver && (
         <div className="profile-page__payment-modal-overlay">
           <div className="profile-page__payment-modal">
             <div className="profile-page__payment-modal-header">

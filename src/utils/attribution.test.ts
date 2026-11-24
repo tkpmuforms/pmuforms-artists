@@ -2,8 +2,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   ATTRIBUTION_COOKIE,
   captureAttribution,
+  forgetSavedCode,
   normalizeReferralCode,
   readAttribution,
+  savedCode,
 } from "./attribution";
 
 const clearCookie = () => {
@@ -57,5 +59,31 @@ describe("signup attribution", () => {
   it("survives a damaged cookie", () => {
     document.cookie = `${ATTRIBUTION_COOKIE}=%7Bnot-json; Path=/`;
     expect(readAttribution()).toBeNull();
+  });
+
+  describe("discount codes from links and QR codes", () => {
+    it("saves ?code= for promotion codes and artists' referral codes", () => {
+      visit("?code=pmu_20_off");
+      expect(savedCode()).toBe("PMU_20_OFF");
+      visit("?code=glowstud-7k2q");
+      expect(savedCode()).toBe("GLOWSTUD-7K2Q");
+    });
+
+    it("prefers ?code= over an older ?ref=", () => {
+      visit("?ref=OLD-LINK&code=PMUFORMS2026");
+      expect(savedCode()).toBe("PMUFORMS2026");
+    });
+
+    it("keeps working for older ?ref= links", () => {
+      visit("?ref=glow-7k2q");
+      expect(savedCode()).toBe("GLOW-7K2Q");
+    });
+
+    it("forgets the code once used, keeping where they came from", () => {
+      visit("?code=PMUFORMS2026&utm_source=academy");
+      forgetSavedCode();
+      expect(savedCode()).toBeNull();
+      expect(readAttribution()).toMatchObject({ source: "academy" });
+    });
   });
 });

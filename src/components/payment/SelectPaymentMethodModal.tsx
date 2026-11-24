@@ -13,6 +13,12 @@ import {
 import { trackPurchase } from "../../utils/analytics";
 import AddCardModal from "./AddCardModal";
 import toast from "react-hot-toast";
+import { forgetSavedCode } from "../../utils/attribution";
+import {
+  type AppliedCoupon,
+  couponToApplied,
+  priceAfter,
+} from "../../utils/savedOffer";
 import { useDispatch } from "react-redux";
 import {
   saveSubscriptionToStorage,
@@ -38,6 +44,8 @@ interface SelectPaymentMethodModalProps {
   planName?: "monthly" | "yearly";
   onPaymentSuccess?: () => void;
   hasActiveSubscription?: boolean;
+  /** a code from a link or QR code, already checked: applied from the start */
+  initialCoupon?: AppliedCoupon | null;
 }
 
 const SelectPaymentMethodModal = ({
@@ -48,6 +56,7 @@ const SelectPaymentMethodModal = ({
   planName,
   onPaymentSuccess,
   hasActiveSubscription = false,
+  initialCoupon = null,
 }: SelectPaymentMethodModalProps) => {
   const [cards, setCards] = useState<Card[]>(initialCards);
   const [selectedCard, setSelectedCard] = useState<string>("");
@@ -57,11 +66,14 @@ const SelectPaymentMethodModal = ({
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<{
-    code: string;
-    description: string;
-    percentOff?: number | null;
-    amountOff?: number | null;
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(
+    initialCoupon,
+  );
+  // shown after a new subscription: what they paid and when the next payment is
+  const [done, setDone] = useState<{
+    paidToday: number | null;
+    nextPayment: number | null;
+    nextDate: string | null;
   } | null>(null);
   // invited by another artist: the API takes this off the first payment
   // automatically, unless a coupon code is used instead
@@ -141,21 +153,8 @@ const SelectPaymentMethodModal = ({
         return;
       }
 
-      const couponDetails = data?.coupon;
-      const percentOff = couponDetails?.percent_off;
-      const amountOff = couponDetails?.amount_off;
-      const name = couponDetails?.name || trimmed;
-
       // "once" coupons only take money off the first payment
-      const firstOnly = couponDetails?.duration === "once";
-      const first = firstOnly ? " your first payment" : "";
-      let description = name;
-      if (percentOff) description = `${name} — ${percentOff}% off${first}`;
-      else if (amountOff) {
-        description = `${name} — $${(amountOff / 100).toFixed(2)} off${first}`;
-      }
-
-      setAppliedCoupon({ code: trimmed, description, percentOff, amountOff });
+      setAppliedCoupon(couponToApplied(trimmed, data?.coupon));
       setCouponCode("");
     } catch (err: any) {
       const msg = err.response?.data?.message || err.response?.data?.error || "Invalid coupon code";
@@ -213,6 +212,27 @@ const SelectPaymentMethodModal = ({
         if (response.data) {
           saveSubscriptionToStorage(response.data);
         }
+        // a link's code is for the first subscription only
+        forgetSavedCode();
+
+        if (appliedCoupon && planAmount != null) {
+          // confirm what the code got them before closing
+          const end = response.data?.items?.data?.[0]?.current_period_end;
+          setDone({
+            paidToday: priceAfter(planAmount, appliedCoupon),
+            nextPayment: planAmount,
+            nextDate:
+              typeof end === "number"
+                ? new Date(end * 1000).toLocaleDateString(undefined, {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : null,
+          });
+          await refreshAuthUser(dispatch);
+          return;
+        }
       }
 
       await refreshAuthUser(dispatch);
@@ -246,6 +266,44 @@ const SelectPaymentMethodModal = ({
         onClose={() => setShowAddCard(false)}
         onCardAdded={handleCardAdded}
       />
+    );
+  }
+
+  if (done) {
+    const finish = () => {
+      onPaymentSuccess?.();
+      onClose();
+    };
+    const money = (n: number) => `$${n.toFixed(2)}`;
+    return (
+      <div className="payment-modal-overlay" onClick={finish}>
+        <div
+          className="modal-content payment-done"
+          role="dialog"
+          aria-label="You're subscribed"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="payment-done__icon" aria-hidden>
+            🎉
+          </div>
+          <h2>You're subscribed</h2>
+          <p className="payment-done__lead">
+            {done.paidToday === 0
+              ? "Your first month is free. You paid $0.00 today."
+              : `You paid ${money(done.paidToday ?? 0)} today.`}
+          </p>
+          {done.nextPayment != null && (
+            <p className="payment-done__next">
+              Your next payment of {money(done.nextPayment)}
+              {done.nextDate ? ` is on ${done.nextDate}` : " is in a month"}.
+              Cancel anytime from Profile → Payment.
+            </p>
+          )}
+          <button className="btn btn--primary" onClick={finish}>
+            Done
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -392,7 +450,7 @@ const SelectPaymentMethodModal = ({
                 <input
                   className="coupon-input"
                   type="text"
-                  placeholder="Coupon code"
+                  placeholder="Discount or referral code"
                   value={couponCode}
                   onChange={(e) => {
                     setCouponCode(e.target.value.toUpperCase());

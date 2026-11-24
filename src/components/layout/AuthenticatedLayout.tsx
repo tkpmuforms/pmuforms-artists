@@ -5,6 +5,7 @@ import { type ReactNode, useEffect, useState, useRef } from "react";
 import "./authenticatedLayout.scss";
 import Sidebar, { type SidebarRef } from "./sidebar/Sidebar";
 import AuthenticatedNavbar from "./navbar/AuthenticatedNavbar";
+import SavedOfferPrompt from "../dashboardComp/SavedOfferPrompt";
 
 interface AuthenticatedLayoutProps {
   children: ReactNode;
@@ -67,7 +68,11 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
           // onAvatarClick={onAvatarClick}
           onMobileMenuToggle={handleMobileMenuToggle}
         />
-        <main className="authenticated-layout__main">{children}</main>
+        <main className="authenticated-layout__main">
+          {/* a discount code from a link or QR code, until it's used */}
+          <SavedOfferPrompt />
+          {children}
+        </main>
       </div>
     </div>
   );

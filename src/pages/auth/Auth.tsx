@@ -18,6 +18,7 @@ import useAuth from "../../context/useAuth";
 import { appleProvider, googleProvider } from "../../firebase/firebase";
 import "./auth.scss";
 import { HandleSocialLogin } from "./authUtils";
+import SavedCodeNotice from "./SavedCodeNotice";
 
 type AuthPage = "login" | "signup";
 type SignupStep = "email" | "password" | "verification";
@@ -120,6 +121,7 @@ const Auth: React.FC = () => {
             >
               <div className="auth-form-section">
                 <div className="auth-container">
+                  <SavedCodeNotice />
                   {page === "login" ? (
                     <LoginPage />
                   ) : (
@@ -225,6 +227,7 @@ const Auth: React.FC = () => {
         <div className="auth-form-section">
           <div className="auth-container">
             {signupStep === "email" && <LogoSvg />}
+            <SavedCodeNotice />
             {page === "login" ? (
               <LoginPage />
             ) : (

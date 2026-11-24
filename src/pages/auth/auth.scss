@@ -259,3 +259,20 @@
     }
   }
 }
+
+// a discount code from a link or QR code, saved for when they subscribe
+.saved-code-notice {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f4eaf4;
+  color: #4a1d4a;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+
+  &--error {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+}

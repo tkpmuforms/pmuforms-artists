@@ -606,3 +606,20 @@
     }
   }
 }
+
+// a code from a link or QR code, applied
+.subscription-modal__offer {
+  margin: 10px auto 0;
+  max-width: 420px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f4eaf4;
+  color: #4a1d4a;
+  font-size: 14px;
+  line-height: 1.45;
+
+  &--error {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+}

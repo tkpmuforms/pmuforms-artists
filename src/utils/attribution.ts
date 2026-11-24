@@ -8,7 +8,8 @@
  * artist.pmuforms.com. The value is encodeURIComponent(JSON.stringify(...)).
  *
  * Rules:
- * - A visit with campaign parameters (utm_*, gclid, fbclid, ttclid, ref)
+ * - A visit with campaign parameters (utm_*, gclid, fbclid, ttclid, ref or
+ *   code) replaces what was stored
  *   replaces what was stored, but a stored referral code is kept unless the
  *   new visit has its own.
  * - Otherwise, a first visit from another website is stored (e.g. Google).
@@ -51,10 +52,13 @@ const clean = (value: string | null | undefined, max = 100) => {
   return text ? text.slice(0, max) : undefined;
 };
 
-/** Referral codes are letters, digits and dashes; anything else is dropped. */
+/**
+ * A discount code from a link: an artist's referral code (GLOWSTUD-7K2Q) or
+ * a promotion code (PMUFORMS2026, PMU_20_OFF). Anything else is dropped.
+ */
 export const normalizeReferralCode = (value: string | null | undefined) => {
   const code = (value ?? "").trim().toUpperCase();
-  return /^[A-Z0-9-]{4,20}$/.test(code) ? code : undefined;
+  return /^[A-Z0-9_-]{3,30}$/.test(code) ? code : undefined;
 };
 
 const isOwnSite = (host: string) =>
@@ -109,7 +113,8 @@ export function captureAttribution(
   for (const [key, param] of PARAMS) {
     const value =
       key === "ref"
-        ? normalizeReferralCode(params.get(param))
+        ? // ?code= (QR codes, Refer links) or ?ref= (older links)
+          normalizeReferralCode(params.get("code") ?? params.get(param))
         : clean(params.get(param), key.endsWith("clid") ? 200 : 100);
     if (value) fromUrl[key] = value;
   }
@@ -146,3 +151,28 @@ export function captureAttribution(
 
   return stored;
 }
+
+/**
+ * The discount code a link or QR code brought, kept until it's used: the
+ * plans pop-up applies it, and the login page says it's saved.
+ */
+export const savedCode = (): string | null => {
+  try {
+    return readAttribution()?.ref ?? null;
+  } catch {
+    return null;
+  }
+};
+
+/** after it's been used, or turned out not to be usable */
+export const forgetSavedCode = () => {
+  try {
+    const stored = readAttribution();
+    if (!stored?.ref) return;
+    const { ref: _used, ...rest } = stored;
+    void _used;
+    writeAttribution(rest);
+  } catch {
+    // nothing saved, or cookies blocked
+  }
+};

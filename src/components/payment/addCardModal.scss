@@ -429,3 +429,30 @@
     }
   }
 }
+
+// after subscribing with a code: what they paid and when the next payment is
+.modal-content.payment-done {
+  text-align: center;
+  max-width: 420px;
+
+  h2 {
+    margin: 4px 0 8px;
+  }
+
+  .payment-done__icon {
+    font-size: 40px;
+  }
+
+  .payment-done__lead {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 8px;
+  }
+
+  .payment-done__next {
+    color: #475569;
+    font-size: 14px;
+    margin: 0 0 20px;
+  }
+}

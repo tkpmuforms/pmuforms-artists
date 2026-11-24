@@ -388,6 +388,21 @@ export interface SubscriptionPlans {
 export const getSubscriptionPlans = async () =>
   axiosInstance.get<SubscriptionPlans>("/api/subscriptions/stripe/plans");
 
+/** what a code from a link is worth; works before signing in */
+export interface CodePreview {
+  valid: boolean;
+  code: string | null;
+  kind?: "referral" | "promotion";
+  amountOffCents?: number | null;
+  percentOff?: number | null;
+  duration?: string;
+  message?: string;
+}
+export const previewCode = (code: string) =>
+  axiosInstance.get<CodePreview>(
+    `/api/subscriptions/codes/${encodeURIComponent(code)}`,
+  );
+
 export const validateCoupon = async (couponCode: string) => {
   return axiosInstance.post("/api/subscriptions/stripe/validate-coupon", {
     couponCode,

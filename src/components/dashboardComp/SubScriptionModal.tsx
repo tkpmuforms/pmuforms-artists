@@ -6,6 +6,7 @@ import { useState } from "react";
 import "./subscription-modal.scss";
 import SelectPaymentMethodModal from "../payment/SelectPaymentMethodModal";
 import { useSubscriptionPlans } from "../../utils/subscriptionPlans";
+import { priceAfter, useSavedOffer } from "../../utils/savedOffer";
 
 interface SubscriptionModalProps {
   onClose: () => void;
@@ -47,6 +48,13 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const money = (value?: number | null) =>
     value == null ? "…" : `$${value.toFixed(2).replace(/\.00$/, "")}`;
 
+  // a code from a link or QR code, for an artist's first subscription
+  const offer = useSavedOffer(!currentPriceId);
+  const codeOffer = offer.status === "ready" ? offer.coupon : null;
+  const todayPrice =
+    codeOffer && monthlyPrice != null ? priceAfter(monthlyPrice, codeOffer) : null;
+  const firstMonthFree = todayPrice === 0;
+
   const handleSubscribeClick = (priceId: string) => {
     setSelectedPriceId(priceId);
     setShowPaymentModal(true);
@@ -87,12 +95,43 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 Forms
               </div>
             </div>
-            <h2>Continue Creating Without Limits</h2>
-            <p>
-              {currentPriceId
-                ? "Select a new plan to switch your subscription"
-                : "Keep access to your PMU client forms and all premium features"}
-            </p>
+            {codeOffer ? (
+              <>
+                <h2>
+                  {firstMonthFree
+                    ? "Your first month is free"
+                    : "Your discount is ready"}
+                </h2>
+                <p className="subscription-modal__offer" role="status">
+                  🎁 Code <strong>{codeOffer.code}</strong> is applied:{" "}
+                  {codeOffer.description.replace(/^.* — /, "")}.
+                  {todayPrice != null &&
+                    ` You pay $${todayPrice.toFixed(2)} today, then ${money(monthlyPrice)}/month. Cancel anytime.`}
+                </p>
+              </>
+            ) : (
+              <>
+                <h2>Continue Creating Without Limits</h2>
+                <p>
+                  {currentPriceId
+                    ? "Select a new plan to switch your subscription"
+                    : "Keep access to your PMU client forms and all premium features"}
+                </p>
+                {offer.status === "checking" && (
+                  <p className="subscription-modal__offer" role="status">
+                    Checking your code {offer.code}…
+                  </p>
+                )}
+                {offer.status === "unusable" && (
+                  <p
+                    className="subscription-modal__offer subscription-modal__offer--error"
+                    role="status"
+                  >
+                    Code {offer.code} can't be used: {offer.message}
+                  </p>
+                )}
+              </>
+            )}
           </div>
 
           <div className="subscription-modal__featured">
@@ -137,14 +176,21 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                   !isCurrentPlan(monthlyPriceId) &&
                   handleSubscribeClick(monthlyPriceId)
                 }
-                disabled={!monthlyPriceId || isCurrentPlan(monthlyPriceId)}
+                disabled={
+                  !monthlyPriceId ||
+                  isCurrentPlan(monthlyPriceId) ||
+                  // wait for the code check, so it's on the next step
+                  offer.status === "checking"
+                }
               >
-                {getButtonText("monthly", monthlyPriceId)}
+                {codeOffer && todayPrice != null
+                  ? `Continue: $${todayPrice.toFixed(2)} today`
+                  : getButtonText("monthly", monthlyPriceId)}
               </button>
 
-              {!currentPriceId && (
+              {!currentPriceId && !codeOffer && (
                 <p className="featured-plan__code-hint">
-                  Have a discount code? You can add it on the next step.
+                  Have a discount or referral code? You can add it on the next step.
                 </p>
               )}
 
@@ -154,7 +200,8 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             </div>
           </div>
 
-          {yearlyPriceId && (
+          {/* a link's code is one month free: monthly only */}
+          {yearlyPriceId && !codeOffer && (
           <div className="subscription-modal__alt-plan">
             <div
               className={`alt-plan ${
@@ -229,6 +276,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           planName={selectedPriceId === yearlyPriceId ? "yearly" : "monthly"}
           onPaymentSuccess={handlePaymentSuccess}
           hasActiveSubscription={!!currentPriceId}
+          initialCoupon={selectedPriceId === monthlyPriceId ? codeOffer : null}
         />
       )}
     </>
