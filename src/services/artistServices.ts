@@ -37,6 +37,18 @@ export interface ReferralSummary {
 export const getReferralSummary = async () =>
   axiosInstance.get<ReferralSummary>("/api/referrals/me");
 
+export interface SignupOffer {
+  kind: "referral" | "code";
+  code?: string;
+}
+
+/**
+ * The discount the API offers this artist when they have no code from a
+ * link: e.g. the holiday code. Null once they've subscribed.
+ */
+export const getSignupOffer = async () =>
+  axiosInstance.get<{ offer: SignupOffer | null }>("/api/growth/offer");
+
 export const updateServices = async (data: { services: number[] }) =>
   axiosInstance.put("/api/services/update-services", data);
 

@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../../services/artistServices";
 import SubscriptionModal from "./SubScriptionModal";
+import { resetSavedOfferChecks } from "../../utils/savedOffer";
 
 vi.mock("../../services/artistServices", async (importOriginal) => ({
   ...(await importOriginal<typeof api>()),
@@ -11,6 +12,7 @@ vi.mock("../../services/artistServices", async (importOriginal) => ({
   listPaymentMethods: vi.fn(),
   validateCoupon: vi.fn(),
   createSubscription: vi.fn(),
+  getSignupOffer: vi.fn(),
 }));
 vi.mock("react-redux", () => ({ useDispatch: () => vi.fn() }));
 vi.mock("../../utils/authUtils", () => ({ refreshAuthUser: vi.fn() }));
@@ -34,7 +36,9 @@ const noBuildPlans = () => {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  resetSavedOfferChecks();
   noBuildPlans();
+  mocked.getSignupOffer.mockResolvedValue({ data: { offer: null } } as never);
   mocked.getSubscriptionPlans.mockResolvedValue({
     data: {
       monthly: { priceId: "price_month", amount: 19.99, currency: "usd" },
@@ -68,7 +72,10 @@ describe("Subscription pop-up", () => {
     expect(screen.queryByText(/NaN/)).toBeNull();
     // not subscribed, so nothing is their current plan
     expect(screen.queryByText("Current Plan")).toBeNull();
-    expect(screen.getByRole("button", { name: "Subscribe" })).toBeEnabled();
+    // enabled once the API says there's no signup offer
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Subscribe" })).toBeEnabled(),
+    );
     expect(screen.getByText("Most Popular")).toBeInTheDocument();
     expect(screen.queryByText(/HIPAA/i)).toBeNull();
     expect(

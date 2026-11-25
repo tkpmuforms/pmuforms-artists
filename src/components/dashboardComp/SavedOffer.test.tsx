@@ -17,6 +17,7 @@ vi.mock("../../services/artistServices", async (importOriginal) => ({
   validateCoupon: vi.fn(),
   createSubscription: vi.fn(),
   previewCode: vi.fn(),
+  getSignupOffer: vi.fn(),
 }));
 vi.mock("react-redux", () => ({ useDispatch: () => vi.fn() }));
 vi.mock("../../utils/authUtils", () => ({ refreshAuthUser: vi.fn() }));
@@ -63,6 +64,7 @@ beforeEach(() => {
     },
   } as never);
   mocked.getReferralSummary.mockRejectedValue(new Error("none"));
+  mocked.getSignupOffer.mockResolvedValue({ data: { offer: null } } as never);
   mocked.listPaymentMethods.mockResolvedValue({
     data: { data: [{ id: "pm_1", card: { brand: "visa", last4: "4242" }, billing_details: { name: "Ada" } }] },
   } as never);
@@ -192,6 +194,59 @@ describe("a code from a link or QR code", () => {
     const { container } = render(<SavedOfferPrompt />);
     expect(container).toBeEmptyDOMElement();
     expect(mocked.validateCoupon).not.toHaveBeenCalled();
+    expect(mocked.getSignupOffer).not.toHaveBeenCalled();
+  });
+
+  describe("the signup offer, for artists without a code of their own", () => {
+    const holidayOffer = () =>
+      mocked.getSignupOffer.mockResolvedValue({
+        data: { offer: { kind: "code", code: "PMUSTUDIO2027" } },
+      } as never);
+
+    it("opens the plans with the holiday code applied, then keeps a banner", async () => {
+      holidayOffer();
+      academyCode();
+      const user = userEvent.setup();
+      render(<SavedOfferPrompt />);
+
+      expect(await screen.findByText("Your first month is free")).toBeInTheDocument();
+      expect(mocked.validateCoupon).toHaveBeenCalledWith("PMUSTUDIO2027");
+      expect(screen.getByText(/You pay \$0\.00 today/)).toBeInTheDocument();
+      await user.click(screen.getAllByRole("button")[0]); // the pop-up's close button
+      const banner = await screen.findByRole("status");
+      expect(banner).toHaveTextContent(
+        "Use code PMUSTUDIO2027: your first month is free when you subscribe.",
+      );
+    });
+
+    it("prefers the code they arrived with", async () => {
+      holidayOffer();
+      academyCode();
+      arriveWith("AZPMUACADEMY");
+      render(<SavedOfferPrompt />);
+      expect(await screen.findByText("Your first month is free")).toBeInTheDocument();
+      expect(mocked.validateCoupon).toHaveBeenCalledWith("AZPMUACADEMY");
+      expect(mocked.getSignupOffer).not.toHaveBeenCalled();
+    });
+
+    it("stays quiet when the signup code can't be used", async () => {
+      holidayOffer();
+      mocked.validateCoupon.mockResolvedValue({
+        data: { isValid: false, message: "This code is only for new customers" },
+      } as never);
+      const { container } = render(<SavedOfferPrompt />);
+      await waitFor(() => expect(mocked.validateCoupon).toHaveBeenCalled());
+      await waitFor(() => expect(container).toBeEmptyDOMElement());
+      expect(screen.queryByText(/can't be used/)).toBeNull();
+    });
+
+    it("shows the usual plans when there's no offer or the check fails", async () => {
+      mocked.getSignupOffer.mockRejectedValue(new Error("offline"));
+      const { container } = render(<SavedOfferPrompt />);
+      await waitFor(() => expect(mocked.getSignupOffer).toHaveBeenCalled());
+      expect(container).toBeEmptyDOMElement();
+      expect(mocked.validateCoupon).not.toHaveBeenCalled();
+    });
   });
 
   describe("the payment button", () => {

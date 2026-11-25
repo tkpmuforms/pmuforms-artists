@@ -119,7 +119,9 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 </p>
                 {offer.status === "checking" && (
                   <p className="subscription-modal__offer" role="status">
-                    Checking your code {offer.code}…
+                    {offer.code
+                      ? `Checking your code ${offer.code}…`
+                      : "Checking for offers…"}
                   </p>
                 )}
                 {offer.status === "unusable" && (

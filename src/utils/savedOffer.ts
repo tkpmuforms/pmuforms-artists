@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { validateCoupon } from "../services/artistServices";
+import { getSignupOffer, validateCoupon } from "../services/artistServices";
 import { forgetSavedCode, savedCode } from "./attribution";
 
 /** a discount code applied on the payment step */
@@ -48,8 +48,10 @@ export const priceAfter = (amount: number, coupon: AppliedCoupon) => {
 
 export type SavedOffer =
   | { status: "none" }
-  | { status: "checking"; code: string }
-  | { status: "ready"; coupon: AppliedCoupon }
+  /** code is null while asking the API for the signup offer */
+  | { status: "checking"; code: string | null }
+  /** source: from a link or QR code, or the offer every new artist gets */
+  | { status: "ready"; coupon: AppliedCoupon; source: "saved" | "signup" }
   | { status: "unusable"; code: string; message: string };
 
 /**
@@ -60,8 +62,36 @@ export type SavedOffer =
 // one check per code, shared by the banner, the plans pop-up and Profile
 const checks = new Map<string, Promise<SavedOffer>>();
 
+// the signup offer (e.g. the holiday code), asked for once per page load
+let signupOffer: Promise<string | null> | null = null;
+
 /** for tests, and after signing out */
-export const resetSavedOfferChecks = () => checks.clear();
+export const resetSavedOfferChecks = () => {
+  checks.clear();
+  signupOffer = null;
+};
+
+const signupOfferCode = (): Promise<string | null> => {
+  if (!signupOffer) {
+    signupOffer = getSignupOffer()
+      .then((response) => {
+        const body = response.data as { data?: { offer?: unknown }; offer?: unknown };
+        const offer = (body?.data?.offer ?? body?.offer) as
+          | { kind?: string; code?: unknown }
+          | null
+          | undefined;
+        // a referral discount is applied at checkout without a code
+        return offer?.kind === "code" && typeof offer.code === "string"
+          ? offer.code
+          : null;
+      })
+      .catch(() => {
+        signupOffer = null;
+        return null;
+      });
+  }
+  return signupOffer;
+};
 
 const checkCode = (code: string): Promise<SavedOffer> => {
   let check = checks.get(code);
@@ -77,7 +107,11 @@ const checkCode = (code: string): Promise<SavedOffer> => {
             message: data?.message || "This code can't be used.",
           };
         }
-        return { status: "ready", coupon: couponToApplied(code, data?.coupon) };
+        return {
+          status: "ready",
+          coupon: couponToApplied(code, data?.coupon),
+          source: "saved",
+        };
       })
       .catch((): SavedOffer => {
         // a network problem: keep the code and try again next time; the
@@ -90,22 +124,41 @@ const checkCode = (code: string): Promise<SavedOffer> => {
   return check;
 };
 
+const NONE: SavedOffer = { status: "none" };
+
+/**
+ * The code a link or QR code brought, or else the offer every new artist
+ * gets (the API decides which, e.g. the holiday code). A signup code that
+ * can't be used is simply not offered: the artist never typed it.
+ */
 export const useSavedOffer = (enabled: boolean): SavedOffer => {
+  const [wanted] = useState(enabled);
   const [code] = useState(() => (enabled ? savedCode() : null));
   const [offer, setOffer] = useState<SavedOffer>(
-    code ? { status: "checking", code } : { status: "none" },
+    wanted ? { status: "checking", code } : NONE,
   );
 
   useEffect(() => {
-    if (!code) return;
+    if (!wanted) return;
     let active = true;
-    checkCode(code).then((result) => {
-      if (active) setOffer(result);
+    const result: Promise<SavedOffer> = code
+      ? checkCode(code)
+      : signupOfferCode().then((signupCode) =>
+          signupCode
+            ? checkCode(signupCode).then((checked) =>
+                checked.status === "ready"
+                  ? { ...checked, source: "signup" as const }
+                  : NONE,
+              )
+            : NONE,
+        );
+    result.then((next) => {
+      if (active) setOffer(next);
     });
     return () => {
       active = false;
     };
-  }, [code]);
+  }, [wanted, code]);
 
   return offer;
 };

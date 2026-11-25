@@ -26,10 +26,11 @@ const markOpened = (code: string) => {
 };
 
 /**
- * Someone came from a link or QR code with a discount code and hasn't
- * subscribed yet: once they've set up their business name and services, the
- * plans open with the code applied (once per visit), and a banner keeps the
- * offer in view if they close it.
+ * Someone hasn't subscribed yet and has a discount: a code from a link or QR
+ * code, or else the offer every new artist gets (e.g. the holiday code). Once
+ * they've set up their business name and services, the plans open with the
+ * code applied (once per visit), and a banner keeps the offer in view if they
+ * close it.
  */
 const SavedOfferPrompt: React.FC = () => {
   const { user } = useAuth();
@@ -56,7 +57,8 @@ const SavedOfferPrompt: React.FC = () => {
   return (
     <div className="saved-offer-banner" role="status">
       <span>
-        🎁 Code <strong>{code}</strong> is saved:{" "}
+        🎁 {offer.source === "signup" ? "Use code" : "Code"} <strong>{code}</strong>
+        {offer.source === "signup" ? ":" : " is saved:"}{" "}
         {free
           ? "your first month is free when you subscribe."
           : `${offer.coupon.description.replace(/^.* — /, "")} when you subscribe.`}
