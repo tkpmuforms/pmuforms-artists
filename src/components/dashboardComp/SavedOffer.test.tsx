@@ -6,6 +6,7 @@ import { ATTRIBUTION_COOKIE, captureAttribution, savedCode } from "../../utils/a
 import SavedCodeNotice from "../../pages/auth/SavedCodeNotice";
 import SavedOfferPrompt from "./SavedOfferPrompt";
 import SubscriptionModal from "./SubScriptionModal";
+import SelectPaymentMethodModal from "../payment/SelectPaymentMethodModal";
 import { resetSavedOfferChecks } from "../../utils/savedOffer";
 
 vi.mock("../../services/artistServices", async (importOriginal) => ({
@@ -127,7 +128,10 @@ describe("a code from a link or QR code", () => {
     expect(screen.getByText("$0.00")).toBeInTheDocument();
     expect(mocked.validateCoupon).toHaveBeenCalledTimes(1);
 
-    const pay = screen.getByRole("button", { name: "Make Payment" });
+    expect(
+      screen.getByText("Add or select a card to claim it. You won't be charged today."),
+    ).toBeInTheDocument();
+    const pay = screen.getByRole("button", { name: "Claim free month" });
     await waitFor(() => expect(pay).toBeEnabled());
     await user.click(pay);
 
@@ -188,5 +192,31 @@ describe("a code from a link or QR code", () => {
     const { container } = render(<SavedOfferPrompt />);
     expect(container).toBeEmptyDOMElement();
     expect(mocked.validateCoupon).not.toHaveBeenCalled();
+  });
+
+  describe("the payment button", () => {
+    const modal = (coupon: Parameters<typeof SelectPaymentMethodModal>[0]["initialCoupon"]) =>
+      render(
+        <SelectPaymentMethodModal
+          onClose={vi.fn()}
+          priceId="price_month"
+          planAmount={19.99}
+          planName="monthly"
+          initialCoupon={coupon}
+        />,
+      );
+
+    it("says Make Payment without a code", async () => {
+      modal(null);
+      expect(await screen.findByRole("button", { name: "Make Payment" })).toBeInTheDocument();
+      expect(screen.getByText("Select or add card to make payment")).toBeInTheDocument();
+    });
+
+    it("shows what's due when a code takes part of it off", async () => {
+      modal({ code: "PMU_20_OFF", description: "20% off", percentOff: 20, duration: "once" });
+      expect(
+        await screen.findByRole("button", { name: "Claim discount · Pay $15.99" }),
+      ).toBeInTheDocument();
+    });
   });
 });

@@ -313,6 +313,22 @@ const SelectPaymentMethodModal = ({
     (subscriptionData &&
       ["active", "trialing"].includes(subscriptionData.status.toLowerCase()));
 
+  // with a code on, the button says what they're getting, not "Make Payment"
+  const dueToday =
+    appliedCoupon && planAmount != null && !isChangingPlan
+      ? priceAfter(planAmount, appliedCoupon)
+      : null;
+  const freeMonth = dueToday === 0 && planName !== "yearly";
+  const payLabel = isChangingPlan
+    ? "Update Plan"
+    : dueToday === 0
+      ? freeMonth
+        ? "Claim free month"
+        : "Claim offer"
+      : dueToday != null
+        ? `Claim discount · Pay $${dueToday.toFixed(2)}`
+        : "Make Payment";
+
   return (
     <div className="payment-modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -326,7 +342,9 @@ const SelectPaymentMethodModal = ({
         <p className="modal-subtitle">
           {isChangingPlan
             ? "Select card to update your subscription plan"
-            : "Select or add card to make payment"}
+            : dueToday === 0
+              ? "Add or select a card to claim it. You won't be charged today."
+              : "Select or add card to make payment"}
         </p>
 
         {error && <div className="error-message">{error}</div>}
@@ -487,11 +505,7 @@ const SelectPaymentMethodModal = ({
             onClick={handleMakePayment}
             disabled={loading || !selectedCard || cards.length === 0}
           >
-            {loading
-              ? "Processing..."
-              : isChangingPlan
-                ? "Update Plan"
-                : "Make Payment"}
+            {loading ? "Processing..." : payLabel}
           </button>
         </div>
       </div>

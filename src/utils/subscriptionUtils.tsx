@@ -9,7 +9,43 @@ export interface SubscriptionData {
   amount: number;
   currency: string;
   cancelAt?: number;
+  /** cancelled: runs to the end of the paid period, then stops */
+  cancelAtPeriodEnd?: boolean;
+  /** the first payment was $0 thanks to a code */
+  freeStart?: { code: string | null } | null;
 }
+
+interface StripeSubscriptionLike {
+  latest_invoice?:
+    | string
+    | { billing_reason?: string; total?: number; subtotal?: number }
+    | null;
+  discounts?: Array<string | { promotion_code?: string | { code?: string } | null }>;
+}
+
+/** a $0 first invoice, and the code that made it so */
+const freeStartOf = (
+  subscription: StripeSubscriptionLike,
+): SubscriptionData["freeStart"] => {
+  const invoice = subscription?.latest_invoice;
+  if (
+    !invoice ||
+    typeof invoice !== "object" ||
+    invoice.billing_reason !== "subscription_create" ||
+    invoice.total !== 0 ||
+    !((invoice.subtotal ?? 0) > 0)
+  ) {
+    return null;
+  }
+  let code: string | null = null;
+  for (const discount of subscription.discounts || []) {
+    if (typeof discount === "object" && typeof discount.promotion_code === "object") {
+      code = discount.promotion_code?.code ?? null;
+      if (code) break;
+    }
+  }
+  return { code: code ?? null };
+};
 
 const SUBSCRIPTION_KEY = "pmu_subscription_data";
 
@@ -40,6 +76,8 @@ export const saveSubscriptionToStorage = (subscriptionData: any): void => {
         subscriptionData.items.data[0]?.price.currency ||
         subscriptionData.currency,
       cancelAt: subscriptionData.cancel_at,
+      cancelAtPeriodEnd: !!subscriptionData.cancel_at_period_end,
+      freeStart: freeStartOf(subscriptionData),
     };
 
     localStorage.setItem(SUBSCRIPTION_KEY, JSON.stringify(data));

@@ -110,7 +110,7 @@ describe("Subscription pop-up", () => {
     expect(mocked.validateCoupon).toHaveBeenCalledWith("GLOWACADEMY");
     expect(screen.getByText("$0.00")).toBeInTheDocument();
 
-    const pay = screen.getByRole("button", { name: "Make Payment" });
+    const pay = screen.getByRole("button", { name: "Claim free month" });
     await waitFor(() => expect(pay).toBeEnabled());
     await user.click(pay);
     await waitFor(() =>

@@ -421,6 +421,10 @@ export const createSubscription = async (
   });
 };
 
+/** undo a cancellation before the paid period ends */
+export const resumeSubscription = () =>
+  axiosInstance.post("/api/subscriptions/stripe/resume-subscription");
+
 export const cancelSubscription = async () => {
   return axiosInstance.get("/api/subscriptions/stripe/cancel-subscription");
 };

@@ -16,6 +16,7 @@ import {
   getSubscription,
   listPaymentMethods,
   listTransactions,
+  resumeSubscription,
 } from "../../../services/artistServices";
 import { refreshAuthUser } from "../../../utils/authUtils";
 import {
@@ -52,6 +53,7 @@ const PaymentPage = () => {
   const [cancelPlans, setShowCancelPlans] = useState(false);
   const [subscriptionData, setSubscriptionData] =
     useState<SubscriptionData | null>(null);
+  const [resuming, setResuming] = useState(false);
 
   useEffect(() => {
     fetchPaymentMethods();
@@ -142,10 +144,37 @@ const PaymentPage = () => {
       saveSubscriptionToStorage(subData);
       setSubscriptionData(getSubscriptionFromStorage());
       setShowCancelPlans(false);
-      toast.success("Subscription cancelled successfully.");
+      toast.success(
+        endDate
+          ? `Cancelled. You keep full access until ${endDate}.`
+          : "Subscription cancelled.",
+      );
     } catch (error) {
       console.error("Error cancelling subscription:", error);
       toast.error("Failed to cancel subscription. Please try again.");
+    }
+  };
+
+  const handleResume = async () => {
+    setResuming(true);
+    try {
+      const response = await resumeSubscription();
+      saveSubscriptionToStorage(response.data);
+      await refreshAuthUser(dispatch);
+      await fetchSubscriptionData();
+      toast.success(
+        endDate
+          ? `Welcome back! Your plan continues and renews on ${endDate}.`
+          : "Welcome back! Your plan continues.",
+      );
+    } catch (error) {
+      const { response } = error as { response?: { data?: { message?: string } } };
+      toast.error(
+        response?.data?.message ||
+          "Couldn't resume your subscription. Please try again.",
+      );
+    } finally {
+      setResuming(false);
     }
   };
 
@@ -188,7 +217,32 @@ const PaymentPage = () => {
       ? getPlanName(subscriptionData.interval, subscriptionData.intervalCount)
       : "No Active Plan";
 
-  const isCancelled = !isMobileSub && !!subscriptionData?.cancelAt;
+  // cancelled, but paid up until the end of the period
+  const isCancelled =
+    !isMobileSub &&
+    !!isActive &&
+    !!(subscriptionData?.cancelAt || subscriptionData?.cancelAtPeriodEnd);
+  const endsAt = subscriptionData?.cancelAt || subscriptionData?.currentPeriodEnd;
+  const endDate = endsAt
+    ? new Date(endsAt * 1000).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : null;
+  const nextDate = subscriptionData?.currentPeriodEnd
+    ? new Date(subscriptionData.currentPeriodEnd * 1000).toLocaleDateString(
+        "en-US",
+        { month: "long", day: "numeric", year: "numeric" },
+      )
+    : null;
+  const planPrice =
+    subscriptionData?.amount != null
+      ? `$${(subscriptionData.amount / 100).toFixed(2)}/${
+          subscriptionData.interval === "year" ? "year" : "month"
+        }`
+      : null;
+  const freeStart = !isMobileSub && isActive ? subscriptionData?.freeStart : null;
 
   const billingDateLabel = isCancelled
     ? "Subscription Ends"
@@ -238,29 +292,86 @@ const PaymentPage = () => {
                 <span className="payment-page__label">Status</span>
                 <span
                   className={`payment-page__status payment-page__status--${
-                    isActive ? "active" : "inactive"
+                    isCancelled ? "ending" : isActive ? "active" : "inactive"
                   }`}
                 >
-                  {isActive ? "Active" : "Inactive"}
+                  {isCancelled ? "Cancelled" : isActive ? "Active" : "Inactive"}
                 </span>
               </div>
-              <div className="payment-page__subscription-actions">
-                {isActive && (
+              {isCancelled ? (
+                <div className="payment-page__subscription-actions">
                   <button
-                    className="payment-page__btn payment-page__btn--secondary"
-                    onClick={() => setShowCancelPlans(true)}
-                    disabled={isCancelled}
+                    className="payment-page__btn payment-page__btn--primary"
+                    onClick={handleResume}
+                    disabled={resuming}
                   >
-                    Cancel Subscription
+                    {resuming ? "Resuming..." : "Resume Subscription"}
                   </button>
-                )}
-                <button
-                  className="payment-page__btn payment-page__btn--primary"
-                  onClick={() => setShowUpgradeSubscription(true)}
-                >
-                  {isActive ? "Change Plan" : "Upgrade Subscription"}
-                </button>
-              </div>
+                </div>
+              ) : (
+                <div className="payment-page__subscription-actions">
+                  {isActive && (
+                    <button
+                      className="payment-page__btn payment-page__btn--secondary"
+                      onClick={() => setShowCancelPlans(true)}
+                    >
+                      Cancel Subscription
+                    </button>
+                  )}
+                  <button
+                    className="payment-page__btn payment-page__btn--primary"
+                    onClick={() => setShowUpgradeSubscription(true)}
+                  >
+                    {isActive ? "Change Plan" : "Upgrade Subscription"}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {isCancelled && (
+            <div
+              className="payment-page__notice payment-page__notice--ending"
+              role="status"
+            >
+              <strong>
+                Your subscription is cancelled
+                {endDate ? ` and ends on ${endDate}` : ""}.
+              </strong>{" "}
+              You keep full access until then and won't be charged again.
+              Changed your mind? Resume it and your plan carries on
+              {planPrice ? ` at ${planPrice}` : ""}
+              {endDate ? ` from ${endDate}` : ""}.
+            </div>
+          )}
+
+          {freeStart && !isCancelled && (
+            <div className="payment-page__notice" role="status">
+              🎁 Your first {subscriptionData?.interval === "year" ? "year" : "month"}{" "}
+              is free
+              {freeStart.code ? (
+                <>
+                  {" "}
+                  with code <strong>{freeStart.code}</strong>
+                </>
+              ) : null}
+              .{" "}
+              {nextDate && planPrice
+                ? `Your first payment of ${planPrice.split("/")[0]} is on ${nextDate}.`
+                : ""}
+            </div>
+          )}
+
+          {freeStart && isCancelled && (
+            <div className="payment-page__notice" role="status">
+              🎁 Your free {subscriptionData?.interval === "year" ? "year" : "month"}
+              {freeStart.code ? (
+                <>
+                  {" "}
+                  (code <strong>{freeStart.code}</strong>)
+                </>
+              ) : null}{" "}
+              still runs to the end{endDate ? `, ${endDate}` : ""}.
             </div>
           )}
         </section>
@@ -412,8 +523,14 @@ const PaymentPage = () => {
       {cancelPlans && (
         <DeleteModal
           onClose={() => setShowCancelPlans(false)}
-          headerText="Cancel Plans"
-          shorterText="Are you sure you want to cancel your plan?"
+          headerText="Cancel Subscription"
+          shorterText={
+            endDate
+              ? `You'll keep full access until ${endDate} and won't be charged again. You can resume anytime before then.`
+              : "Are you sure you want to cancel your plan?"
+          }
+          confirmLabel="Cancel Subscription"
+          cancelLabel="Keep My Plan"
           handleDelete={handleCancelSubscription}
         />
       )}
