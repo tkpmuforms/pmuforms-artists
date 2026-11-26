@@ -70,3 +70,22 @@ describe("Integrations without a subscription", () => {
     expect(screen.queryByText(/part of a PMU Forms subscription/)).toBeNull();
   });
 });
+
+describe("what each booking tool does", () => {
+  it("only promises payments for Square", async () => {
+    mocked.getIntegrations.mockReturnValue(square("disconnected"));
+    const { container } = renderPage();
+    await screen.findByRole("button", { name: "Connect Square" });
+
+    expect(screen.getByText(/With Square, you can also request deposits and payments/)).toBeInTheDocument();
+    const lines = [...container.querySelectorAll(".integrations-page__offers")].map(
+      (el) => el.textContent,
+    );
+    expect(lines).toEqual([
+      "Bookings, forms, deposits and payments",
+      "Bookings and forms",
+      "Bookings and forms",
+      "Bookings and forms",
+    ]);
+  });
+});

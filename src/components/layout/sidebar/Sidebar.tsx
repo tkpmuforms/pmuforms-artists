@@ -3,8 +3,8 @@
 import type React from "react";
 import { useState, forwardRef, useImperativeHandle } from "react";
 import { Menu, type MenuItem } from "../menu";
-import { ChevronLeft, ChevronRight, Mail } from "lucide-react";
-import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "../../../utils/support";
+import { Check, ChevronLeft, ChevronRight, Copy, Mail } from "lucide-react";
+import { SUPPORT_EMAIL, copySupportEmail } from "../../../utils/support";
 import "./sidebar.scss";
 import {
   ClientIcon,
@@ -33,6 +33,7 @@ export interface SidebarRef {
 const Sidebar = forwardRef<SidebarRef, SidebarProps>(
   ({ activeItem, onItemClick, className = "" }, ref) => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [emailCopied, setEmailCopied] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const { user, logout, isMember } = useAuth();
     const menu = isMember ? Menu.filter((item) => !item.ownerOnly) : Menu;
@@ -88,6 +89,18 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
       ) : (
         <span>•</span>
       );
+    };
+
+    const openContact = () => {
+      navigate("/contact-us");
+      setIsMobileOpen(false);
+    };
+
+    const copyEmail = async () => {
+      if (await copySupportEmail()) {
+        setEmailCopied(true);
+        window.setTimeout(() => setEmailCopied(false), 2000);
+      }
     };
 
     return (
@@ -157,22 +170,51 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
           </nav>
 
           <div className="sidebar__footer">
-            <a
-              className="sidebar__support"
-              href={SUPPORT_MAILTO}
-              title={`Email support: ${SUPPORT_EMAIL}`}
-              aria-label={`Need help? Email ${SUPPORT_EMAIL}`}
-            >
-              <span className="sidebar__support-icon">
+            {/* stays in the app: the contact page, and an email to copy
+                (a mailto link opened Outlook in place of the app) */}
+            <div className="sidebar__support">
+              <button
+                type="button"
+                className="sidebar__support-icon"
+                onClick={openContact}
+                title="Contact support"
+                aria-label="Need help? Contact support"
+              >
                 <Mail size={18} />
-              </span>
+              </button>
               {!isCollapsed && (
-                <span className="sidebar__support-text">
-                  <span className="sidebar__support-label">Need help?</span>
-                  <span className="sidebar__support-email">{SUPPORT_EMAIL}</span>
-                </span>
+                <>
+                  <span className="sidebar__support-text">
+                    <button
+                      type="button"
+                      className="sidebar__support-label"
+                      onClick={openContact}
+                    >
+                      Need help?
+                    </button>
+                    {/* the copy button sits on the email's own line */}
+                    <span className="sidebar__support-email-row">
+                      <span className="sidebar__support-email">
+                        {SUPPORT_EMAIL}
+                      </span>
+                      <button
+                        type="button"
+                        className="sidebar__support-copy"
+                        onClick={copyEmail}
+                        title={emailCopied ? "Copied" : "Copy email"}
+                        aria-label={
+                          emailCopied
+                            ? "Support email copied"
+                            : "Copy support email"
+                        }
+                      >
+                        {emailCopied ? <Check size={14} /> : <Copy size={14} />}
+                      </button>
+                    </span>
+                  </span>
+                </>
               )}
-            </a>
+            </div>
             <button
               className="sidebar__logout-button"
               onClick={logout}

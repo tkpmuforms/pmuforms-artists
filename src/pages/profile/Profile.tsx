@@ -2,11 +2,11 @@
 
 import {
   Building2,
-  Edit,
-  FileText,
+  CreditCard,
   HelpCircle,
   Key,
-  LogOut,
+  ScrollText,
+  ShieldCheck,
   Trash2,
   UserRound,
   Users,
@@ -113,7 +113,7 @@ const ProfilePage: React.FC = () => {
       onClick: () => setShowChangePassword(true),
     },
     {
-      icon: <FileText size={10} />,
+      icon: <CreditCard size={10} />,
       title: "Payment & Subscriptions",
       onClick: () => navigate("/profile/payment"),
     },
@@ -144,21 +144,16 @@ const ProfilePage: React.FC = () => {
       onClick: () => navigate("/contact-us"),
     },
     {
-      icon: <FileText size={10} />,
+      icon: <ShieldCheck size={10} />,
       title: "Privacy Policy",
       onClick: () => navigate("/privacy-policy"),
     },
     {
-      icon: <FileText size={10} />,
+      icon: <ScrollText size={10} />,
       title: "Terms of Service",
       onClick: () => navigate("/terms"),
     },
-    {
-      icon: <LogOut size={10} />,
-      title: "Log Out",
-      onClick: () => logout(),
-      variant: "danger" as const,
-    },
+    // Log Out lives at the bottom of the sidebar on every page
     // only the owner can delete the account
     ...(member
       ? []
@@ -192,7 +187,7 @@ const ProfilePage: React.FC = () => {
           <div className="profile-page__user">
             <div className="profile-page__user-info">
               <h1>{user?.businessName}</h1>
-              {member ? (
+              {member && (
                 <p className="profile-page__member-note">
                   Signed in as{" "}
                   {member.firstName
@@ -202,14 +197,6 @@ const ProfilePage: React.FC = () => {
                   team. Business details, billing and integrations are managed
                   by the owner.
                 </p>
-              ) : (
-                <button
-                  className="profile-page__edit-btn"
-                  onClick={() => navigate("/profile/business-information")}
-                >
-                  <Edit size={20} />
-                  Edit business info
-                </button>
               )}
             </div>
           </div>

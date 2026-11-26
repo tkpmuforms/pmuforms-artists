@@ -31,7 +31,9 @@
     display: flex;
     flex-wrap: wrap;
     gap: 32px;
-    align-items: stretch;
+    // each card is as tall as its own content, so a long services list
+    // doesn't push the other cards' buttons down
+    align-items: flex-start;
   }
 
   &__section {
@@ -92,24 +94,34 @@
 
   .services-list {
     display: flex;
-    flex-direction: column;
-    gap: 1px;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
   .service-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 16px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #8e2d8e1a;
     color: #1e293b;
+    font-size: 13px;
     font-weight: 500;
-    padding: 2px 0;
+    line-height: 1.4;
+  }
 
-    .service-bullet {
-      color: var(--pmu-primary);
-      font-weight: bold;
-      font-size: 18px;
-    }
+  .services-toggle {
+    margin-top: 10px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--pmu-primary, #8e2d8e);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   .no-services {
@@ -222,8 +234,8 @@
       font-size: 13px;
     }
 
-    .service-item {
-      font-size: 14px;
+    &__section {
+      width: 100%;
     }
 
     .edit-button {

@@ -27,6 +27,8 @@ interface Integration {
   mappingPath?: string;
   // shown but not connectable yet
   comingSoon?: boolean;
+  /** what PMU Forms does with it; payments only where we support them */
+  offers: string;
   logo: React.ReactNode;
 }
 
@@ -36,6 +38,7 @@ const integrations: Integration[] = [
     provider: "square",
     name: "Square",
     mappingPath: "/integrations/square/mapping",
+    offers: "Bookings, forms, deposits and payments",
     logo: <SquareLogo />,
   },
   {
@@ -43,6 +46,7 @@ const integrations: Integration[] = [
     provider: "squarespace",
     name: "Squarespace",
     comingSoon: true,
+    offers: "Bookings and forms",
     logo: <SquarespaceLogo />,
   },
   {
@@ -50,6 +54,7 @@ const integrations: Integration[] = [
     provider: "calendly",
     name: "Calendly",
     comingSoon: true,
+    offers: "Bookings and forms",
     logo: <CalendlyLogo />,
   },
   {
@@ -57,6 +62,7 @@ const integrations: Integration[] = [
     provider: "cal.com",
     name: "Cal.com",
     comingSoon: true,
+    offers: "Bookings and forms",
     logo: <CalLogo />,
   },
 ];
@@ -199,7 +205,8 @@ const IntegrationsPage: React.FC = () => {
             Connect the booking tool you already use and map its services to
             your PMU Forms services. When a client books, we automatically
             create the client and appointment and send the consent form for that
-            service, if one is needed.
+            service, if one is needed. With Square, you can also request
+            deposits and payments from any appointment.
           </p>
         </div>
 
@@ -276,6 +283,9 @@ const IntegrationsPage: React.FC = () => {
                         )
                       )}
                     </div>
+                    <p className="integrations-page__offers">
+                      {integration.offers}
+                    </p>
                     {isConnected(integration) &&
                       statuses[integration.provider]?.externalAccountName && (
                         <p

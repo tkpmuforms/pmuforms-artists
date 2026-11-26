@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import Sidebar from "./Sidebar";
 
@@ -19,17 +19,40 @@ vi.mock("../../../context/useAuth.ts", () => ({
 }));
 
 describe("Sidebar", () => {
-  it("shows the support email next to Logout", () => {
-    render(
+  it("shows the support email as text to copy, next to Logout, with no mail link", async () => {
+    const writeText = vi.fn(async () => undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+    const { container } = render(
       <MemoryRouter>
         <Sidebar />
       </MemoryRouter>,
     );
-    const link = screen.getByRole("link", { name: "Need help? Email contact@pmuforms.com" });
-    expect(link).toHaveAttribute("href", "mailto:contact@pmuforms.com");
-    expect(link).toHaveTextContent("contact@pmuforms.com");
+    // nothing opens the mail app (Outlook) in place of PMU Forms
+    expect(container.querySelector('a[href^="mailto:"]')).toBeNull();
+
+    const email = screen.getByText("contact@pmuforms.com");
+    expect(email.closest("a, button")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy support email" }));
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith("contact@pmuforms.com"));
+    expect(await screen.findByRole("button", { name: "Support email copied" })).toBeInTheDocument();
+
     // directly above the logout button
-    expect(link.nextElementSibling).toBe(screen.getByRole("button", { name: /Logout/ }));
+    const support = container.querySelector(".sidebar__support");
+    expect(support?.nextElementSibling).toBe(screen.getByRole("button", { name: /Logout/ }));
+  });
+
+  it("opens the contact page inside the app", () => {
+    render(
+      <MemoryRouter initialEntries={["/dashboard"]}>
+        <Routes>
+          <Route path="*" element={<Sidebar />} />
+          <Route path="/contact-us" element={<p>Contact page</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Need help?" }));
+    expect(screen.getByText("Contact page")).toBeInTheDocument();
   });
 
   it("shows the business name without a logo or photo", () => {

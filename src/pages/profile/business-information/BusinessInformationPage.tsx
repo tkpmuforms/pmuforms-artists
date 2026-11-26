@@ -22,6 +22,9 @@ import { refreshAuthUser } from "../../../utils/authUtils";
 import { formatUSPhone, type OwnerDetails } from "../../../utils/ownerDetails";
 import "./business-information-page.scss";
 
+/** services shown before "Show all", so the card stays short */
+const SERVICES_PREVIEW = 12;
+
 /** The business's details, the owner's own details, and the services offered. */
 const BusinessInformationPage: React.FC = () => {
   const { user } = useAuth();
@@ -33,6 +36,14 @@ const BusinessInformationPage: React.FC = () => {
   // the owner's name and phone live on their profile, apart from the business
   const [owner, setOwner] = useState<OwnerDetails | null>(null);
   const registeredServices = user?.services || [];
+  const [showAllServices, setShowAllServices] = useState(false);
+  const hiddenServices = Math.max(
+    0,
+    registeredServices.length - SERVICES_PREVIEW,
+  );
+  const shownServices = showAllServices
+    ? registeredServices
+    : registeredServices.slice(0, SERVICES_PREVIEW);
   const hasSignature = Boolean(user?.signature_url);
 
   useEffect(() => {
@@ -180,19 +191,36 @@ const BusinessInformationPage: React.FC = () => {
             aria-label="Services"
           >
             <div className="section-content">
-              <label>Registered Services</label>
-              <div className="services-list">
-                {registeredServices.length > 0 ? (
-                  registeredServices.map((service: Service, index) => (
-                    <div key={index} className="service-item">
-                      <span className="service-bullet">•</span>
-                      {service.service}
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-services">No services registered yet</div>
-                )}
-              </div>
+              <label>
+                Registered Services
+                {registeredServices.length > 0 &&
+                  ` (${registeredServices.length})`}
+              </label>
+              {registeredServices.length > 0 ? (
+                <>
+                  <ul className="services-list" aria-label="Registered services">
+                    {shownServices.map((service: Service, index) => (
+                      <li key={index} className="service-item">
+                        {service.service}
+                      </li>
+                    ))}
+                  </ul>
+                  {hiddenServices > 0 && (
+                    <button
+                      type="button"
+                      className="services-toggle"
+                      onClick={() => setShowAllServices((v) => !v)}
+                      aria-expanded={showAllServices}
+                    >
+                      {showAllServices
+                        ? "Show fewer"
+                        : `Show all ${registeredServices.length} services`}
+                    </button>
+                  )}
+                </>
+              ) : (
+                <div className="no-services">No services registered yet</div>
+              )}
             </div>
             <button
               className="edit-button"

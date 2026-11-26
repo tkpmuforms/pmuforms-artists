@@ -11,6 +11,9 @@ vi.mock("../../../services/artistServices", () => ({
   updateMySignature: vi.fn(),
   updateBusinessInfo: vi.fn(),
 }));
+const auth = vi.hoisted(() => ({
+  services: [] as { id: number; service: string }[],
+}));
 vi.mock("../../../context/useAuth", () => ({
   default: () => ({
     user: {
@@ -20,7 +23,7 @@ vi.mock("../../../context/useAuth", () => ({
       businessPhoneNumber: "(512) 555-0100",
       businessAddress: "1 Main St",
       website: "glow.com",
-      services: [],
+      services: auth.services,
     },
   }),
 }));
@@ -129,5 +132,28 @@ describe("owner phone numbers", () => {
     expect(toE164USPhone("(512) 555-0142")).toBe("+15125550142");
     expect(toE164USPhone("+1 (512) 555-0142")).toBe("+15125550142");
     expect(toE164USPhone("")).toBe("");
+  });
+
+  it("keeps a long services list short, with a way to show them all", async () => {
+    mocked.getMyProfile.mockResolvedValue({ data: { profile: {} } } as never);
+    auth.services = Array.from({ length: 31 }, (_, i) => ({
+      id: i + 1,
+      service: `Service ${i + 1}`,
+    }));
+    const user = userEvent.setup();
+    render(<BusinessInformationPage />);
+
+    const list = screen.getByRole("list", { name: "Registered services" });
+    expect(within(list).getAllByRole("listitem")).toHaveLength(12);
+    expect(screen.getByText("Registered Services (31)")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Edit Business Services/ }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Show all 31 services" }));
+    expect(within(list).getAllByRole("listitem")).toHaveLength(31);
+    await user.click(screen.getByRole("button", { name: "Show fewer" }));
+    expect(within(list).getAllByRole("listitem")).toHaveLength(12);
+    auth.services = [];
   });
 });
