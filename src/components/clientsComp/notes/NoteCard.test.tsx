@@ -134,3 +134,24 @@ describe("notes that record communication with the client", () => {
     expect(onCancelScheduled).toHaveBeenCalledWith(scheduled);
   });
 });
+
+describe("NoteCard: who wrote it", () => {
+  it("names the author next to the date when given one", () => {
+    render(
+      <NoteCard
+        note={note()}
+        isSelected={false}
+        onNoteClick={vi.fn()}
+        onDeleteNote={vi.fn()}
+        formatDate={(d) => d.slice(0, 10)}
+        author="Mia Ross"
+      />,
+    );
+    expect(screen.getByText("Created: 2026-11-18 · by Mia Ross")).toBeInTheDocument();
+  });
+
+  it("shows only the date without one", () => {
+    renderCard(note());
+    expect(screen.getByText("Created: 2026-11-18")).toBeInTheDocument();
+  });
+});

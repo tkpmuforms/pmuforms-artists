@@ -1,4 +1,4 @@
-import { Calendar, CheckCircle2, Clock, PenLine } from "lucide-react";
+import { CheckCircle2, Clock, PenLine } from "lucide-react";
 import type React from "react";
 import {
   AppointmentSvg,
@@ -36,9 +36,18 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   onRequestPayment,
   onAddProducts,
 }) => {
-  const primaryService = appointment.serviceDetails?.[0];
-  const serviceName = primaryService?.service || "Unknown Service";
+  // every service done at this appointment, not just the first
+  const serviceNames = (appointment.serviceDetails ?? [])
+    .map((s) => s?.service)
+    .filter((name): name is string => !!name);
   const appointmentDate = formatAppointmentTime(appointment.date);
+  // the card is on one client's page, so the date is what tells their
+  // appointments apart; the year only when it isn't this one
+  const year = new Date(appointment.date).getFullYear();
+  const title =
+    year && year !== new Date().getFullYear()
+      ? `${appointmentDate}, ${year}`
+      : appointmentDate;
   const formFilledDate = appointment.allFormsCompleted
     ? `${appointmentDate}`
     : "Not completed yet";
@@ -61,14 +70,16 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           <div className="service-icon">
             <AppointmentSvg />
           </div>
+          {/* "Completed" sits under the name, as on mobile, so the header
+              never runs wider than the card */}
           <div className="service-content">
-            <h3>{serviceName}</h3>
+            <h3>{title}</h3>
+            {appointment.completedAt && (
+              <span className="completed-chip">
+                <CheckCircle2 size={12} /> Completed
+              </span>
+            )}
           </div>
-          {appointment.completedAt && (
-            <span className="completed-chip">
-              <CheckCircle2 size={12} /> Completed
-            </span>
-          )}
           <div className="form-status">
             {appointment.signed ? (
               <span className="status-pill status-pill--signed">
@@ -84,7 +95,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         <AppointmentActionsMenu
           signed={appointment.signed}
           completedAt={appointment.completedAt}
-          label={`${serviceName} on ${appointmentDate}`}
+          label={`${serviceNames.join(", ") || "Appointment"} on ${appointmentDate}`}
           onViewForms={() => onViewForms(appointment.id)}
           onViewNotes={onViewNotes}
           onShareFormLink={
@@ -103,14 +114,18 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
       </div>
 
       <div className="appointment-details">
+        {serviceNames.length ? (
+          <ul className="service-chips" aria-label="Services">
+            {serviceNames.map((name, i) => (
+              <li key={`${name}-${i}`}>{name}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="service-chips service-chips--empty">
+            Service not specified
+          </p>
+        )}
         <div className="detail-row">
-          <div className="detail-item">
-            <div className="detail-header">
-              <Calendar size={16} />
-              <span className="detail-label">Appointment Date</span>
-            </div>
-            <span className="detail-value">{appointmentDate}</span>
-          </div>
 
           <div className="detail-item">
             <div className="detail-header">

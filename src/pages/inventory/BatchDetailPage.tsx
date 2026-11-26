@@ -30,6 +30,7 @@ import {
   formatQty,
   formatWhen,
 } from "../../utils/inventory";
+import { useWhoDid } from "../../utils/teamPeople";
 
 const BatchDetailPage: React.FC = () => (
   <InventoryGate>
@@ -41,6 +42,7 @@ const BatchDetailView: React.FC = () => {
   const { batchId = "" } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const who = useWhoDid();
   const [batch, setBatch] = useState<BatchDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [adjusting, setAdjusting] = useState(false);
@@ -309,7 +311,9 @@ const BatchDetailView: React.FC = () => {
                   <td data-label="Before → after" className="inv-num">
                     {t.previousQty} → {t.newQty}
                   </td>
-                  <td data-label="By">{byLabel(t.performedBy, me)}</td>
+                  <td data-label="By">
+                    {who.label(t.performedBy) || byLabel(t.performedBy, me)}
+                  </td>
                   <td data-label="Reason / notes">
                     {[t.reason, t.notes, t.referenceId && `Ref ${t.referenceId}`]
                       .filter(Boolean)

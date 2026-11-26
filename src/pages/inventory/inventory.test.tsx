@@ -15,6 +15,10 @@ import InventoryPage from "./InventoryPage";
 import ProductFormPage from "./ProductFormPage";
 import ReceiveStockPage from "./ReceiveStockPage";
 
+// someone working alone: no names, and no request for them
+vi.mock("../../utils/teamPeople", () => ({
+  useWhoDid: () => ({ hasTeam: false, label: () => "" }),
+}));
 vi.mock("../../services/inventoryServices", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../services/inventoryServices")>();
   const fns = [

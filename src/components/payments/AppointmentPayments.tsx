@@ -66,7 +66,7 @@ const AppointmentPayments: React.FC<Props> = ({
   const [requests, setRequests] = useState<PaymentRequest[] | null>(null);
   const [creating, setCreating] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, isMember } = useAuth();
   // requesting payments is part of the paid plan; past requests stay visible
   const subscribed = isArtistSubscribed(user);
   const [showPlans, setShowPlans] = useState(false);
@@ -100,9 +100,14 @@ const AppointmentPayments: React.FC<Props> = ({
             Reconnect Square to request deposits and payments from clients. This
             gives PMU Forms permission to create Square payment links for you.
           </p>
-          <Link to="/integrations" className="inv-btn inv-btn--sm">
-            Go to Integrations
-          </Link>
+          {/* integrations are the owner's */}
+          {isMember ? (
+            <p className="inv-small">Ask the account owner to reconnect it.</p>
+          ) : (
+            <Link to="/integrations" className="inv-btn inv-btn--sm">
+              Go to Integrations
+            </Link>
+          )}
         </div>
       </section>
     );
@@ -175,7 +180,8 @@ const AppointmentPayments: React.FC<Props> = ({
           >
             <Plus size={14} /> Request payment
           </button>
-        ) : (
+        ) : isMember ? null : (
+          // billing is the owner's
           <button
             className="inv-btn inv-btn--sm"
             onClick={() => setShowPlans(true)}

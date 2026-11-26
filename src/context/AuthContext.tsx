@@ -7,8 +7,8 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setAuthenticated, setLoading, setUser } from "../redux/auth";
-import { User } from "../redux/types";
+import { setAuthenticated, setLoading, setMe, setUser } from "../redux/auth";
+import { Me, User } from "../redux/types";
 import axiosInstance, {
   getAccessToken,
   isValidToken,
@@ -34,6 +34,10 @@ interface AuthContextValue {
   handleAuthSuccess: (user: User, token: string) => void;
   handleAuthFail: () => void;
   user: User;
+  /** the owner or a team member, once known */
+  me: Me | null;
+  /** a team member: no Settings, billing or integrations */
+  isMember: boolean;
   isAuthenticated: boolean;
   loading: boolean;
 }
@@ -44,6 +48,8 @@ const AuthContext = createContext<AuthContextValue>({
   handleAuthSuccess: () => {},
   handleAuthFail: () => {},
   user: {} as User,
+  me: null,
+  isMember: false,
   isAuthenticated: false,
   loading: false,
 });
@@ -55,7 +61,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, isAuthenticated, loading } = useSelector(
+  const { user, me, isAuthenticated, loading } = useSelector(
     (state: RootState) => state.auth
   );
   const initializationStarted = useRef(false);
@@ -66,6 +72,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const handleAuthSuccess = (user: User, token: string) => {
     dispatch(setLoading(false));
     dispatch(setUser(user));
+    // who is signing in (owner or team member) loads next; see TeamGate
+    dispatch(setMe(null));
     dispatch(setAuthenticated(true));
     setAuthHeader(token);
   };
@@ -75,6 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     dispatch(setLoading(false));
     dispatch(setAuthenticated(false));
     dispatch(setUser({}));
+    dispatch(setMe(null));
     setAuthHeader();
   }, [dispatch]);
 
@@ -153,6 +162,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     dispatch(setLoading(false));
     dispatch(setAuthenticated(false));
     dispatch(setUser({}));
+    dispatch(setMe(null));
 
     const rawUri = localStorage.getItem("businessUri");
     const businessUri =
@@ -173,6 +183,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     handleAuthSuccess,
     handleAuthFail,
     user,
+    me: me ?? null,
+    isMember: me?.role === "member",
     isAuthenticated,
     loading: loading || mobileAuthPending,
   };

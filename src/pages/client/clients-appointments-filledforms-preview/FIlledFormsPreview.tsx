@@ -33,6 +33,8 @@ const FilledFormsPreview = () => {
   const [forms, setForms] = useState<LoadedForm[]>([]);
   const [loading, setLoading] = useState(true);
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
+  // who did the procedure, saved when the appointment was signed
+  const [performedBy, setPerformedBy] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,6 +88,9 @@ const FilledFormsPreview = () => {
             ? appointment.signature_url
             : null,
         );
+        setPerformedBy(
+          appointment?.signed ? appointment?.performedBy?.name || null : null,
+        );
         setForms(loaded);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -108,6 +113,7 @@ const FilledFormsPreview = () => {
       contentHtml: contentRef.current?.innerHTML || "",
       customerSignatureUrl: signatureUrl,
       artistSignatureUrl: user?.signature_url,
+      performedBy,
     });
     if (!opened) toast.error("Please allow pop-ups to generate PDF");
   };

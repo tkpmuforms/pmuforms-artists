@@ -5,6 +5,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import "./add-client-modal.scss";
 import { createClient } from "../../services/artistServices";
+import { getApiErrorMessage } from "../../utils/formLinks";
 import toast from "react-hot-toast";
 
 interface AddClientModalProps {
@@ -65,7 +66,10 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
       })
       .catch((error) => {
         console.error("Error adding client:", error);
-        toast.error("Failed to add client. Please try again.");
+        // the API's reason, e.g. this client is already in the list
+        toast.error(
+          getApiErrorMessage(error, "Failed to add client. Please try again."),
+        );
       });
   };
 

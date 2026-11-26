@@ -22,6 +22,7 @@ import AppointmentPayments from "../../../components/payments/AppointmentPayment
 import AppointmentProducts from "../../../components/inventoryComp/AppointmentProducts";
 import { formServices, isFormFilled } from "../../../utils/appointmentForms";
 import { formatAppointmentTime } from "../../../utils/utils";
+import { useWhoDid } from "../../../utils/teamPeople";
 
 const ClientsFormsForAppointments: React.FC = () => {
   const { id, appointmentId } = useParams();
@@ -32,9 +33,20 @@ const ClientsFormsForAppointments: React.FC = () => {
   // loaded fresh so a just-signed appointment never shows "Sign" again
   const [appointment, setAppointment] = useState<Pick<
     Appointment,
-    "signed" | "allFormsCompleted" | "date" | "serviceDetails" | "completedAt"
+    | "signed"
+    | "allFormsCompleted"
+    | "date"
+    | "serviceDetails"
+    | "completedAt"
+    | "createdBy"
+    | "performedBy"
   > | null>(null);
   const navigate = useNavigate();
+  // with a team: who booked it and who signed it off
+  const who = useWhoDid();
+  const bookedBy = who.hasTeam ? who.label(appointment?.createdBy) : "";
+  const signedBy =
+    who.hasTeam && appointment?.signed ? who.label(appointment.performedBy) : "";
 
   const onViewForm = (formId: string) => {
     navigate(`/clients/${id}/appointments/${appointmentId}/forms/${formId}`);
@@ -177,6 +189,18 @@ const ClientsFormsForAppointments: React.FC = () => {
                   {filledCount} of {forms.length} filled
                   {appointment.signed ? " · signed" : ""}
                 </span>
+              </div>
+            )}
+            {bookedBy && (
+              <div className="appointment-summary__item">
+                <span className="appointment-summary__label">Booked by</span>
+                <span className="appointment-summary__value">{bookedBy}</span>
+              </div>
+            )}
+            {signedBy && (
+              <div className="appointment-summary__item">
+                <span className="appointment-summary__label">Signed off by</span>
+                <span className="appointment-summary__value">{signedBy}</span>
               </div>
             )}
           </section>

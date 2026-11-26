@@ -7,12 +7,18 @@ import {
   HelpCircle,
   Key,
   LogOut,
+  UserRound,
+  Users,
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import ChangePasswordModal from "../../components/profileComp/ChangePasswordModal";
 import EditBusinessInformationModal from "../../components/profileComp/EditBusinessInformationModal";
+import MemberNameModal from "../../components/team/MemberNameModal";
+import { setMe } from "../../redux/auth";
+import { forgetTeamPeople } from "../../utils/teamPeople";
 import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
 import useAuth from "../../context/useAuth";
 import type { OnboardingStep } from "../auth/authUtils";
@@ -27,7 +33,11 @@ interface LocationState {
 }
 
 const ProfilePage: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, me } = useAuth();
+  const dispatch = useDispatch();
+  // a team member: their own name and login only; the rest is the owner's
+  const member = me?.role === "member" ? me : null;
+  const [showMemberName, setShowMemberName] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as LocationState;
@@ -83,11 +93,16 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const profileMenuItems = [
+  const ownerItems = [
     {
       icon: <Building2 size={10} />,
       title: "Business Information",
       onClick: () => navigate("/profile/business-information"),
+    },
+    {
+      icon: <Users size={10} />,
+      title: "Team",
+      onClick: () => navigate("/profile/team"),
     },
     {
       icon: <Key size={10} />,
@@ -99,6 +114,27 @@ const ProfilePage: React.FC = () => {
       title: "Payment & Subscriptions",
       onClick: () => navigate("/profile/payment"),
     },
+  ];
+  const memberItems = [
+    {
+      icon: <UserRound size={10} />,
+      title: "Your Name",
+      onClick: () => setShowMemberName(true),
+    },
+    {
+      icon: <Key size={10} />,
+      title: "Change Password",
+      onClick: () => setShowChangePassword(true),
+    },
+  ];
+
+  const profileMenuItems: {
+    icon: React.ReactNode;
+    title: string;
+    onClick: () => void;
+    variant?: "danger";
+  }[] = [
+    ...(member ? memberItems : ownerItems),
     {
       icon: <HelpCircle size={10} />,
       title: "Help & Support",
@@ -137,13 +173,25 @@ const ProfilePage: React.FC = () => {
           <div className="profile-page__user">
             <div className="profile-page__user-info">
               <h1>{user?.businessName}</h1>
-              <button
-                className="profile-page__edit-btn"
-                onClick={() => navigate("/profile/business-information")}
-              >
-                <Edit size={20} />
-                Edit business info
-              </button>
+              {member ? (
+                <p className="profile-page__member-note">
+                  Signed in as{" "}
+                  {member.firstName
+                    ? `${member.firstName} ${member.lastName} (${member.email})`
+                    : member.email}
+                  , on {member.ownerName ? `${member.ownerName}'s` : "the owner's"}{" "}
+                  team. Business details, billing and integrations are managed
+                  by the owner.
+                </p>
+              ) : (
+                <button
+                  className="profile-page__edit-btn"
+                  onClick={() => navigate("/profile/business-information")}
+                >
+                  <Edit size={20} />
+                  Edit business info
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -226,6 +274,24 @@ const ProfilePage: React.FC = () => {
           onClose={() => setShowUpdateServices(false)}
           onGoBack={() => {
             setShowUpdateServices(false);
+          }}
+        />
+      )}
+
+      {showMemberName && member && (
+        <MemberNameModal
+          initial={{ firstName: member.firstName, lastName: member.lastName }}
+          onClose={() => setShowMemberName(false)}
+          onSaved={(name) => {
+            setShowMemberName(false);
+            forgetTeamPeople();
+            dispatch(
+              setMe({
+                ...member,
+                ...name,
+                name: `${name.firstName} ${name.lastName}`,
+              }),
+            );
           }}
         />
       )}

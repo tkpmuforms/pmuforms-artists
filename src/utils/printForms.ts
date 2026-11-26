@@ -26,12 +26,13 @@ const escapeHtml = (text: string) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const signatureBlock = (label: string, src: string) => `
+const signatureBlock = (label: string, src: string, caption?: string) => `
   <div class="signature-item">
     <h4>${label}</h4>
     <div class="signature-container">
       <img src="${escapeHtml(src)}" alt="${label}" style="max-width: 300px; max-height: 150px; border-bottom: 1px solid #999; display: block;" />
     </div>
+    ${caption ? `<p class="signature-caption">${escapeHtml(caption)}</p>` : ""}
   </div>`;
 
 const PRINT_STYLES = `
@@ -50,6 +51,7 @@ const PRINT_STYLES = `
   .signatures-container { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 15px; }
   .signature-item { flex: 1; min-width: 250px; }
   .signature-container { margin-top: 10px; }
+  .signature-caption { margin: 8px 0 0; font-size: 14px; color: #333; }
   img { max-width: 100%; height: auto; }
   @media print {
     body { margin: 0; }
@@ -65,6 +67,11 @@ export const printFormsAsPdf = async (params: {
   contentHtml: string;
   customerSignatureUrl?: string | null;
   artistSignatureUrl?: string | null;
+  /**
+   * Who did the procedure. The artist signature is the owner's on file (a
+   * team member has none of their own yet), so the record names who did it.
+   */
+  performedBy?: string | null;
 }): Promise<boolean> => {
   // open before any await so browsers treat it as user-initiated
   const printWindow = window.open("", "_blank");
@@ -81,7 +88,15 @@ export const printFormsAsPdf = async (params: {
   const signatures = customerSignature
     ? `<div class="signature-section"><div class="signatures-container">
         ${signatureBlock("Customer Signature", customerSignature)}
-        ${artistSignature ? signatureBlock("Artist Signature", artistSignature) : ""}
+        ${
+          artistSignature
+            ? signatureBlock(
+                "Artist Signature",
+                artistSignature,
+                params.performedBy ? `Performed by: ${params.performedBy}` : undefined,
+              )
+            : ""
+        }
       </div></div>`
     : "";
 

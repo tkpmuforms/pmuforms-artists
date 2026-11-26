@@ -17,6 +17,7 @@ import "./square-services-mapping.scss";
 import "../../components/inventoryComp/inventory.scss";
 import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
 import { isArtistSubscribed } from "../../utils/subscriptionUtils";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 // Shape returned by GET /api/integrations/square/services
 // (see pmuforms-api src/integrations/square/square.mapper.ts)
@@ -170,8 +171,10 @@ const SquareServicesMapping: React.FC = () => {
       .catch((error) => {
         console.error("Error loading Square mappings:", error);
         setLoadError(
-          error?.response?.data?.message ||
+          getApiErrorMessage(
+            error,
             "We couldn't load your Square services. Make sure Square is connected, then try again.",
+          ),
         );
       })
       .finally(() => setLoading(false));
@@ -278,11 +281,11 @@ const SquareServicesMapping: React.FC = () => {
       })
       .catch((error) => {
         console.error("Error saving Square mappings:", error);
-        const message = error?.response?.data?.message;
         toast.error(
-          Array.isArray(message)
-            ? message.join(", ")
-            : message || "Could not save your mappings. Please try again.",
+          getApiErrorMessage(
+            error,
+            "Could not save your mappings. Please try again.",
+          ),
         );
       })
       .finally(() => setSaving(false));

@@ -3,8 +3,11 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import Sidebar from "./Sidebar";
 
+const auth = vi.hoisted(() => ({ isMember: false }));
+
 vi.mock("../../../context/useAuth.ts", () => ({
   default: () => ({
+    isMember: auth.isMember,
     user: {
       userId: "artist-1",
       firstName: "Ada",
@@ -37,5 +40,19 @@ describe("Sidebar", () => {
     );
     expect(screen.getByRole("heading", { name: "Brow Studio" })).toBeInTheDocument();
     expect(container.querySelector("img")).toBeNull();
+  });
+
+  it("hides the owner's areas from a team member", () => {
+    auth.isMember = true;
+    render(
+      <MemoryRouter>
+        <Sidebar />
+      </MemoryRouter>,
+    );
+    auth.isMember = false;
+    expect(screen.queryByRole("button", { name: /Integrations/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Refer/ })).toBeNull();
+    expect(screen.getByRole("button", { name: /Clients/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Settings/ })).toBeInTheDocument();
   });
 });

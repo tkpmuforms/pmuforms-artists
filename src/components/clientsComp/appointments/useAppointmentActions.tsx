@@ -49,8 +49,13 @@ export const useAppointmentActions = ({
   onCompleted?: (appointmentId: string, completedAt: string) => void;
 } = {}) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isMember } = useAuth();
   const subscribed = isArtistSubscribed(user);
+  // billing is the owner's: a team member is told to ask them instead
+  const showPlansOrAsk = () =>
+    isMember
+      ? toast.error("This is part of a PMU Forms subscription. Ask the account owner to subscribe.")
+      : setShowPlans(true);
   // payments need Square: the menu item only appears for Square-connected artists
   const [square, setSquare] = useState<SquarePaymentStatus | null>(null);
   const [active, setActive] = useState<Active | null>(null);
@@ -70,10 +75,17 @@ export const useAppointmentActions = ({
       return () =>
         subscribed
           ? setActive({ ...target, kind: "payment" })
-          : setShowPlans(true);
+          : showPlansOrAsk();
     }
     if (square?.reconnectRequired) {
       return () => {
+        // integrations are the owner's
+        if (isMember) {
+          toast.error(
+            "Square needs reconnecting before payments can be requested. Ask the account owner to reconnect it.",
+          );
+          return;
+        }
         toast.error(
           "Reconnect Square to request payments. It needs permission to create payment links.",
         );
@@ -99,7 +111,7 @@ export const useAppointmentActions = ({
     onRequestPayment: requestPayment(target),
     // products are part of inventory, which is part of the paid plan
     onAddProducts: () =>
-      subscribed ? setActive({ ...target, kind: "products" }) : setShowPlans(true),
+      subscribed ? setActive({ ...target, kind: "products" }) : showPlansOrAsk(),
     onDelete: () => setActive({ ...target, kind: "delete" }),
   });
 

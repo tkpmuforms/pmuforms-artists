@@ -25,6 +25,7 @@ import {
   getSubscriptionFromStorage,
 } from "../../utils/subscriptionUtils";
 import { refreshAuthUser } from "../../utils/authUtils";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 interface Card {
   id: string;
@@ -156,9 +157,8 @@ const SelectPaymentMethodModal = ({
       // "once" coupons only take money off the first payment
       setAppliedCoupon(couponToApplied(trimmed, data?.coupon));
       setCouponCode("");
-    } catch (err: any) {
-      const msg = err.response?.data?.message || err.response?.data?.error || "Invalid coupon code";
-      setCouponError(msg);
+    } catch (err) {
+      setCouponError(getApiErrorMessage(err, "Invalid coupon code"));
     } finally {
       setCouponLoading(false);
     }
@@ -242,11 +242,11 @@ const SelectPaymentMethodModal = ({
       }
 
       onClose();
-    } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        "Payment failed. Please try again.";
+    } catch (err) {
+      const errorMessage = getApiErrorMessage(
+        err,
+        "Payment failed. Please try again.",
+      );
       setError(errorMessage);
       toast.error(errorMessage);
       console.error("Error making payment:", err);

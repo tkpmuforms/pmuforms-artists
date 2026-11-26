@@ -342,7 +342,7 @@ const AppointmentProducts: React.FC<{
   services?: AppointmentService[];
   completed?: boolean;
 }> = ({ appointmentId, clientName, services = [], completed = false }) => {
-  const { user } = useAuth();
+  const { user, isMember } = useAuth();
   const subscribed = isArtistSubscribed(user);
   const location = useLocation();
   const sectionRef = useRef<HTMLElement>(null);
@@ -395,12 +395,15 @@ const AppointmentProducts: React.FC<{
               subscription.
             </p>
           </div>
-          <button
-            className="inv-btn inv-btn--sm"
-            onClick={() => setShowPlans(true)}
-          >
-            See plans
-          </button>
+          {/* billing is the owner's */}
+          {!isMember && (
+            <button
+              className="inv-btn inv-btn--sm"
+              onClick={() => setShowPlans(true)}
+            >
+              See plans
+            </button>
+          )}
         </div>
         {showPlans && <SubscriptionModal onClose={() => setShowPlans(false)} />}
       </section>

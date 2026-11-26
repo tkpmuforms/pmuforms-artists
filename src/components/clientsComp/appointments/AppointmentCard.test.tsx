@@ -46,6 +46,32 @@ const menuLabels = (menu: HTMLElement) =>
   );
 
 describe("AppointmentCard", () => {
+  it("titles the card by date and shows every service as a chip", () => {
+    renderCard(
+      appointment({
+        date: "2025-03-04T15:00:00.000Z",
+        serviceDetails: [
+          { _id: "s1", id: 1, service: "Microblading" },
+          { _id: "s2", id: 2, service: "Lip Blush" },
+          { _id: "s3", id: 100001, service: "Brow Lamination" },
+        ],
+      }),
+    );
+
+    const title = screen.getByRole("heading", { level: 3 });
+    // another year, so the year is shown
+    expect(title).toHaveTextContent(/Mar 4.*2025/);
+    const chips = within(screen.getByRole("list", { name: "Services" }))
+      .getAllByRole("listitem")
+      .map((li) => li.textContent);
+    expect(chips).toEqual(["Microblading", "Lip Blush", "Brow Lamination"]);
+  });
+
+  it("says when no service was recorded", () => {
+    renderCard(appointment({ serviceDetails: [] }));
+    expect(screen.getByText("Service not specified")).toBeInTheDocument();
+  });
+
   it("shows signed forms as signed, not just completed", () => {
     const { prompt } = renderCard(appointment({ signed: true }));
 

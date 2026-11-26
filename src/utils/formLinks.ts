@@ -1,17 +1,9 @@
 import toast from "react-hot-toast";
 import { createFormLink } from "../services/artistServices";
+import { getApiErrorMessage } from "./apiError";
 
-export const getApiErrorMessage = (error: unknown, fallback: string) => {
-  // axiosSetup's interceptor rejects with the response body itself, so the
-  // API's message is usually on the error directly
-  const err = error as {
-    message?: unknown;
-    response?: { data?: { message?: unknown } };
-  };
-  const message = err?.response?.data?.message ?? err?.message;
-  if (Array.isArray(message)) return message.join(", ");
-  return typeof message === "string" && message ? message : fallback;
-};
+// shared by many screens; kept here too for the imports that use this path
+export { getApiErrorMessage };
 
 /**
  * Generates a fresh form link and opens it in a new tab so the client can

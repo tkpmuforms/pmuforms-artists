@@ -1,6 +1,7 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import "./signup.scss";
+import { savedTeamInvite } from "../../../utils/teamInvite";
 
 interface EmailStepProps {
   onEmailSubmit: (email: string) => void;
@@ -9,7 +10,8 @@ interface EmailStepProps {
 
 const EmailStep: React.FC<EmailStepProps> = ({ onEmailSubmit, isMobile }) => {
   const initialValues = {
-    email: "",
+    // an invited team member signs up with the invited email
+    email: savedTeamInvite()?.email ?? "",
   };
 
   const validationSchema = Yup.object({

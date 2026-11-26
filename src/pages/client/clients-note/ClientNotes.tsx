@@ -25,6 +25,7 @@ import {
 import { formatDate } from "../../../utils/utils";
 import { getApiErrorMessage } from "../../../utils/formLinks";
 import { formatSendAt } from "../../../utils/notes";
+import { useWhoDid } from "../../../utils/teamPeople";
 import {
   NOTE_RANGES,
   NOTE_TYPES,
@@ -42,6 +43,12 @@ import { Camera, Plus, Search, X } from "lucide-react";
 const ClientNotesPage: React.FC = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const who = useWhoDid();
+  // the app writes records (emails, client photos); people write notes
+  const authorOf = (note: Note) =>
+    who.hasTeam && (!note.kind || note.kind === "note")
+      ? who.label(note.addedBy, { ownerIfMissing: true }) || undefined
+      : undefined;
   const { clientName } = location.state || {};
   const { clientId } = useParams<{ clientId: string }>();
   const [showNotesModal, setShowNotesModal] = useState(false);
@@ -423,6 +430,7 @@ const ClientNotesPage: React.FC = () => {
                   formatDate={formatDate}
                   appointmentLabel={labelFor(note)}
                   onCancelScheduled={setScheduledToCancel}
+                  author={authorOf(note)}
                 />
               ))}
             </div>

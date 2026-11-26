@@ -34,7 +34,8 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
   ({ activeItem, onItemClick, className = "" }, ref) => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const { user, logout } = useAuth();
+    const { user, logout, isMember } = useAuth();
+    const menu = isMember ? Menu.filter((item) => !item.ownerOnly) : Menu;
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -48,7 +49,7 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
       if (activeItem) return activeItem;
 
       const currentPath = location.pathname;
-      const activeMenuItem = Menu.find(
+      const activeMenuItem = menu.find(
         (item) =>
           currentPath === item.basePath ||
           currentPath.startsWith(item.basePath + "/")
@@ -130,7 +131,7 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
 
           <nav className="sidebar__nav">
             <ul className="sidebar__menu">
-              {Menu.map((item) => {
+              {menu.map((item) => {
                 const isActive = currentActiveItem === item.TSKey;
                 return (
                   <li key={item.TSKey} className="sidebar__menu-item">

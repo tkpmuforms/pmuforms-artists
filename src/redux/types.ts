@@ -80,6 +80,9 @@ export interface Appointment {
   formsToFillCount: number;
   // set when the artist marks the procedure done
   completedAt?: string | null;
+  // who booked it, and who signed it off (since teams)
+  createdBy?: ActorRef;
+  performedBy?: ActorRef;
   // sent with the appointment list
   customer?: {
     id: string;
@@ -263,6 +266,8 @@ export interface Note {
   messageType?: string;
   messageId?: string;
   sendAt?: string;
+  // who wrote it (since teams; older notes are the owner's)
+  addedBy?: ActorRef;
 }
 
 export interface Card {
@@ -280,4 +285,26 @@ export interface SubscriptionHistory {
   cardUsed: string;
   amount: number;
   status: "Successful" | "Failed" | "Pending";
+}
+
+/**
+ * Who is signed in. A team member works in the owner's account (`user` is
+ * the owner's), but under their own name, and can't open Settings.
+ */
+export type Me =
+  | { id: string; role: "owner"; name: string }
+  | {
+      id: string;
+      role: "member";
+      name: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      ownerName: string;
+    };
+
+/** Who did something, saved with what they did. */
+export interface ActorRef {
+  id: string;
+  name: string;
 }

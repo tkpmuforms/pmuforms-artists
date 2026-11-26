@@ -5,6 +5,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import ClientsFormsForAppointments from "./ClientsFormsForAppointments";
 import * as api from "../../../services/artistServices";
 
+// someone working alone: no names, and no request for them
+vi.mock("../../../utils/teamPeople", () => ({
+  useWhoDid: () => ({ hasTeam: false, label: () => "" }),
+}));
 vi.mock("../../../services/artistServices", () => ({
   getAppointmentById: vi.fn(),
   getCustomerById: vi.fn(),

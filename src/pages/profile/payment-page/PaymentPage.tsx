@@ -34,6 +34,7 @@ import {
   getTransactionStatus,
 } from "../../../utils/utils";
 import "./payment.scss";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 const PaymentPage = () => {
   const { user } = useAuth();
@@ -168,10 +169,11 @@ const PaymentPage = () => {
           : "Welcome back! Your plan continues.",
       );
     } catch (error) {
-      const { response } = error as { response?: { data?: { message?: string } } };
       toast.error(
-        response?.data?.message ||
+        getApiErrorMessage(
+          error,
           "Couldn't resume your subscription. Please try again.",
+        ),
       );
     } finally {
       setResuming(false);

@@ -22,6 +22,8 @@ interface NoteCardProps {
   appointmentLabel?: string;
   // cancels a scheduled email
   onCancelScheduled?: (note: Note) => void;
+  // who wrote it, when the account has a team
+  author?: string;
 }
 
 const NoteCard: React.FC<NoteCardProps> = ({
@@ -33,6 +35,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
   formatDate,
   appointmentLabel,
   onCancelScheduled,
+  author,
 }) => {
   const isRecord = isRecordNote(note);
 
@@ -120,6 +123,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
         {note.kind === "scheduled-email"
           ? formatSendAt(note.sendAt)
           : getDisplayDate(note)}
+        {author && ` · by ${author}`}
       </p>
     </div>
   );

@@ -1,15 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User } from "./types";
+import { Me, User } from "./types";
 
 interface UserState {
   loading: boolean;
   user: User;
+  // the owner or a team member; null until /api/auth/me answers
+  me?: Me | null;
   isAuthenticated: boolean;
 }
 
 const initialState: UserState = {
   loading: true,
   user: {},
+  me: null,
   isAuthenticated: false,
 };
 
@@ -20,6 +23,9 @@ export const userSlice = createSlice({
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
     },
+    setMe: (state, action: PayloadAction<Me | null>) => {
+      state.me = action.payload;
+    },
     setAuthenticated: (state, action: PayloadAction<boolean>) => {
       state.isAuthenticated = action.payload;
     },
@@ -29,6 +35,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setUser, setLoading, setAuthenticated } = userSlice.actions;
+export const { setUser, setMe, setLoading, setAuthenticated } =
+  userSlice.actions;
 
 export default userSlice.reducer;

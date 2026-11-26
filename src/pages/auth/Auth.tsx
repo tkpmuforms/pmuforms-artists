@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   AppleLoginSvg,
   GoogleLoginSvg,
@@ -19,12 +19,20 @@ import { appleProvider, googleProvider } from "../../firebase/firebase";
 import "./auth.scss";
 import { HandleSocialLogin } from "./authUtils";
 import SavedCodeNotice from "./SavedCodeNotice";
+import TeamInviteNotice from "./TeamInviteNotice";
+import { teamInviteMismatch } from "../../utils/teamInvite";
 
 type AuthPage = "login" | "signup";
 type SignupStep = "email" | "password" | "verification";
 
 const Auth: React.FC = () => {
-  const [page, setPage] = useState<AuthPage>("login");
+  const location = useLocation();
+  // the join page sends invited people straight to signup or login
+  const [page, setPage] = useState<AuthPage>(
+    (location.state as { authPage?: AuthPage } | null)?.authPage === "signup"
+      ? "signup"
+      : "login",
+  );
   const [isMobile, setIsMobile] = useState(false);
   const [signupStep, setSignupStep] = useState<SignupStep>("email");
   const [signupEmail, setSignupEmail] = useState<string>("");
@@ -50,6 +58,12 @@ const Auth: React.FC = () => {
   };
 
   const handleEmailSubmit = (email: string) => {
+    // with a team invite open, another email would start a new business
+    const mismatch = teamInviteMismatch(email);
+    if (mismatch) {
+      toast.error(mismatch);
+      return;
+    }
     setSignupEmail(email);
     setSignupStep("password");
   };
@@ -105,7 +119,8 @@ const Auth: React.FC = () => {
             >
               <div className="auth-form-section">
                 <div className="auth-container">
-                  <SavedCodeNotice />
+                  <TeamInviteNotice />
+            <SavedCodeNotice />
                   {page === "login" ? (
                     <LoginPage />
                   ) : (
@@ -210,6 +225,7 @@ const Auth: React.FC = () => {
         <div className="auth-form-section">
           <div className="auth-container">
             {signupStep === "email" && <LogoSvg />}
+            <TeamInviteNotice />
             <SavedCodeNotice />
             {page === "login" ? (
               <LoginPage />

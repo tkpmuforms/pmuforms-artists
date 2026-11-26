@@ -13,7 +13,7 @@ interface DisplayElementProps {
 }
 
 const RouteGuard = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, isMember } = useAuth();
 
   if (loading) {
     return (
@@ -77,7 +77,13 @@ const RouteGuard = () => {
           key={route.path}
           path={route.path}
           element={displayElement({
-            element: route.element,
+            // Settings, billing and integrations are the owner's
+            element:
+              route.ownerOnly && isMember ? (
+                <Navigate to="/profile" replace />
+              ) : (
+                route.element
+              ),
             breadcrumbs: route.breadcrumbs,
             showAds: route.showAds,
           })}

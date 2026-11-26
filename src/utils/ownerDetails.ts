@@ -76,8 +76,12 @@ export const toE164USPhone = (phone: string): string => {
 
 /** The API's error message(s) as one string, or the fallback. */
 export const apiErrorText = (error: unknown, fallback: string): string => {
-  const raw = (error as { response?: { data?: { message?: unknown } } })
-    ?.response?.data?.message;
+  // axiosSetup's interceptor rejects with the response body itself
+  const err = error as {
+    message?: unknown;
+    response?: { data?: { message?: unknown } };
+  };
+  const raw = err?.response?.data?.message ?? err?.message;
   const messages = (Array.isArray(raw) ? raw : [raw]).filter(
     (m): m is string => typeof m === "string" && m.length > 0,
   );

@@ -3,6 +3,8 @@ export interface MenuItem {
   basePath: string;
   TSKey: string;
   icon?: string;
+  /** hidden from team members */
+  ownerOnly?: boolean;
 }
 
 export const Menu: MenuItem[] = [
@@ -46,12 +48,14 @@ export const Menu: MenuItem[] = [
     name: "Integrations",
     basePath: "/integrations",
     TSKey: "Integrations",
+    ownerOnly: true,
     icon: "integrations",
   },
   {
     name: "Refer & Earn",
     basePath: "/refer",
     TSKey: "Refer",
+    ownerOnly: true,
     icon: "refer",
   },
   {

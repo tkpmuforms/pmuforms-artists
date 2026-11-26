@@ -1,4 +1,4 @@
-import { lazy, ReactNode } from "react";
+import { lazy, ReactNode, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 import Auth from "../pages/auth/Auth.tsx";
 
@@ -87,11 +87,15 @@ const PaymentPage = lazy(
 const ServicesPage = lazy(
   () => import("../pages/services/ServicesPage.tsx")
 );
+const TeamPage = lazy(() => import("../pages/profile/team/TeamPage.tsx"));
+const JoinTeamPage = lazy(() => import("../pages/join/JoinTeamPage.tsx"));
 interface RouteProps {
   path: string;
   element: ReactNode;
   breadcrumbs?: string[];
   showAds?: boolean;
+  /** Settings, billing and integrations: team members are sent to Settings */
+  ownerOnly?: boolean;
 }
 
 export const authorizedRoutes: RouteProps[] = [
@@ -190,14 +194,22 @@ export const authorizedRoutes: RouteProps[] = [
   },
   {
     path: "/profile/edit",
+    ownerOnly: true,
     // owner's details are part of Business Information now
     element: <Navigate to="/profile/business-information" replace />,
     breadcrumbs: ["Settings", "Business Information"],
   },
   {
     path: "/profile/business-information",
+    ownerOnly: true,
     element: <BusinessInformationPage />,
     breadcrumbs: ["Settings", "Business Information"],
+  },
+  {
+    path: "/profile/team",
+    ownerOnly: true,
+    element: <TeamPage />,
+    breadcrumbs: ["Settings", "Team"],
   },
   {
     path: "/inventory",
@@ -236,21 +248,25 @@ export const authorizedRoutes: RouteProps[] = [
   },
   {
     path: "/integrations",
+    ownerOnly: true,
     element: <IntegrationsPage />,
     breadcrumbs: ["Integrations"],
   },
   {
     path: "/integrations/square/mapping",
+    ownerOnly: true,
     element: <SquareServicesMappingPage />,
     breadcrumbs: ["Integrations", "Services Mapping"],
   },
   {
     path: "/refer",
+    ownerOnly: true,
     element: <ReferPage />,
     breadcrumbs: ["Refer & Earn"],
   },
   {
     path: "/profile/payment",
+    ownerOnly: true,
     element: <PaymentPage />,
     breadcrumbs: ["Settings", "Payment"],
   },
@@ -270,6 +286,16 @@ export const nonAuthRoutes: RouteProps[] = [
   {
     path: "/",
     element: <Auth />,
+    breadcrumbs: [],
+  },
+  {
+    // a team invite link, before or after signing in
+    path: "/join/:token",
+    element: (
+      <Suspense fallback={null}>
+        <JoinTeamPage />
+      </Suspense>
+    ),
     breadcrumbs: [],
   },
 ];

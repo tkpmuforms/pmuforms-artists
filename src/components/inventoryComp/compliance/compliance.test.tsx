@@ -12,6 +12,10 @@ import DocumentDetailModal from "./DocumentDetailModal";
 import DocumentFormModal from "./DocumentFormModal";
 import { resetComplianceCatalog } from "./useComplianceCatalog";
 
+// someone working alone: no names, and no request for them
+vi.mock("../../../utils/teamPeople", () => ({
+  useWhoDid: () => ({ hasTeam: false, label: () => "" }),
+}));
 vi.mock("../../../services/inventoryServices", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../../services/inventoryServices")>();
   return {

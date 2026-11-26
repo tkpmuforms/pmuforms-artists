@@ -6,6 +6,8 @@ import "./authenticatedLayout.scss";
 import Sidebar, { type SidebarRef } from "./sidebar/Sidebar";
 import AuthenticatedNavbar from "./navbar/AuthenticatedNavbar";
 import SavedOfferPrompt from "../dashboardComp/SavedOfferPrompt";
+import TeamGate from "../team/TeamGate";
+import useAuth from "../../context/useAuth";
 
 interface AuthenticatedLayoutProps {
   children: ReactNode;
@@ -23,6 +25,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
   onNotificationClick,
   onAvatarClick,
 }) => {
+  const { isMember } = useAuth();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const sidebarRef = useRef<SidebarRef>(null);
 
@@ -69,8 +72,11 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
           onMobileMenuToggle={handleMobileMenuToggle}
         />
         <main className="authenticated-layout__main">
-          {/* a discount code from a link or QR code, until it's used */}
-          <SavedOfferPrompt />
+          {/* owner or team member; asks a new member for their name */}
+          <TeamGate />
+          {/* a discount code from a link or QR code, until it's used; billing
+              is the owner's, so never for team members */}
+          {!isMember && <SavedOfferPrompt />}
           {children}
         </main>
       </div>

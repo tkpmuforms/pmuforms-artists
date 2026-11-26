@@ -6,7 +6,7 @@ import SubscriptionModal from "../dashboardComp/SubScriptionModal";
 
 /** Inventory is part of the paid plan; everyone else sees what it offers. */
 const InventoryGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, isMember } = useAuth();
   const [showPlans, setShowPlans] = useState(false);
   const subscribed = !!(user?.appStorePurchaseActive || user?.stripeSubscriptionActive);
 
@@ -22,10 +22,16 @@ const InventoryGate: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           product's documentation in one place, and know exactly which clients
           received a batch if it's ever recalled.
         </p>
-        <p className="inv-muted">Inventory is included with a PMU Forms subscription.</p>
-        <button className="inv-btn inv-btn--primary" onClick={() => setShowPlans(true)}>
-          See plans
-        </button>
+        <p className="inv-muted">
+          Inventory is included with a PMU Forms subscription.
+          {/* billing is the owner's */}
+          {isMember && " Ask the account owner to subscribe."}
+        </p>
+        {!isMember && (
+          <button className="inv-btn inv-btn--primary" onClick={() => setShowPlans(true)}>
+            See plans
+          </button>
+        )}
       </div>
       {showPlans && <SubscriptionModal onClose={() => setShowPlans(false)} />}
     </div>

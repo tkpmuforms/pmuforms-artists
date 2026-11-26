@@ -1,6 +1,6 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { getAuthMe } from "../services/artistServices";
-import { setUser } from "../redux/auth";
+import { setMe, setUser } from "../redux/auth";
 
 /**
  * Refreshes the authenticated user data from the server and updates Redux store
@@ -25,6 +25,9 @@ export const refreshAuthUser = async (dispatch: Dispatch): Promise<void> => {
     const response = await getAuthMe();
     if (response?.data?.user) {
       dispatch(setUser(response.data.user));
+    }
+    if (response?.data?.me) {
+      dispatch(setMe(response.data.me));
     }
   } catch (error) {
     console.error("Error refreshing auth user:", error);

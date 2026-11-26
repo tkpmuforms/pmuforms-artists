@@ -149,6 +149,35 @@ describe("FilledFormsPreview", () => {
     expect(html).not.toContain("Download all as PDF");
   });
 
+  it("names who did the procedure under the owner's artist signature", async () => {
+    mocked.getAppointmentById.mockResolvedValue({
+      data: {
+        appointment: {
+          signed: true,
+          signature_url: "https://storage.example.com/client.png",
+          performedBy: { id: "m1", name: "Mia Ross" },
+        },
+      },
+    } as never);
+    const write = vi.fn();
+    vi.spyOn(window, "open").mockReturnValue({
+      document: { write, close: vi.fn() },
+      print: vi.fn(),
+      close: vi.fn(),
+    } as never);
+    const user = userEvent.setup();
+    renderAt("/clients/cust-1/appointments/appt-1/forms/all");
+
+    await user.click(
+      await screen.findByRole("button", { name: "Download all as PDF" }),
+    );
+
+    await waitFor(() => expect(write).toHaveBeenCalledTimes(1));
+    const html: string = write.mock.calls[0][0];
+    expect(html).toContain("https://storage.example.com/artist.png");
+    expect(html).toContain("Performed by: Mia Ross");
+  });
+
   it("tells the artist when pop-ups block the PDF", async () => {
     vi.spyOn(window, "open").mockReturnValue(null);
     const user = userEvent.setup();

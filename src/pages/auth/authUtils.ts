@@ -5,7 +5,9 @@ import {
   sendEmailVerification,
 } from "../../services/artistServices";
 import { trackSignUp } from "../../utils/analytics";
+import { forgetTeamInvite, teamInviteMismatch } from "../../utils/teamInvite";
 import type { AuthProvider, UserCredential, User } from "firebase/auth";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 export type OnboardingStep =
   | "businessName"
@@ -20,16 +22,9 @@ interface Artist {
   appStorePurchaseActive?: boolean;
 }
 
-const getErrorMessage = (error: unknown): string => {
-  const responseMessage = (error as any)?.response?.data?.message;
-  const responseError = (error as any)?.response?.data?.error;
-
-  if (typeof responseMessage === "string") return responseMessage;
-  if (typeof responseError === "string") return responseError;
-  if (error instanceof Error) return error.message;
-
-  return "Login failed! Try again later.";
-};
+// the API's message, or Firebase's (an Error), or a fallback
+const getErrorMessage = (error: unknown): string =>
+  getApiErrorMessage(error, "Login failed! Try again later.");
 
 const isEmailNotVerifiedError = (message: string): boolean =>
   /e-?mail(?: address)?.*\bnot\b.*\bverified\b/i.test(message);
@@ -72,6 +67,14 @@ export const HandleSocialLogin = async (
     const user: User = result.user;
     const userToken = await user.getIdToken();
 
+    // with a team invite open, another email would start a new business
+    const mismatch = teamInviteMismatch(user.email);
+    if (mismatch) {
+      await auth.signOut();
+      showAlert("error", mismatch);
+      return;
+    }
+
     localStorage.setItem("userEmail", user.email ?? "");
     localStorage.setItem("userName", user.displayName ?? "");
 
@@ -80,6 +83,13 @@ export const HandleSocialLogin = async (
     localStorage.setItem("userId", res.data?.artist?.id ?? "");
     localStorage.setItem("accessToken", res.data?.access_token ?? "");
     handleAuthSuccess(res?.data?.artist, res.data?.access_token ?? "");
+
+    // a team member works in the owner's account, which is already set up
+    if (res.data?.teamMember) {
+      forgetTeamInvite();
+      navigate("/dashboard");
+      return;
+    }
 
     const artist = res?.data?.artist;
     const onboardingStep = determineOnboardingStep(artist);
@@ -100,11 +110,7 @@ export const HandleSocialLogin = async (
     }
   } catch (error: unknown) {
     console.error("Social login error:", error);
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : (error as any)?.response?.data?.error ||
-          "Login failed! Try again later.";
+    const errorMessage = getErrorMessage(error);
 
     showAlert("error", errorMessage);
   }
@@ -123,6 +129,14 @@ export const SignInSuccessWithAuthResult = async (
   const userToken = await user.getIdToken();
 
   try {
+    // with a team invite open, another email would start a new business
+    const mismatch = teamInviteMismatch(user.email);
+    if (mismatch) {
+      await auth.signOut();
+      showAlert("error", mismatch);
+      return;
+    }
+
     localStorage.setItem("userEmail", user.email ?? "");
     localStorage.setItem("userName", user.displayName ?? "");
 
@@ -131,6 +145,13 @@ export const SignInSuccessWithAuthResult = async (
     localStorage.setItem("userId", res.data?.artist?.id ?? "");
     localStorage.setItem("accessToken", res.data?.access_token ?? "");
     handleAuthSuccess(res?.data?.artist, res.data?.access_token ?? "");
+
+    // a team member works in the owner's account, which is already set up
+    if (res.data?.teamMember) {
+      forgetTeamInvite();
+      navigate("/dashboard");
+      return;
+    }
 
     const artist = res?.data?.artist;
     const onboardingStep = determineOnboardingStep(artist);

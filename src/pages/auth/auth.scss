@@ -283,3 +283,13 @@
     padding: 8px 0;
   }
 }
+
+.team-invite-notice__dismiss {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -1,5 +1,6 @@
 import type { FormType, Service } from "../redux/types";
 import axiosInstance from "../utils/axios/axiosSetup";
+import { getApiErrorMessage } from "../utils/apiError";
 
 /** what each question is, in the builder */
 export type FieldKind =
@@ -108,15 +109,8 @@ export const scanPaperForm = (pages: Blob[]) => {
 };
 
 /** the message the API sent back, or a fallback */
-export const apiMessage = (error: unknown, fallback: string) => {
-  const message = (
-    error as { response?: { data?: { message?: unknown } } }
-  )?.response?.data?.message;
-  if (typeof message === "string" && message.trim()) return message;
-  if (Array.isArray(message) && typeof message[0] === "string")
-    return message[0];
-  return fallback;
-};
+export const apiMessage = (error: unknown, fallback: string) =>
+  getApiErrorMessage(error, fallback);
 
 export const FIELD_KIND_LABELS: Record<FieldKind, string> = {
   text: "Short answer",

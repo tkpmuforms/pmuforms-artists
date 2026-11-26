@@ -13,6 +13,7 @@ import {
 } from "../../../services/inventoryServices";
 import { getApiErrorMessage } from "../../../utils/formLinks";
 import { byLabel, DOC_STATUS, formatDay, formatWhen } from "../../../utils/inventory";
+import { useWhoDid } from "../../../utils/teamPeople";
 import InventoryModal from "../InventoryModal";
 import { DocStatusBadge } from "../StatusBadge";
 import DocumentFormModal from "./DocumentFormModal";
@@ -73,6 +74,9 @@ const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
 }) => {
   const auth = useAuth();
   const me = auth?.user?.userId ?? null;
+  const who = useWhoDid();
+  // a team member's name, "You", or the old fallback
+  const by = (id?: string | null) => who.label(id) || byLabel(id, me);
   const [doc, setDoc] = useState<ComplianceDoc | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [mode, setMode] = useState<"view" | "edit" | "supersede">("view");
@@ -248,14 +252,14 @@ const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
             <div>
               <dt>Added</dt>
               <dd>
-                {formatWhen(doc.createdAt)} by {byLabel(doc.uploadedBy, me)}
+                {formatWhen(doc.createdAt)} by {by(doc.uploadedBy)}
               </dd>
             </div>
             {doc.lastReview && (
               <div>
                 <dt>Last review</dt>
                 <dd>
-                  {formatWhen(doc.lastReview.at)} by {byLabel(doc.lastReview.by, me)}
+                  {formatWhen(doc.lastReview.at)} by {by(doc.lastReview.by)}
                   {doc.lastReview.method ? ` · ${doc.lastReview.method}` : ""}
                 </dd>
               </div>
@@ -488,7 +492,7 @@ const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
                 <li key={i}>
                   <strong>{historyTitle(entry)}</strong>
                   <div className="inv-small">
-                    {formatWhen(entry.at)} · {byLabel(entry.by, me)}
+                    {formatWhen(entry.at)} · {by(entry.by)}
                   </div>
                   {entry.method && <div className="inv-muted">Method: {entry.method}</div>}
                   {entry.notes && <div className="inv-muted">{entry.notes}</div>}

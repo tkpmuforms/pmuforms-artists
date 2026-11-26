@@ -11,9 +11,11 @@ import useAuth from "../../../context/useAuth";
 import { toast } from "react-hot-toast";
 import { auth } from "../../../firebase/firebase";
 import { Eye, EyeOff } from "lucide-react";
+import { savedTeamInvite } from "../../../utils/teamInvite";
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState("");
+  // an invited team member signs in with the invited email
+  const [email, setEmail] = useState(() => savedTeamInvite()?.email ?? "");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { handleAuthSuccess } = useAuth();
