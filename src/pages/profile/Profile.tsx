@@ -228,6 +228,7 @@ const ProfilePage: React.FC = () => {
               setOnboardingStep("completed");
             }}
             onSave={handleBusinessInfoSave}
+            askHeardFrom
           />
         )}
 

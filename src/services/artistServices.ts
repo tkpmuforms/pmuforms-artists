@@ -229,6 +229,12 @@ export const signAppointment = async (
   data: { signatureUrl: string },
 ) => axiosInstance.post(`/api/appointments/${appointmentId}/sign`, data);
 
+// "How did you hear about PMU Forms?" (onboarding, optional)
+export const updateHeardFrom = async (data: {
+  heardFrom: string;
+  heardFromOther?: string;
+}) => axiosInstance.patch("/api/artists/heard-from", data);
+
 // that the artist looked at the client's ID: the type and 18+, never a photo
 export const recordIdCheck = async (
   appointmentId: string,

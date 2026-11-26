@@ -6,7 +6,11 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import useAuth from "../../context/useAuth";
-import { updateBusinessInfo } from "../../services/artistServices";
+import {
+  updateBusinessInfo,
+  updateHeardFrom,
+} from "../../services/artistServices";
+import { HEARD_FROM_OPTIONS, type HeardFrom } from "../../utils/heardFrom";
 import { refreshAuthUser } from "../../utils/authUtils";
 import "./edit-business-information-modal.scss";
 
@@ -15,11 +19,13 @@ const DEFAULT_BUSINESS_NAME = "New Business";
 interface EditBusinessInformationModalProps {
   onClose: () => void;
   onSave: () => void;
+  /** onboarding: also ask "How did you hear about PMU Forms?" (optional) */
+  askHeardFrom?: boolean;
 }
 
 const EditBusinessInformationModal: React.FC<
   EditBusinessInformationModalProps
-> = ({ onClose, onSave }) => {
+> = ({ onClose, onSave, askHeardFrom = false }) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   // "New Business" is the placeholder the API gives new accounts; showing it
@@ -33,6 +39,8 @@ const EditBusinessInformationModal: React.FC<
   const [address, setAddress] = useState(user?.businessAddress || "");
   const [website, setWebsite] = useState(user?.website || "");
   const [isSaving, setIsSaving] = useState(false);
+  const [heardFrom, setHeardFrom] = useState<HeardFrom | "">("");
+  const [heardFromOther, setHeardFromOther] = useState("");
 
   const handleSave = async () => {
     if (!businessName.trim()) {
@@ -56,6 +64,17 @@ const EditBusinessInformationModal: React.FC<
 
     try {
       await updateBusinessInfo(businessData);
+      // optional, and never holds up onboarding: a failure is only logged
+      if (askHeardFrom && heardFrom) {
+        updateHeardFrom({
+          heardFrom,
+          ...(heardFrom === "other" && heardFromOther.trim()
+            ? { heardFromOther: heardFromOther.trim() }
+            : {}),
+        }).catch((error) =>
+          console.error("Error saving how they heard about us:", error),
+        );
+      }
       await refreshAuthUser(dispatch);
       toast.success("Business information updated successfully!");
       onSave();
@@ -152,6 +171,41 @@ const EditBusinessInformationModal: React.FC<
               />
             </div>
           </div>
+
+          {askHeardFrom && (
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="heardFrom">
+                  How did you hear about PMU Forms? (optional)
+                </label>
+                <select
+                  id="heardFrom"
+                  value={heardFrom}
+                  onChange={(e) => setHeardFrom(e.target.value as HeardFrom)}
+                  className="form-input"
+                >
+                  <option value="">Choose one</option>
+                  {HEARD_FROM_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+                {heardFrom === "other" && (
+                  <input
+                    id="heardFromOther"
+                    type="text"
+                    aria-label="Where did you hear about us?"
+                    value={heardFromOther}
+                    onChange={(e) => setHeardFromOther(e.target.value)}
+                    className="form-input heard-from-other"
+                    placeholder="Where did you hear about us?"
+                    maxLength={100}
+                  />
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <button
