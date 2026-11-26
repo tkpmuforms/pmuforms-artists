@@ -29,12 +29,13 @@
 
   &__content {
     display: flex;
+    flex-wrap: wrap;
     gap: 32px;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
   &__section {
-    flex: 1;
+    flex: 1 1 300px;
     border-radius: 16px;
     padding: 24px;
     border: 1px solid #e2e8f0;
@@ -145,6 +146,44 @@
     &:active {
       transform: translateY(0);
     }
+  }
+
+  .signature-preview {
+    display: block;
+    max-width: 220px;
+    max-height: 80px;
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .section-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+
+    .edit-button {
+      margin-top: 0;
+    }
+  }
+
+  .edit-button--outline {
+    background: white;
+    color: var(--pmu-primary);
+    border: 1px solid var(--pmu-primary);
+
+    &:hover {
+      filter: none;
+      background: #faf5fb;
+    }
+  }
+
+  .edit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
   }
 
   @media (max-width: 768px) {

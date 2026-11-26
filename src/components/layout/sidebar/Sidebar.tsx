@@ -10,7 +10,7 @@ import {
   ClientIcon,
   DashboardIcon,
   FormsIcon,
-  ProfileIcon,
+  SettingsIcon,
   ServicesIcon,
 } from "../../../assets/svgs/DashboardSvg.tsx";
 import { IntegrationsIcon } from "../../../assets/svgs/IntegrationsSvg.tsx";
@@ -79,7 +79,7 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(
         inventory: InventoryIcon,
         integrations: IntegrationsIcon,
         refer: ReferIcon,
-        profile: ProfileIcon,
+        settings: SettingsIcon,
       };
       const IconComponent = iconMap[iconName];
       return IconComponent ? (

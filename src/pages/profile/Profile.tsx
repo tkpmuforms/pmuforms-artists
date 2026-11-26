@@ -121,7 +121,7 @@ const ProfilePage: React.FC = () => {
     <div className="profile-page">
       {isNewUser && onboardingStep !== "completed" && (
         <div className="profile-page__onboarding-banner">
-          <h2>Welcome! Let's set up your profile</h2>
+          <h2>Welcome! Let's set up your account</h2>
           <p>
             {onboardingStep === "businessName"
               ? "First, let's set your business name"
@@ -139,10 +139,10 @@ const ProfilePage: React.FC = () => {
               <h1>{user?.businessName}</h1>
               <button
                 className="profile-page__edit-btn"
-                onClick={() => navigate("/profile/edit")}
+                onClick={() => navigate("/profile/business-information")}
               >
                 <Edit size={20} />
-                Edit Profile
+                Edit business info
               </button>
             </div>
           </div>

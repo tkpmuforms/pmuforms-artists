@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FormCard from "../../components/formsComp/FormCard";
 import { Loading } from "../../components/loading/Loading";
+import Pagination from "../../components/pagination/Pagination";
 import { Form, FormType } from "../../redux/types";
 import { getArtistForms } from "../../services/artistServices";
 import { transformFormData } from "../../utils/utils";
@@ -35,6 +36,8 @@ const FORM_TABS: { type: FormType; label: string }[] = [
   { type: "care", label: "Aftercare" },
 ];
 
+const FORMS_PER_PAGE = 12;
+
 const FormsPage: React.FC = () => {
   const { user } = useAuth();
   const artistServices = useMemo(() => user?.services ?? [], [user?.services]);
@@ -54,6 +57,8 @@ const FormsPage: React.FC = () => {
         const next = new URLSearchParams(prev);
         if (value && value !== fallback) next.set(key, value);
         else next.delete(key);
+        // a new tab or filter starts again from the first page
+        if (key !== "page") next.delete("page");
         return next;
       },
       { replace: true },
@@ -96,6 +101,16 @@ const FormsPage: React.FC = () => {
     ).length;
   const tabLabel =
     FORM_TABS.find((t) => t.type === activeTab)?.label.toLowerCase() ?? "";
+  const pages = Math.max(1, Math.ceil(filteredForms.length / FORMS_PER_PAGE));
+  const page = Math.min(Math.max(Number(params.get("page")) || 1, 1), pages);
+  const pageForms = filteredForms.slice(
+    (page - 1) * FORMS_PER_PAGE,
+    page * FORMS_PER_PAGE,
+  );
+  const goToPage = (next: number) => {
+    setParam("page", String(next), "1");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     const fetchForms = async () => {
@@ -273,7 +288,7 @@ const FormsPage: React.FC = () => {
 
         <div className="forms-page__grid">
           {filteredForms.length > 0 ? (
-            filteredForms.map((form) => (
+            pageForms.map((form) => (
               <FormCard
                 key={form.id}
                 {...form}
@@ -307,6 +322,7 @@ const FormsPage: React.FC = () => {
             </div>
           )}
         </div>
+        <Pagination page={page} pages={pages} onChange={goToPage} />
       </div>
 
       {showAddMoreServicesModal && (

@@ -55,9 +55,9 @@ export const Menu: MenuItem[] = [
     icon: "refer",
   },
   {
-    name: "Profile",
+    name: "Settings",
     basePath: "/profile",
     TSKey: "Profile",
-    icon: "profile",
+    icon: "settings",
   },
 ];

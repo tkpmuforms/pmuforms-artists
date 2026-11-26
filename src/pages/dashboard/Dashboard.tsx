@@ -364,6 +364,7 @@ const Dashboard: React.FC = () => {
                 onViewForms={openForms}
                 {...handlersFor({
                   appointmentId: appointment.id,
+                  customerId: appointment.customerId,
                   clientName: customers[appointment.customerId]?.name || name,
                   services: appointment.serviceDetails,
                 })}
@@ -392,7 +393,7 @@ const Dashboard: React.FC = () => {
       ));
   };
 
-  // Prefer the artist's own first name (Edit Your Profile), then the business
+  // Prefer the artist's own first name (owner's details), then the business
   // name; skip the "New Business" placeholder new accounts start with.
   const greetingName =
     user?.profile?.firstName?.trim() ||

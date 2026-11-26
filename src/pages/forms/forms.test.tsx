@@ -27,6 +27,8 @@ vi.mock("../../components/profileComp/UpdateServicesModal", () => ({
 }));
 
 const mocked = vi.mocked(artistApi);
+// jsdom has no scrolling
+window.scrollTo = vi.fn() as never;
 
 const apiForm = (over: Record<string, unknown>) => ({
   id: "f",
@@ -177,5 +179,37 @@ describe("Forms page", () => {
     await user.click(clear[clear.length - 1]);
     expect(titles()).toEqual(["Aftercare Guide"]);
     expect(screen.getByTestId("where")).toHaveTextContent("type=care");
+  });
+
+  it("shows 12 forms a page and starts again from the first page on a new filter", async () => {
+    mocked.getArtistForms.mockResolvedValue({
+      data: {
+        forms: Array.from({ length: 30 }, (_, i) =>
+          apiForm({
+            id: `f${i}`,
+            title: `Consent ${String(i + 1).padStart(2, "0")}`,
+          }),
+        ),
+      },
+    } as never);
+    const user = userEvent.setup();
+    renderPage("/forms?sort=az");
+
+    await screen.findByText("Page 1 of 3");
+    expect(titles()).toHaveLength(12);
+    expect(titles()[0]).toBe("Consent 01");
+    expect(screen.getByRole("button", { name: "Previous page" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Next page" }));
+    await user.click(screen.getByRole("button", { name: "Next page" }));
+    expect(screen.getByText("Page 3 of 3")).toBeInTheDocument();
+    expect(titles()).toHaveLength(6);
+    expect(titles()[0]).toBe("Consent 25");
+    expect(screen.getByTestId("where")).toHaveTextContent("page=3");
+
+    await user.type(screen.getByPlaceholderText(/Search/), "Consent 1");
+    expect(screen.getByTestId("where")).not.toHaveTextContent("page=");
+    expect(titles()).toHaveLength(10);
+    expect(screen.queryByText(/Page \d of/)).toBeNull();
   });
 });

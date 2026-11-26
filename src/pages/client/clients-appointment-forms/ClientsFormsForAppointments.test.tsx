@@ -42,6 +42,7 @@ function renderPage() {
           path="/clients/:id/appointments/:appointmentId/forms/all"
           element={<p>All forms page</p>}
         />
+        <Route path="/clients/:clientId/notes" element={<p>Notes page</p>} />
         <Route
           path="/clients/:id/appointments/:appointmentId/signature"
           element={<p>Signature page</p>}
@@ -88,6 +89,20 @@ describe("ClientsFormsForAppointments", () => {
       await screen.findByRole("button", { name: "View all forms" }),
     );
     expect(await screen.findByText("All forms page")).toBeInTheDocument();
+  });
+
+  it("opens the client's notes", async () => {
+    mocked.getFilledFormsByAppointment.mockResolvedValue({
+      data: { filledForms: forms("signed") },
+    } as never);
+    mocked.getAppointmentById.mockResolvedValue({
+      data: { appointment: { signed: true, allFormsCompleted: true } },
+    } as never);
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(await screen.findByRole("button", { name: "View notes" }));
+    expect(await screen.findByText("Notes page")).toBeInTheDocument();
   });
 
   it("lets a completed, unsigned appointment go to signing", async () => {

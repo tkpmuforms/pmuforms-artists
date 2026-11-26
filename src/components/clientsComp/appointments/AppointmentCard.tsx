@@ -15,6 +15,7 @@ export type { CareAction };
 interface AppointmentCardProps {
   appointment: ClientAppointmentData;
   onViewForms: (appointmentId: string) => void;
+  onViewNotes?: () => void;
   onDeleteAppointment: (appointmentId: string) => void;
   onShareFormLink?: (appointmentId: string) => void;
   onStartFilling?: (appointmentId: string) => void;
@@ -27,6 +28,7 @@ interface AppointmentCardProps {
 const AppointmentCard: React.FC<AppointmentCardProps> = ({
   appointment,
   onViewForms,
+  onViewNotes,
   onDeleteAppointment,
   onShareFormLink,
   onStartFilling,
@@ -84,6 +86,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           completedAt={appointment.completedAt}
           label={`${serviceName} on ${appointmentDate}`}
           onViewForms={() => onViewForms(appointment.id)}
+          onViewNotes={onViewNotes}
           onShareFormLink={
             onShareFormLink && (() => onShareFormLink(appointment.id))
           }

@@ -420,6 +420,7 @@ const Appointment: React.FC = () => {
                       onViewForms={() => openForms(appointment)}
                       {...handlersFor({
                         appointmentId: appointment.id,
+                        customerId: appointment.customerId,
                         clientName: nameOf(appointment),
                         services: appointment.serviceDetails,
                       })}

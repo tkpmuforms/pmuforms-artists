@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import toast from "react-hot-toast";
 import ClientAppointmentPage from "./ClientsAppointment";
@@ -63,9 +63,24 @@ const renderPage = () =>
       <Routes>
         <Route path="/clients/:id/appointments" element={<ClientAppointmentPage />} />
         <Route path="/integrations" element={<p>Integrations page</p>} />
+        <Route
+          path="/clients/:clientId/notes"
+          element={<NotesProbe />}
+        />
       </Routes>
     </MemoryRouter>,
   );
+
+/** stands in for the notes page: shows which client and name it was opened with */
+function NotesProbe() {
+  const { clientId } = useParams();
+  const { state } = useLocation();
+  return (
+    <p>
+      Notes for {clientId} ({state?.clientName})
+    </p>
+  );
+}
 
 const oneAppointment = () =>
   mocked.getAppointmentsForCustomer.mockResolvedValue({
@@ -315,5 +330,19 @@ describe("ClientAppointmentPage: the ⋯ menu", () => {
     );
     await waitFor(() => expect(screen.queryByText("Microblading")).toBeNull());
     expect(mocked.DeleteAppointment).toHaveBeenCalledWith("appt-1");
+  });
+});
+
+describe("ClientAppointmentPage: view notes from the menu", () => {
+  it("opens the client's notes, right after View Forms", async () => {
+    oneAppointment();
+    mockedPayments.getSquarePaymentStatus.mockResolvedValue(notConnected());
+    const user = userEvent.setup();
+    renderPage();
+
+    const viewNotes = (await menuButton("View Notes"))!;
+    expect(viewNotes.previousElementSibling).toHaveTextContent("View Forms");
+    await user.click(viewNotes);
+    expect(await screen.findByText("Notes for cust-1 (Jane Doe)")).toBeInTheDocument();
   });
 });

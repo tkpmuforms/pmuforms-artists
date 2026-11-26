@@ -162,6 +162,41 @@ describe("Inventory page", () => {
     );
   });
 
+  it("pages through products, 25 at a time", async () => {
+    mocked.getOverview.mockReturnValue(ok(overview));
+    mocked.getProducts.mockImplementation(((filters: { page?: number }) =>
+      ok({
+        products: [
+          product({ id: `p${filters.page}`, name: `Pigment page ${filters.page}` }),
+        ],
+        total: 60,
+        page: filters.page,
+        perPage: 25,
+      })) as never);
+    renderAt("/inventory", <InventoryPage />, "/inventory");
+
+    expect(await screen.findByText("Pigment page 1")).toBeInTheDocument();
+    expect(mocked.getProducts).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 1, perPage: 25 }),
+    );
+    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Previous" })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(await screen.findByText("Pigment page 2")).toBeInTheDocument();
+    expect(screen.getByText("Page 2 of 3")).toBeInTheDocument();
+
+    // a new search starts again from the first page
+    fireEvent.change(screen.getByLabelText("Search products"), {
+      target: { value: "brown" },
+    });
+    await waitFor(() =>
+      expect(mocked.getProducts).toHaveBeenLastCalledWith(
+        expect.objectContaining({ q: "brown", page: 1 }),
+      ),
+    );
+  });
+
   it("offers the plans to artists without a subscription", async () => {
     auth.subscribed = false;
     renderAt("/inventory", <InventoryPage />, "/inventory");

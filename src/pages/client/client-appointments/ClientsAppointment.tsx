@@ -40,10 +40,12 @@ const ClientAppointmentPage: React.FC = () => {
   const cardHandlers = (appointment: ClientAppointmentData) => {
     const h = handlersFor({
       appointmentId: appointment.id,
+      customerId: id,
       clientName,
       services: appointment.serviceDetails,
     });
     return {
+      onViewNotes: h.onViewNotes,
       onDeleteAppointment: h.onDelete,
       onShareFormLink: h.onShareFormLink,
       onStartFilling: h.onStartFilling,

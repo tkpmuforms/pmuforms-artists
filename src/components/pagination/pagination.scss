@@ -1,0 +1,39 @@
+.pmu-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 32px;
+  gap: 20px;
+
+  &__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid var(--border-color, #e5e5e5);
+    color: var(--text-primary, #1a1a1a);
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: var(--pmu-primary, #a858f0);
+      color: var(--pmu-primary, #a858f0);
+    }
+  }
+
+  &__text {
+    font-size: 0.9rem;
+    color: var(--text-primary, #1a1a1a);
+    font-weight: 500;
+    min-width: 120px;
+    text-align: center;
+  }
+}

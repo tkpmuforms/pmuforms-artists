@@ -24,6 +24,8 @@ import ShareFormLinkModal from "./ShareFormLinkModal";
 /** the appointment an action is for, and whose it is */
 export interface ActionTarget {
   appointmentId: string;
+  /** the client's id: without it the menu has no View Notes */
+  customerId?: string;
   clientName: string;
   services?: AppointmentService[];
 }
@@ -85,6 +87,12 @@ export const useAppointmentActions = ({
   const handlersFor = (
     target: ActionTarget,
   ): Omit<AppointmentMenuHandlers, "onViewForms"> => ({
+    onViewNotes: target.customerId
+      ? () =>
+          navigate(`/clients/${target.customerId}/notes`, {
+            state: { clientName: target.clientName },
+          })
+      : undefined,
     onShareFormLink: () => setActive({ ...target, kind: "link" }),
     onStartFilling: () => startFillingOnThisDevice(target.appointmentId),
     onCareAction: (action) => setActive({ ...target, kind: "care", action }),

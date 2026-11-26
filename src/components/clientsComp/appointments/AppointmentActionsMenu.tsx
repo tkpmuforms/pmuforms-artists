@@ -7,6 +7,7 @@ import {
   Link2,
   MessageCircleHeart,
   MoreVertical,
+  NotebookPen,
   Package,
   Send,
   Trash2,
@@ -18,6 +19,8 @@ export type CareAction = "complete" | "pre-care" | "aftercare" | "check-in";
 
 export interface AppointmentMenuHandlers {
   onViewForms?: () => void;
+  /** the client's notes (all of them, not just this appointment's) */
+  onViewNotes?: () => void;
   onShareFormLink?: () => void;
   onStartFilling?: () => void;
   onCareAction?: (action: CareAction) => void;
@@ -44,6 +47,7 @@ const AppointmentActionsMenu: React.FC<
   completedAt,
   label,
   onViewForms,
+  onViewNotes,
   onShareFormLink,
   onStartFilling,
   onCareAction,
@@ -69,6 +73,12 @@ const AppointmentActionsMenu: React.FC<
         <button type="button" onClick={onViewForms}>
           <FileText size={16} />
           View Forms
+        </button>
+      )}
+      {onViewNotes && (
+        <button type="button" onClick={onViewNotes}>
+          <NotebookPen size={16} />
+          View Notes
         </button>
       )}
       {/* signed appointments can't take new answers */}

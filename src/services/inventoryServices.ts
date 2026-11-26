@@ -498,8 +498,19 @@ export interface ProductFilters {
   stockStatus?: StockStatus;
 }
 
-export const getProducts = (filters: ProductFilters = {}) =>
-  axiosInstance.get<{ products: Product[] }>(`${BASE}/products`, {
+/**
+ * With `page`, one page of products and the total; without, every product
+ * (for pickers that need them all).
+ */
+export const getProducts = (
+  filters: ProductFilters & { page?: number; perPage?: number } = {},
+) =>
+  axiosInstance.get<{
+    products: Product[];
+    total?: number;
+    page?: number;
+    perPage?: number;
+  }>(`${BASE}/products`, {
     params: clean(filters),
   });
 export const getProduct = (id: string) =>

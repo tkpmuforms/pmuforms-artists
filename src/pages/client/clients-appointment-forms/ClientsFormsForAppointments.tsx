@@ -1,5 +1,11 @@
 "use client";
-import { Calendar, CheckCircle2, FileText, Files } from "lucide-react";
+import {
+  Calendar,
+  CheckCircle2,
+  FileText,
+  Files,
+  NotebookPen,
+} from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -38,6 +44,12 @@ const ClientsFormsForAppointments: React.FC = () => {
     navigate(`/clients/${id}/appointments/${appointmentId}/signature`, {
       state: { clientName },
     });
+  };
+
+  // all of the client's notes: the emails and photos for this appointment
+  // are labelled with it there
+  const onViewNotes = () => {
+    navigate(`/clients/${id}/notes`, { state: { clientName } });
   };
 
   const onViewAllForms = () => {
@@ -105,6 +117,10 @@ const ClientsFormsForAppointments: React.FC = () => {
             </p>
           </div>
           <div className="header-actions">
+            <button onClick={onViewNotes} className="all-forms-btn">
+              <NotebookPen size={16} />
+              View notes
+            </button>
             {forms.length > 0 && (
               <button onClick={onViewAllForms} className="all-forms-btn">
                 <Files size={16} />

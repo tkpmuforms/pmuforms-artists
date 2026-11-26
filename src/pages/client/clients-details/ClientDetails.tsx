@@ -132,16 +132,6 @@ const ClientDetailPage: React.FC = () => {
         }),
     },
     {
-      icon: <Send size={20} />,
-      title: "Send Consent Form",
-      onClick: () => setShowSendConsentForm(true),
-    },
-    {
-      icon: <Clock size={20} />,
-      title: "Set Reminders",
-      onClick: () => navigate(`/clients/${client?.id}/reminders`),
-    },
-    {
       icon: <User size={20} />,
       title: "View Notes",
       onClick: () =>
@@ -152,6 +142,16 @@ const ClientDetailPage: React.FC = () => {
             clientPhone: client?.phone,
           },
         }),
+    },
+    {
+      icon: <Send size={20} />,
+      title: "Send Consent Form",
+      onClick: () => setShowSendConsentForm(true),
+    },
+    {
+      icon: <Clock size={20} />,
+      title: "Set Reminders",
+      onClick: () => navigate(`/clients/${client?.id}/reminders`),
     },
   ];
 

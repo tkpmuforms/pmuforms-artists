@@ -221,6 +221,8 @@ interface TabProps {
 
 // ---------------------------------------------------------------- products
 
+const PRODUCTS_PER_PAGE = 25;
+
 const ProductsTab: React.FC<TabProps> = ({ params, setParam }) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState(params.get("q") ?? "");
@@ -228,8 +230,10 @@ const ProductsTab: React.FC<TabProps> = ({ params, setParam }) => {
   const categoryId = params.get("category") ?? "";
   const stockStatus = (params.get("stock") ?? "") as StockStatus | "";
   const archived = params.get("archived") === "1";
+  const page = Number(params.get("page") ?? "1") || 1;
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -246,8 +250,14 @@ const ProductsTab: React.FC<TabProps> = ({ params, setParam }) => {
       categoryId: categoryId || undefined,
       stockStatus: stockStatus || undefined,
       status: archived ? "archived" : "active",
+      page,
+      perPage: PRODUCTS_PER_PAGE,
     })
-      .then(({ data }) => live && setProducts(data.products))
+      .then(({ data }) => {
+        if (!live) return;
+        setProducts(data.products);
+        setTotal(data.total ?? data.products.length);
+      })
       .catch((e) => {
         if (!live) return;
         setProducts([]);
@@ -256,9 +266,10 @@ const ProductsTab: React.FC<TabProps> = ({ params, setParam }) => {
     return () => {
       live = false;
     };
-  }, [q, categoryId, stockStatus, archived]);
+  }, [q, categoryId, stockStatus, archived, page]);
 
   const filtered = !!(q || categoryId || stockStatus || archived);
+  const pages = Math.max(1, Math.ceil(total / PRODUCTS_PER_PAGE));
 
   return (
     <>
@@ -313,6 +324,9 @@ const ProductsTab: React.FC<TabProps> = ({ params, setParam }) => {
 
       {products === null ? (
         <div className="inv-loading">Loading products…</div>
+      ) : products.length === 0 && page > 1 ? (
+        // past the end, e.g. after archiving the last product on a page
+        <Pager page={page} pages={pages} setParam={setParam} />
       ) : products.length === 0 ? (
         <div className="inv-card inv-empty">
           {filtered ? (
@@ -388,6 +402,7 @@ const ProductsTab: React.FC<TabProps> = ({ params, setParam }) => {
               ))}
             </tbody>
           </table>
+          <Pager page={page} pages={pages} setParam={setParam} />
         </div>
       )}
     </>
@@ -617,31 +632,45 @@ const HistoryTab: React.FC<TabProps> = ({ params, setParam }) => {
               </tbody>
             </table>
           </div>
-          {pages > 1 && (
-            <div className="inv-toolbar" style={{ justifyContent: "flex-end" }}>
-              <span className="inv-muted">
-                Page {page} of {pages}
-              </span>
-              <button
-                className="inv-btn inv-btn--sm"
-                disabled={page <= 1}
-                onClick={() => setParam("page", String(page - 1))}
-              >
-                Previous
-              </button>
-              <button
-                className="inv-btn inv-btn--sm"
-                disabled={page >= pages}
-                onClick={() => setParam("page", String(page + 1))}
-              >
-                Next
-              </button>
-            </div>
-          )}
+          <Pager page={page} pages={pages} setParam={setParam} />
         </>
       )}
     </>
   );
 };
+
+/** Previous / Next for a list paged through the address (?page=). */
+const Pager: React.FC<{
+  page: number;
+  pages: number;
+  setParam: TabProps["setParam"];
+}> = ({ page, pages, setParam }) =>
+  pages > 1 || page > 1 ? (
+    <nav
+      className="inv-toolbar"
+      style={{ justifyContent: "flex-end" }}
+      aria-label="Pages"
+    >
+      <span className="inv-muted">
+        Page {Math.min(page, pages)} of {pages}
+      </span>
+      <button
+        className="inv-btn inv-btn--sm"
+        disabled={page <= 1}
+        onClick={() =>
+          setParam("page", page > 2 ? String(Math.min(page - 1, pages)) : undefined)
+        }
+      >
+        Previous
+      </button>
+      <button
+        className="inv-btn inv-btn--sm"
+        disabled={page >= pages}
+        onClick={() => setParam("page", String(page + 1))}
+      >
+        Next
+      </button>
+    </nav>
+  ) : null;
 
 export default InventoryPage;

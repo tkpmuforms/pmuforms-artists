@@ -111,19 +111,6 @@ const EditBusinessInformationModal: React.FC<
                 placeholder="Business Name"
               />
             </div>
-
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                value={user?.email || ""}
-                className="form-input"
-                placeholder="Email"
-                disabled
-                style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
-              />
-            </div>
           </div>
 
           <div className="form-row">

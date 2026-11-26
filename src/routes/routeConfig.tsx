@@ -1,4 +1,5 @@
 import { lazy, ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 import Auth from "../pages/auth/Auth.tsx";
 
 const Dashboard = lazy(() => import("../pages/dashboard/Dashboard"));
@@ -66,9 +67,6 @@ const AllAppointments = lazy(
   () => import("../pages/appointments/Appointment.tsx")
 );
 
-const EditProfilePage = lazy(
-  () => import("../pages/profile/edit-profile/EditProfilePage.tsx")
-);
 
 const BusinessInformationPage = lazy(
   () =>
@@ -188,17 +186,18 @@ export const authorizedRoutes: RouteProps[] = [
   {
     path: "/profile",
     element: <Profile />,
-    breadcrumbs: ["Profile"],
+    breadcrumbs: ["Settings"],
   },
   {
     path: "/profile/edit",
-    element: <EditProfilePage />,
-    breadcrumbs: ["Profile", "Edit Profile"],
+    // owner's details are part of Business Information now
+    element: <Navigate to="/profile/business-information" replace />,
+    breadcrumbs: ["Settings", "Business Information"],
   },
   {
     path: "/profile/business-information",
     element: <BusinessInformationPage />,
-    breadcrumbs: ["Profile", "Business Information"],
+    breadcrumbs: ["Settings", "Business Information"],
   },
   {
     path: "/inventory",
@@ -253,17 +252,17 @@ export const authorizedRoutes: RouteProps[] = [
   {
     path: "/profile/payment",
     element: <PaymentPage />,
-    breadcrumbs: ["Profile", "Payment"],
+    breadcrumbs: ["Settings", "Payment"],
   },
   {
     path: "/contact-us",
     element: <ContactUsPage />,
-    breadcrumbs: ["Profile", "Contact Us"],
+    breadcrumbs: ["Settings", "Contact Us"],
   },
   {
     path: "/privacy-policy",
     element: <PrivacyPolicyPage />,
-    breadcrumbs: ["Profile", "Privacy Policy"],
+    breadcrumbs: ["Settings", "Privacy Policy"],
   },
 ];
 
