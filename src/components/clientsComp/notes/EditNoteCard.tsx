@@ -1,6 +1,7 @@
 "use client";
 
 import { Camera, Edit3, Save, Trash2, Upload } from "lucide-react";
+import NoIdUploadNote from "./NoIdUploadNote";
 import type React from "react";
 import { useRef } from "react";
 import { Note } from "../../../redux/types";
@@ -187,6 +188,7 @@ const EditCard: React.FC<EditCardProps> = ({
                         )}
                       </button>
                     </div>
+                    <NoIdUploadNote />
                   </div>
                   <textarea
                     value={editContent}

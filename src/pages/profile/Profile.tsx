@@ -146,6 +146,11 @@ const ProfilePage: React.FC = () => {
       onClick: () => navigate("/privacy-policy"),
     },
     {
+      icon: <FileText size={10} />,
+      title: "Terms of Service",
+      onClick: () => navigate("/terms"),
+    },
+    {
       icon: <LogOut size={10} />,
       title: "Log Out",
       onClick: () => logout(),

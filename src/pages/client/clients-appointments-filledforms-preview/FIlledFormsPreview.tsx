@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { describeIdCheck } from "../../../utils/idCheck";
 import toast from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import { LoadingSmall } from "../../../components/loading/Loading";
@@ -35,6 +36,8 @@ const FilledFormsPreview = () => {
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   // who did the procedure, saved when the appointment was signed
   const [performedBy, setPerformedBy] = useState<string | null>(null);
+  // on the PDF: that the ID was checked (type and 18+, never the ID)
+  const [idCheck, setIdCheck] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -91,6 +94,11 @@ const FilledFormsPreview = () => {
         setPerformedBy(
           appointment?.signed ? appointment?.performedBy?.name || null : null,
         );
+        setIdCheck(
+          appointment?.idCheck
+            ? describeIdCheck(appointment.idCheck, appointment.idCheck.checkedBy?.name)
+            : null,
+        );
         setForms(loaded);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -114,6 +122,7 @@ const FilledFormsPreview = () => {
       customerSignatureUrl: signatureUrl,
       artistSignatureUrl: user?.signature_url,
       performedBy,
+      idCheck,
     });
     if (!opened) toast.error("Please allow pop-ups to generate PDF");
   };

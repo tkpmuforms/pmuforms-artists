@@ -1,3 +1,5 @@
+import type { IdCheck } from "../utils/idCheck";
+
 export interface User {
   _id?: string;
   firstName?: string;
@@ -83,6 +85,8 @@ export interface Appointment {
   // who booked it, and who signed it off (since teams)
   createdBy?: ActorRef;
   performedBy?: ActorRef;
+  // that the artist checked the client's ID in person (never the ID itself)
+  idCheck?: IdCheck | null;
   // sent with the appointment list
   customer?: {
     id: string;

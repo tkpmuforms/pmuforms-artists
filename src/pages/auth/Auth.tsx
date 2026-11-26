@@ -12,6 +12,7 @@ import {
 } from "../../assets/svgs/AuthSvg";
 import LoginPage from "../../components/authComp/login/Login";
 import SignupPage from "../../components/authComp/signup/SignUp";
+import LegalConsentLine from "./LegalConsentLine";
 import Navbar from "../../components/layout/navbar/Navbar";
 import ImageSlider from "../../components/slider/ImageSlider";
 import useAuth from "../../context/useAuth";
@@ -176,6 +177,7 @@ const Auth: React.FC = () => {
                     </>
                   )}
 
+                  <LegalConsentLine />
                   {shouldShowAuthSwitch() && (
                     <div className="switch-auth">
                       {page === "login" ? (
@@ -278,6 +280,7 @@ const Auth: React.FC = () => {
                 </div>
               </>
             )}
+            <LegalConsentLine />
             {shouldShowAuthSwitch() && (
               <div className="switch-auth">
                 {page === "login" ? (

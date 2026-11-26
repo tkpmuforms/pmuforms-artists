@@ -13,6 +13,8 @@ vi.mock("../../../services/artistServices", () => ({
   getAppointmentById: vi.fn(),
   getCustomerById: vi.fn(),
   getFilledFormsByAppointment: vi.fn(),
+  recordIdCheck: vi.fn(),
+  clearIdCheck: vi.fn(),
 }));
 
 const mocked = vi.mocked(api);
@@ -208,5 +210,51 @@ describe("ClientsFormsForAppointments", () => {
     expect(screen.getByRole("button", { name: /Open Client Intake/ })).toHaveTextContent(
       "For this appointment",
     );
+  });
+
+  it("records an ID check: the type and 18+, never the ID itself", async () => {
+    mocked.getFilledFormsByAppointment.mockResolvedValue({
+      data: { filledForms: forms("completed") },
+    } as never);
+    mocked.getAppointmentById.mockResolvedValue({
+      data: { appointment: { signed: false, allFormsCompleted: true } },
+    } as never);
+    mocked.recordIdCheck.mockResolvedValue({
+      data: {
+        appointment: {
+          idCheck: {
+            idType: "passport",
+            over18: true,
+            checkedAt: "2026-11-26T15:00:00.000Z",
+          },
+        },
+      },
+    } as never);
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Record ID check" }),
+    );
+    const dialog = screen.getByRole("dialog", { name: "Record ID check" });
+    // warned off photos and numbers, and given nowhere to put them
+    expect(dialog).toHaveTextContent(/Don't photograph, scan or upload the ID/);
+    expect(within(dialog).queryByRole("textbox")).toBeNull();
+    expect(dialog.querySelector('input[type="file"]')).toBeNull();
+
+    const save = within(dialog).getByRole("button", { name: "Save ID check" });
+    expect(save).toBeDisabled();
+    await user.selectOptions(within(dialog).getByLabelText("Type of ID"), "passport");
+    await user.click(within(dialog).getByLabelText(/Jane is 18 or older/));
+    await user.click(save);
+
+    expect(mocked.recordIdCheck).toHaveBeenCalledWith("appt-1", {
+      idType: "passport",
+      over18: true,
+    });
+    expect(
+      await screen.findByText(/Passport · 18\+ · Nov 26, 2026/),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 });

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import NoIdUploadNote from "./NoIdUploadNote";
 import { X, Upload, Trash2 } from "lucide-react";
 import type React from "react";
 import "./NotesModal.scss";
@@ -120,6 +121,7 @@ const NotesModal: React.FC<NotesModalProps> = ({
                   )}
                 </button>
               </div>
+              <NoIdUploadNote />
             </div>
           )}
 

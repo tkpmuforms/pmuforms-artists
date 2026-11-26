@@ -1,0 +1,155 @@
+.id-check-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  &__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 440px;
+    background: white;
+    border-radius: 20px;
+    padding: 28px 24px 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      margin: 0 32px 8px 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+
+    &:hover {
+      background: #f1f5f9;
+    }
+  }
+
+  &__description {
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #64748b;
+  }
+
+  &__warning {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 20px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 13px;
+    line-height: 1.45;
+
+    svg {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+  }
+
+  &__label {
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  &__select {
+    height: 44px;
+    padding: 0 12px;
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+  }
+
+  &__check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: #374151;
+    cursor: pointer;
+
+    input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--pmu-primary, #8e2d8e);
+    }
+  }
+
+  &__save {
+    height: 46px;
+    border: none;
+    border-radius: 999px;
+    background: var(--pmu-primary, #8e2d8e);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// the "ID check" item on an appointment's summary
+.id-check-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  &__action {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--pmu-primary, #8e2d8e);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &--quiet {
+      color: #6b7280;
+      font-weight: 500;
+    }
+  }
+}

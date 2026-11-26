@@ -1,0 +1,14 @@
+.no-id-upload-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 8px 0 0;
+  color: #92400e;
+  font-size: 12px;
+  line-height: 1.45;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}

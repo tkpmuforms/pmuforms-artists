@@ -129,7 +129,10 @@ const ScanStep: React.FC<ScanStepProps> = ({ onScanned, onBuildInstead }) => {
         and edit before saving.
       </p>
       <ul className="scan-step__tips">
-        <li>Use a blank copy, not one a client filled in.</li>
+        <li>
+          Use a blank copy, not one a client filled in, with no IDs or card
+          details in the photo.
+        </li>
         <li>Lay the page flat in good light and fill the frame with it.</li>
         <li>One photo per page, in order. Up to {maxPages} pages.</li>
       </ul>

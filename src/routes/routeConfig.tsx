@@ -80,6 +80,9 @@ const ContactUsPage = lazy(
 const PrivacyPolicyPage = lazy(
   () => import("../pages/privacy-policy/PrivacyPolicy.tsx")
 );
+const TermsOfServicePage = lazy(
+  () => import("../pages/privacy-policy/TermsOfService.tsx")
+);
 const PaymentPage = lazy(
   () => import("../pages/profile/payment-page/PaymentPage.tsx")
 );
@@ -279,6 +282,11 @@ export const authorizedRoutes: RouteProps[] = [
     path: "/privacy-policy",
     element: <PrivacyPolicyPage />,
     breadcrumbs: ["Settings", "Privacy Policy"],
+  },
+  {
+    path: "/terms",
+    element: <TermsOfServicePage />,
+    breadcrumbs: ["Settings", "Terms of Service"],
   },
 ];
 

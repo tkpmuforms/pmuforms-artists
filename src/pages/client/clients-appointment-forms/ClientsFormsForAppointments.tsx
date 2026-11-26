@@ -23,6 +23,11 @@ import AppointmentProducts from "../../../components/inventoryComp/AppointmentPr
 import { formServices, isFormFilled } from "../../../utils/appointmentForms";
 import { formatAppointmentTime } from "../../../utils/utils";
 import { useWhoDid } from "../../../utils/teamPeople";
+import { describeIdCheck } from "../../../utils/idCheck";
+import { clearIdCheck } from "../../../services/artistServices";
+import { getApiErrorMessage } from "../../../utils/apiError";
+import IdCheckModal from "../../../components/clientsComp/idCheck/IdCheckModal";
+import toast from "react-hot-toast";
 
 const ClientsFormsForAppointments: React.FC = () => {
   const { id, appointmentId } = useParams();
@@ -40,13 +45,34 @@ const ClientsFormsForAppointments: React.FC = () => {
     | "completedAt"
     | "createdBy"
     | "performedBy"
+    | "idCheck"
   > | null>(null);
+  const [showIdCheck, setShowIdCheck] = useState(false);
   const navigate = useNavigate();
   // with a team: who booked it and who signed it off
   const who = useWhoDid();
   const bookedBy = who.hasTeam ? who.label(appointment?.createdBy) : "";
   const signedBy =
     who.hasTeam && appointment?.signed ? who.label(appointment.performedBy) : "";
+
+  const idCheck = appointment?.idCheck;
+  const idCheckText = idCheck
+    ? describeIdCheck(
+        idCheck,
+        who.hasTeam ? who.label(idCheck.checkedBy) : undefined,
+      )
+    : "";
+  const setIdCheck = (check: Appointment["idCheck"]) =>
+    setAppointment((a) => (a ? { ...a, idCheck: check } : a));
+  const removeIdCheck = async () => {
+    if (!appointmentId) return;
+    try {
+      await clearIdCheck(appointmentId);
+      setIdCheck(null);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Couldn't remove the ID check."));
+    }
+  };
 
   const onViewForm = (formId: string) => {
     navigate(`/clients/${id}/appointments/${appointmentId}/forms/${formId}`);
@@ -203,7 +229,42 @@ const ClientsFormsForAppointments: React.FC = () => {
                 <span className="appointment-summary__value">{signedBy}</span>
               </div>
             )}
+            {/* the artist looked at the ID; never a photo or number of it */}
+            <div className="appointment-summary__item">
+              <span className="appointment-summary__label">ID check</span>
+              <span className="appointment-summary__value id-check-item">
+                {idCheck ? (
+                  <>
+                    {idCheckText}
+                    <button
+                      type="button"
+                      className="id-check-item__action id-check-item__action--quiet"
+                      onClick={removeIdCheck}
+                    >
+                      Remove
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="id-check-item__action"
+                    onClick={() => setShowIdCheck(true)}
+                  >
+                    Record ID check
+                  </button>
+                )}
+              </span>
+            </div>
           </section>
+        )}
+
+        {showIdCheck && appointmentId && (
+          <IdCheckModal
+            appointmentId={appointmentId}
+            clientName={clientName}
+            onClose={() => setShowIdCheck(false)}
+            onSaved={setIdCheck}
+          />
         )}
 
         {forms.length === 0 ? (

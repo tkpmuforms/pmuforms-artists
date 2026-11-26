@@ -48,6 +48,7 @@ const PRINT_STYLES = `
   input, textarea { margin-top: 8px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
   .filled-form + .filled-form { page-break-before: always; break-before: page; }
   .signature-section { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; page-break-inside: avoid; }
+  .id-check-line { margin-top: 16px; font-size: 12px; color: #444; }
   .signatures-container { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 15px; }
   .signature-item { flex: 1; min-width: 250px; }
   .signature-container { margin-top: 10px; }
@@ -72,6 +73,8 @@ export const printFormsAsPdf = async (params: {
    * team member has none of their own yet), so the record names who did it.
    */
   performedBy?: string | null;
+  /** e.g. "Driver's license · 18+ · Nov 26, 2026"; never the ID itself */
+  idCheck?: string | null;
 }): Promise<boolean> => {
   // open before any await so browsers treat it as user-initiated
   const printWindow = window.open("", "_blank");
@@ -99,6 +102,9 @@ export const printFormsAsPdf = async (params: {
         }
       </div></div>`
     : "";
+  const idCheckLine = params.idCheck
+    ? `<p class="id-check-line"><strong>ID checked in person:</strong> ${escapeHtml(params.idCheck)}</p>`
+    : "";
 
   printWindow.document.write(`<!DOCTYPE html>
 <html>
@@ -109,6 +115,7 @@ export const printFormsAsPdf = async (params: {
   <body>
     ${params.contentHtml}
     ${signatures}
+    ${idCheckLine}
   </body>
 </html>`);
   printWindow.document.close();

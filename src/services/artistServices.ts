@@ -229,6 +229,15 @@ export const signAppointment = async (
   data: { signatureUrl: string },
 ) => axiosInstance.post(`/api/appointments/${appointmentId}/sign`, data);
 
+// that the artist looked at the client's ID: the type and 18+, never a photo
+export const recordIdCheck = async (
+  appointmentId: string,
+  data: { idType: string; over18: boolean },
+) => axiosInstance.put(`/api/appointments/${appointmentId}/id-check`, data);
+
+export const clearIdCheck = async (appointmentId: string) =>
+  axiosInstance.delete(`/api/appointments/${appointmentId}/id-check`);
+
 export const getMyCustomers = async (page?: number) => {
   const params = page ? `?page=${page}` : "";
   return axiosInstance.get(`/api/customers/my-customers${params}`);
