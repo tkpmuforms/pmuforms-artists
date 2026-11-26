@@ -3,7 +3,7 @@
 import imageCompression from "browser-image-compression";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useParams } from "react-router-dom";
 import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
@@ -25,9 +25,19 @@ import {
 import { formatDate } from "../../../utils/utils";
 import { getApiErrorMessage } from "../../../utils/formLinks";
 import { formatSendAt } from "../../../utils/notes";
+import {
+  NOTE_RANGES,
+  NOTE_TYPES,
+  NO_NOTE_FILTERS,
+  NoteFilters,
+  NoteRange,
+  NoteSort,
+  filterNotes,
+  hasNoteFilters,
+} from "../../../utils/noteFilters";
 import "./client-notes.scss";
 import { LoadingSmall } from "../../../components/loading/Loading";
-import { Plus } from "lucide-react";
+import { Camera, Plus, Search, X } from "lucide-react";
 
 const ClientNotesPage: React.FC = () => {
   const location = useLocation();
@@ -53,6 +63,16 @@ const ClientNotesPage: React.FC = () => {
   const [appointmentLabels, setAppointmentLabels] = useState<
     Record<string, string>
   >({});
+  const [filters, setFilters] = useState<NoteFilters>(NO_NOTE_FILTERS);
+  const setFilter = <K extends keyof NoteFilters>(
+    key: K,
+    value: NoteFilters[K],
+  ) => setFilters((prev) => ({ ...prev, [key]: value }));
+  const filtering = hasNoteFilters(filters);
+  const { notes: shownNotes, counts } = useMemo(
+    () => filterNotes(notes, filters),
+    [notes, filters],
+  );
 
   useEffect(() => {
     if (clientId) {
@@ -271,15 +291,128 @@ const ClientNotesPage: React.FC = () => {
         </button>
       </div>
 
+      {notes?.length > 0 && (
+        <div className="notes-filters" aria-label="Filter notes" role="search">
+          <div className="notes-filters__row">
+            <label className="notes-filters__search">
+              <Search size={16} aria-hidden />
+              <input
+                type="search"
+                aria-label="Search notes"
+                placeholder="Search notes and email subjects"
+                value={filters.search}
+                onChange={(e) => setFilter("search", e.target.value)}
+              />
+            </label>
+            <select
+              aria-label="Date range"
+              value={filters.range}
+              onChange={(e) => setFilter("range", e.target.value as NoteRange)}
+            >
+              {NOTE_RANGES.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+            {filters.range === "custom" && (
+              <>
+                <label className="notes-filters__date">
+                  From
+                  <input
+                    type="date"
+                    aria-label="From date"
+                    value={filters.from}
+                    max={filters.to || undefined}
+                    onChange={(e) => setFilter("from", e.target.value)}
+                  />
+                </label>
+                <label className="notes-filters__date">
+                  To
+                  <input
+                    type="date"
+                    aria-label="To date"
+                    value={filters.to}
+                    min={filters.from || undefined}
+                    onChange={(e) => setFilter("to", e.target.value)}
+                  />
+                </label>
+              </>
+            )}
+            <select
+              aria-label="Sort"
+              value={filters.sort}
+              onChange={(e) => setFilter("sort", e.target.value as NoteSort)}
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </div>
+          <div className="notes-filters__chips">
+            {NOTE_TYPES.map((t) => {
+              const active = filters.type === t.value;
+              return (
+                <button
+                  key={t.value}
+                  type="button"
+                  aria-pressed={active}
+                  className={`notes-filters__chip ${active ? "notes-filters__chip--active" : ""}`}
+                  onClick={() => setFilter("type", t.value)}
+                >
+                  {t.label}
+                  <span className="notes-filters__count">{counts[t.value]}</span>
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              aria-pressed={filters.photosOnly}
+              className={`notes-filters__chip ${filters.photosOnly ? "notes-filters__chip--active" : ""}`}
+              onClick={() => setFilter("photosOnly", !filters.photosOnly)}
+            >
+              <Camera size={14} aria-hidden />
+              With photos
+            </button>
+          </div>
+          {filtering && (
+            <div className="notes-filters__result" aria-live="polite">
+              <span>
+                {shownNotes.length} of {notes.length} notes
+              </span>
+              <button
+                type="button"
+                className="notes-filters__clear"
+                onClick={() => setFilters(NO_NOTE_FILTERS)}
+              >
+                <X size={14} aria-hidden />
+                Clear filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {notes?.length === 0 ? (
         <div className="notes-empty-state">
           <p>No notes added</p>
+        </div>
+      ) : shownNotes.length === 0 ? (
+        <div className="notes-empty-state">
+          <p>No notes match these filters.</p>
+          <button
+            type="button"
+            className="notes-filters__clear"
+            onClick={() => setFilters(NO_NOTE_FILTERS)}
+          >
+            <X size={14} aria-hidden />
+            Clear filters
+          </button>
         </div>
       ) : (
         <div className="content-grid">
           <div className="notes-column">
             <div className="notes-list">
-              {notes.map((note) => (
+              {shownNotes.map((note) => (
                 <NoteCard
                   key={note.id}
                   note={note}

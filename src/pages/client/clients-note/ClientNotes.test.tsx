@@ -106,3 +106,66 @@ describe("ClientNotesPage: scheduled emails", () => {
     expect(screen.getByText("How is it healing?")).toBeInTheDocument();
   });
 });
+
+describe("ClientNotesPage: filters", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocked.getAppointmentsForCustomer.mockResolvedValue({
+      data: { appointments: [] },
+    } as never);
+    mocked.getCustomerNotes.mockResolvedValue({
+      data: {
+        notes: [
+          {
+            id: "recent",
+            _id: "recent",
+            kind: "email",
+            subject: "Your aftercare",
+            date: "2026-11-20T15:00:00.000Z",
+            artistId: "artist-1",
+            note: "Email to jane@example.com",
+          },
+          {
+            // from before notes had kinds
+            id: "old",
+            _id: "old",
+            date: "2025-03-02T15:00:00.000Z",
+            artistId: "artist-1",
+            note: "Prefers soft brows",
+          },
+        ],
+      },
+    } as never);
+  });
+
+  it("filters by custom dates and type, and clears", async () => {
+    const user = userEvent.setup();
+    renderPage();
+    expect(await screen.findByText("Prefers soft brows")).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("Date range"), "custom");
+    await user.type(screen.getByLabelText("From date"), "2025-01-01");
+    await user.type(screen.getByLabelText("To date"), "2025-12-31");
+    expect(screen.getByText("1 of 2 notes")).toBeInTheDocument();
+    expect(screen.getByText("Prefers soft brows")).toBeInTheDocument();
+    expect(screen.queryByText("Your aftercare")).toBeNull();
+
+    // no emails in that range
+    await user.click(screen.getByRole("button", { name: /Emails sent/ }));
+    expect(screen.getByText("No notes match these filters.")).toBeInTheDocument();
+
+    await user.click(screen.getAllByRole("button", { name: /Clear filters/ })[0]);
+    expect(screen.getByText("Prefers soft brows")).toBeInTheDocument();
+    expect(screen.getByText("Your aftercare")).toBeInTheDocument();
+  });
+
+  it("searches the notes", async () => {
+    const user = userEvent.setup();
+    renderPage();
+    expect(await screen.findByText("Your aftercare")).toBeInTheDocument();
+    await user.type(screen.getByLabelText("Search notes"), "brows");
+    expect(screen.getByText("Prefers soft brows")).toBeInTheDocument();
+    expect(screen.queryByText("Your aftercare")).toBeNull();
+  });
+});
+
