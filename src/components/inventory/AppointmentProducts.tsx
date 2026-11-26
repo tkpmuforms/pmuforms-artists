@@ -18,7 +18,7 @@ import {
 import { formatDay, formatWhen, isAmount } from "../../utils/inventory";
 import { getApiErrorMessage } from "../../utils/formLinks";
 import { isArtistSubscribed } from "../../utils/subscriptionUtils";
-import SubscriptionModal from "../dashboardComp/SubScriptionModal";
+import SubscriptionModal from "../dashboard/SubScriptionModal";
 import Field from "./Field";
 import InventoryModal from "./InventoryModal";
 import { Badge } from "./StatusBadge";

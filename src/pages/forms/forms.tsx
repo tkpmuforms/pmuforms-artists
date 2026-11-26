@@ -5,14 +5,14 @@ import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import FormCard from "../../components/formsComp/FormCard";
+import FormCard from "../../components/forms/FormCard";
 import { Loading } from "../../components/loading/Loading";
 import Pagination from "../../components/pagination/Pagination";
 import { Form, FormType } from "../../redux/types";
 import { getArtistForms } from "../../services/artistServices";
 import { transformFormData } from "../../utils/utils";
 import "./forms-page.scss";
-import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
+import UpdateServicesModal from "../../components/profile/UpdateServicesModal";
 import useAuth from "../../context/useAuth";
 import {
   FORM_SOURCES,

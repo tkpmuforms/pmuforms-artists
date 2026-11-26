@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AuthenticatedNavbar.scss";
-import ClientSearchModal from "../../clientsComp/ClientSearchModal";
+import ClientSearchModal from "../../clients/ClientSearchModal";
 
 interface AuthenticatedNavbarProps {
   breadcrumbs?: string[];

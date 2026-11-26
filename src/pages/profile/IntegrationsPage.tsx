@@ -17,7 +17,7 @@ import {
 } from "../../assets/svgs/IntegrationsSvg";
 import "./integrations.scss";
 import useAuth from "../../context/useAuth";
-import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
+import SubscriptionModal from "../../components/dashboard/SubScriptionModal";
 import { isArtistSubscribed } from "../../utils/subscriptionUtils";
 
 interface Integration {

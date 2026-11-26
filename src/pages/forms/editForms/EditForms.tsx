@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { LoadingSmall } from "../../../components/loading/Loading";
-import EditFormServices from "../../../components/formsComp/EditFormsServices";
-import RenderEditFormsFields from "../../../components/formsComp/RenderEditForms";
-import ServicesSection from "../../../components/formsComp/ServiceSection";
-import AddFieldModal from "../../../components/formsComp/AddFieldModal";
-import FieldInputModal from "../../../components/formsComp/FieldInputModal";
+import EditFormServices from "../../../components/forms/EditFormsServices";
+import RenderEditFormsFields from "../../../components/forms/RenderEditForms";
+import ServicesSection from "../../../components/forms/ServiceSection";
+import AddFieldModal from "../../../components/forms/AddFieldModal";
+import FieldInputModal from "../../../components/forms/FieldInputModal";
 import useAuth from "../../../context/useAuth";
 import { Section, Service, SingleForm } from "../../../redux/types";
 import {
@@ -18,8 +18,8 @@ import {
   addFormSectionData,
 } from "../../../services/artistServices";
 import "./edit-forms.scss";
-import DeleteConfirmModal from "../../../components/formsComp/DeleteConfirmModal";
-import EditParagraphModal from "../../../components/formsComp/EditParagraphModal";
+import DeleteConfirmModal from "../../../components/forms/DeleteConfirmModal";
+import EditParagraphModal from "../../../components/forms/EditParagraphModal";
 
 interface EditFormsProps {
   onClose?: () => void;

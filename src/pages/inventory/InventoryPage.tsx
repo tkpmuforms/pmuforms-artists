@@ -2,12 +2,12 @@ import { PackagePlus, Plus, Search, Settings } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import InventoryGate from "../../components/inventoryComp/InventoryGate";
+import InventoryGate from "../../components/inventory/InventoryGate";
 import {
   BatchStatusBadge,
   StockStatusBadge,
-} from "../../components/inventoryComp/StatusBadge";
-import "../../components/inventoryComp/inventory.scss";
+} from "../../components/inventory/StatusBadge";
+import "../../components/inventory/inventory.scss";
 import {
   type Batch,
   type BatchStatus,

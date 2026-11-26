@@ -27,10 +27,10 @@ vi.mock("../../../context/useAuth", () => ({
 vi.mock("react-redux", () => ({ useDispatch: () => vi.fn() }));
 vi.mock("../../../utils/authUtils", () => ({ refreshAuthUser: vi.fn() }));
 vi.mock("../../../firebase/firebase", () => ({ storage: {} }));
-vi.mock("../../../components/profileComp/UpdateServicesModal", () => ({
+vi.mock("../../../components/profile/UpdateServicesModal", () => ({
   default: () => null,
 }));
-vi.mock("../../../components/clientsComp/signature/SignatureModal", () => ({
+vi.mock("../../../components/clients/signature/SignatureModal", () => ({
   default: () => <p>Signature pad</p>,
 }));
 vi.mock("react-hot-toast", () => ({

@@ -3,9 +3,9 @@ import { CircularProgress } from "@mui/material";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import AddClientModal from "../../components/clientsComp/AddClientModal";
-import ClientCard from "../../components/clientsComp/ClientCard";
-import ClientSearchModal from "../../components/clientsComp/ClientSearchModal";
+import AddClientModal from "../../components/clients/AddClientModal";
+import ClientCard from "../../components/clients/ClientCard";
+import ClientSearchModal from "../../components/clients/ClientSearchModal";
 import { LoadingSmall } from "../../components/loading/Loading";
 import { Client, CustomerResponse } from "../../redux/types";
 import {

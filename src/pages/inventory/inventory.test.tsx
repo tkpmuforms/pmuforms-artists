@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import AdjustStockModal from "../../components/inventoryComp/AdjustStockModal";
+import AdjustStockModal from "../../components/inventory/AdjustStockModal";
 import type {
   BatchDetail,
   Overview,
@@ -51,7 +51,7 @@ vi.mock("../../context/useAuth", () => ({
   }),
 }));
 
-vi.mock("../../components/dashboardComp/SubScriptionModal", () => ({
+vi.mock("../../components/dashboard/SubScriptionModal", () => ({
   default: () => <div>Plans</div>,
 }));
 

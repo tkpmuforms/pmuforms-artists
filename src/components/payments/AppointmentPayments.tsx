@@ -10,10 +10,10 @@ import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import Field from "../inventoryComp/Field";
-import InventoryModal from "../inventoryComp/InventoryModal";
-import { Badge } from "../inventoryComp/StatusBadge";
-import "../inventoryComp/inventory.scss";
+import Field from "../inventory/Field";
+import InventoryModal from "../inventory/InventoryModal";
+import { Badge } from "../inventory/StatusBadge";
+import "../inventory/inventory.scss";
 import "./appointment-payments.scss";
 import {
   type PaymentRequest,
@@ -32,7 +32,7 @@ import { formatWhen } from "../../utils/inventory";
 import { getApiErrorMessage } from "../../utils/formLinks";
 import useAuth from "../../context/useAuth";
 import { isArtistSubscribed } from "../../utils/subscriptionUtils";
-import SubscriptionModal from "../dashboardComp/SubScriptionModal";
+import SubscriptionModal from "../dashboard/SubScriptionModal";
 
 const STATUS: Record<
   PaymentRequestStatus,

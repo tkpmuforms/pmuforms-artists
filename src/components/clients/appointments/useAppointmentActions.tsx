@@ -9,11 +9,11 @@ import {
 } from "../../../services/paymentServices";
 import { getApiErrorMessage, startFillingOnThisDevice } from "../../../utils/formLinks";
 import { isArtistSubscribed } from "../../../utils/subscriptionUtils";
-import SubscriptionModal from "../../dashboardComp/SubScriptionModal";
+import SubscriptionModal from "../../dashboard/SubScriptionModal";
 import {
   type AppointmentService,
   RecordProductModal,
-} from "../../inventoryComp/AppointmentProducts";
+} from "../../inventory/AppointmentProducts";
 import { RequestPaymentModal } from "../../payments/AppointmentPayments";
 import DeleteModal from "../details/DeleteModal";
 import type { AppointmentMenuHandlers, CareAction } from "./AppointmentActionsMenu";

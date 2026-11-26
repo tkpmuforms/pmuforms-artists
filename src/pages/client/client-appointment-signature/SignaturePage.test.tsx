@@ -24,7 +24,7 @@ vi.mock("browser-image-compression", () => ({
   default: vi.fn(async (file: File) => file),
 }));
 // the real modal draws on a canvas; this one submits straight away
-vi.mock("../../../components/clientsComp/signature/SignatureModal", () => ({
+vi.mock("../../../components/clients/signature/SignatureModal", () => ({
   default: ({ onSubmit }: { onSubmit: (url: string) => Promise<void> }) => (
     <div role="dialog" aria-label="Signature pad">
       <button onClick={() => onSubmit("data:image/png;base64,AAAA")}>

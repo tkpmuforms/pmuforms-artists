@@ -3,10 +3,10 @@ import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import InventoryGate from "../../components/inventoryComp/InventoryGate";
-import ManufacturerModal from "../../components/inventoryComp/ManufacturerModal";
-import SupplierModal from "../../components/inventoryComp/SupplierModal";
-import "../../components/inventoryComp/inventory.scss";
+import InventoryGate from "../../components/inventory/InventoryGate";
+import ManufacturerModal from "../../components/inventory/ManufacturerModal";
+import SupplierModal from "../../components/inventory/SupplierModal";
+import "../../components/inventory/inventory.scss";
 import {
   type Category,
   type Ingredient,
@@ -25,7 +25,7 @@ import {
 } from "../../services/inventoryServices";
 import { getApiErrorMessage } from "../../utils/formLinks";
 import { isAmount } from "../../utils/inventory";
-import Field from "../../components/inventoryComp/Field";
+import Field from "../../components/inventory/Field";
 
 const NEW = "__new__";
 

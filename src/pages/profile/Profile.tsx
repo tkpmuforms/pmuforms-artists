@@ -7,6 +7,7 @@ import {
   HelpCircle,
   Key,
   LogOut,
+  Trash2,
   UserRound,
   Users,
 } from "lucide-react";
@@ -14,12 +15,13 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import ChangePasswordModal from "../../components/profileComp/ChangePasswordModal";
-import EditBusinessInformationModal from "../../components/profileComp/EditBusinessInformationModal";
+import ChangePasswordModal from "../../components/profile/ChangePasswordModal";
+import DeleteAccountModal from "../../components/profile/DeleteAccountModal";
+import EditBusinessInformationModal from "../../components/profile/EditBusinessInformationModal";
 import MemberNameModal from "../../components/team/MemberNameModal";
 import { setMe } from "../../redux/auth";
 import { forgetTeamPeople } from "../../utils/teamPeople";
-import UpdateServicesModal from "../../components/profileComp/UpdateServicesModal";
+import UpdateServicesModal from "../../components/profile/UpdateServicesModal";
 import useAuth from "../../context/useAuth";
 import type { OnboardingStep } from "../auth/authUtils";
 import { determineOnboardingStep } from "../auth/authUtils";
@@ -44,6 +46,7 @@ const ProfilePage: React.FC = () => {
   const [showEditBusinessInfo, setShowEditBusinessInfo] = useState(false);
   const [showUpdateServices, setShowUpdateServices] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const [isNewUser] = useState(locationState?.newUser || false);
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>(
     locationState?.onboardingStep || "completed",
@@ -156,6 +159,17 @@ const ProfilePage: React.FC = () => {
       onClick: () => logout(),
       variant: "danger" as const,
     },
+    // only the owner can delete the account
+    ...(member
+      ? []
+      : [
+          {
+            icon: <Trash2 size={10} />,
+            title: "Delete Account",
+            onClick: () => setShowDeleteAccount(true),
+            variant: "danger" as const,
+          },
+        ]),
   ];
 
   return (
@@ -304,6 +318,18 @@ const ProfilePage: React.FC = () => {
 
       {showChangePassword && (
         <ChangePasswordModal onClose={() => setShowChangePassword(false)} />
+      )}
+
+      {showDeleteAccount && (
+        <DeleteAccountModal
+          onClose={() => setShowDeleteAccount(false)}
+          onDeleted={() => {
+            // the business page is gone too, so sign out to the home page
+            localStorage.removeItem("businessUri");
+            logout();
+          }}
+          storeSubscription={!!user?.appStorePurchaseActive}
+        />
       )}
     </div>
   );

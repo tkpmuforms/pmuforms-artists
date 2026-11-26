@@ -15,7 +15,7 @@ vi.mock("react-hot-toast", () => ({
 }));
 let mockUser: { stripeSubscriptionActive?: boolean } = {};
 vi.mock("../../context/useAuth", () => ({ default: () => ({ user: mockUser }) }));
-vi.mock("../../components/dashboardComp/SubScriptionModal", () => ({
+vi.mock("../../components/dashboard/SubScriptionModal", () => ({
   default: () => <p>Plans</p>,
 }));
 

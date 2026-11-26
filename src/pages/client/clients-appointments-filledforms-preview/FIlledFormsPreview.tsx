@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import FilledFormView, {
   FilledFormTemplate,
-} from "../../../components/clientsComp/filled-forms/FilledFormView";
+} from "../../../components/clients/filled-forms/FilledFormView";
 import useAuth from "../../../context/useAuth";
 import {
   getAppointmentById,

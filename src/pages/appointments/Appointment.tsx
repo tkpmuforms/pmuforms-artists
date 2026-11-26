@@ -4,9 +4,9 @@ import { Calendar, Search, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
-import AppointmentActionsMenu from "../../components/clientsComp/appointments/AppointmentActionsMenu";
-import { useAppointmentActions } from "../../components/clientsComp/appointments/useAppointmentActions";
+import AppointmentCard from "../../components/dashboard/AppointmentCard";
+import AppointmentActionsMenu from "../../components/clients/appointments/AppointmentActionsMenu";
+import { useAppointmentActions } from "../../components/clients/appointments/useAppointmentActions";
 import { LoadingSmall } from "../../components/loading/Loading";
 import useAuth from "../../context/useAuth";
 import {

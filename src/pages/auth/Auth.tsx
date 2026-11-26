@@ -10,8 +10,8 @@ import {
   MobileAppleLoginSvg,
   MobileGoogleLoginSvg,
 } from "../../assets/svgs/AuthSvg";
-import LoginPage from "../../components/authComp/login/Login";
-import SignupPage from "../../components/authComp/signup/SignUp";
+import LoginPage from "../../components/auth/login/Login";
+import SignupPage from "../../components/auth/signup/SignUp";
 import LegalConsentLine from "./LegalConsentLine";
 import Navbar from "../../components/layout/navbar/Navbar";
 import ImageSlider from "../../components/slider/ImageSlider";

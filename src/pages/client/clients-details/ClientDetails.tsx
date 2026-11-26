@@ -21,9 +21,9 @@ import {
   TotalAppointmentsSvg,
 } from "../../../assets/svgs/formsSvg";
 
-import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
-import EditClientModal from "../../../components/clientsComp/details/EditClientModal";
-import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
+import DeleteModal from "../../../components/clients/details/DeleteModal";
+import EditClientModal from "../../../components/clients/details/EditClientModal";
+import SendConsentFormModal from "../../../components/clients/details/SendConsentFormModal";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import {
   deleteCustomer,

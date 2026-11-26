@@ -6,7 +6,7 @@ import {
   EditFormsSvg,
   PreviewAlertSvg,
 } from "../../../assets/svgs/formsSvg";
-import { renderPreviewFormFields } from "../../../components/formsComp/RenderPreviewFormFields";
+import { renderPreviewFormFields } from "../../../components/forms/RenderPreviewFormFields";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import useAuth from "../../../context/useAuth";
 import { Section, SingleForm } from "../../../redux/types";
@@ -15,7 +15,7 @@ import {
   getFormById,
 } from "../../../services/artistServices";
 import "./preview-forms.scss";
-import DeleteConfirmModal from "../../../components/formsComp/DeleteConfirmModal";
+import DeleteConfirmModal from "../../../components/forms/DeleteConfirmModal";
 
 interface PreviewFormsProps {
   onClose?: () => void;

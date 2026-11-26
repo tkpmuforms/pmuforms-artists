@@ -3,10 +3,10 @@
 import { ClipboardPen } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
-import AddClientModal from "../clientsComp/AddClientModal";
-import ClientSearchModal from "../clientsComp/ClientSearchModal";
-import ShareFormLinkModal from "../clientsComp/appointments/ShareFormLinkModal";
-import SendConsentFormModal from "../clientsComp/details/SendConsentFormModal";
+import AddClientModal from "../clients/AddClientModal";
+import ClientSearchModal from "../clients/ClientSearchModal";
+import ShareFormLinkModal from "../clients/appointments/ShareFormLinkModal";
+import SendConsentFormModal from "../clients/details/SendConsentFormModal";
 
 interface Client {
   id: string;

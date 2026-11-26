@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ReminderCard from "../../../components/clientsComp/reminder/ReminderCard";
-import SelectReminderTypeModal from "../../../components/clientsComp/reminder/ReminderModalType";
-import SetReminderModal from "../../../components/clientsComp/reminder/SetReminderModal";
+import ReminderCard from "../../../components/clients/reminder/ReminderCard";
+import SelectReminderTypeModal from "../../../components/clients/reminder/ReminderModalType";
+import SetReminderModal from "../../../components/clients/reminder/SetReminderModal";
 import "./client-reminder.scss";
 import {
   createReminder,
@@ -11,7 +11,7 @@ import {
   updateReminder,
 } from "../../../services/artistServices";
 import toast from "react-hot-toast";
-import DeleteModal from "../../../components/clientsComp/details/DeleteModal";
+import DeleteModal from "../../../components/clients/details/DeleteModal";
 
 interface Reminder {
   id: string;

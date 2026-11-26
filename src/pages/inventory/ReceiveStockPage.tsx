@@ -2,11 +2,11 @@ import { AlertTriangle, CheckCircle2, FileUp, Info, Plus, Search } from "lucide-
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import InventoryGate from "../../components/inventoryComp/InventoryGate";
-import InventoryModal from "../../components/inventoryComp/InventoryModal";
-import SupplierModal from "../../components/inventoryComp/SupplierModal";
-import DocumentFormModal from "../../components/inventoryComp/compliance/DocumentFormModal";
-import "../../components/inventoryComp/inventory.scss";
+import InventoryGate from "../../components/inventory/InventoryGate";
+import InventoryModal from "../../components/inventory/InventoryModal";
+import SupplierModal from "../../components/inventory/SupplierModal";
+import DocumentFormModal from "../../components/inventory/compliance/DocumentFormModal";
+import "../../components/inventory/inventory.scss";
 import {
   type BatchDetail,
   type ComplianceDoc,
@@ -25,7 +25,7 @@ import {
 } from "../../services/inventoryServices";
 import { getApiErrorMessage } from "../../utils/formLinks";
 import { formatDay, formatQty, isAmount, todayLocal } from "../../utils/inventory";
-import Field from "../../components/inventoryComp/Field";
+import Field from "../../components/inventory/Field";
 
 type Step = "product" | "details" | "review" | "done";
 

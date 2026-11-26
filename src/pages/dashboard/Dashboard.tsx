@@ -14,19 +14,19 @@ import {
   SendFormIcon,
   TodaysScheduleIcon,
 } from "../../assets/svgs/DashboardSvg";
-import AddClientModal from "../../components/clientsComp/AddClientModal";
-import AppointmentCard from "../../components/dashboardComp/AppointmentCard";
-import AppointmentActionsMenu from "../../components/clientsComp/appointments/AppointmentActionsMenu";
-import { useAppointmentActions } from "../../components/clientsComp/appointments/useAppointmentActions";
-import FeaturesModal from "../../components/dashboardComp/FeaturesModal.";
-import FormLinkModal from "../../components/dashboardComp/FormLinkModal";
-import MetricsCard from "../../components/dashboardComp/MetricsCard";
-import QuickActionCard from "../../components/dashboardComp/QuickActionCard";
+import AddClientModal from "../../components/clients/AddClientModal";
+import AppointmentCard from "../../components/dashboard/AppointmentCard";
+import AppointmentActionsMenu from "../../components/clients/appointments/AppointmentActionsMenu";
+import { useAppointmentActions } from "../../components/clients/appointments/useAppointmentActions";
+import FeaturesModal from "../../components/dashboard/FeaturesModal.";
+import FormLinkModal from "../../components/dashboard/FormLinkModal";
+import MetricsCard from "../../components/dashboard/MetricsCard";
+import QuickActionCard from "../../components/dashboard/QuickActionCard";
 import StartNewFormFlow, {
   StartFormIcon,
-} from "../../components/dashboardComp/StartNewFormFlow";
-import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
-import FormCard from "../../components/formsComp/FormCard";
+} from "../../components/dashboard/StartNewFormFlow";
+import SubscriptionModal from "../../components/dashboard/SubScriptionModal";
+import FormCard from "../../components/forms/FormCard";
 import { LoadingSmall } from "../../components/loading/Loading";
 import useAuth from "../../context/useAuth";
 import { Appointment } from "../../redux/types";

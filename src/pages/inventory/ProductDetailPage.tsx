@@ -3,14 +3,14 @@ import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import InventoryGate from "../../components/inventoryComp/InventoryGate";
-import InventoryModal from "../../components/inventoryComp/InventoryModal";
+import InventoryGate from "../../components/inventory/InventoryGate";
+import InventoryModal from "../../components/inventory/InventoryModal";
 import {
   BatchStatusBadge,
   StockStatusBadge,
-} from "../../components/inventoryComp/StatusBadge";
-import CompliancePassport from "../../components/inventoryComp/compliance/CompliancePassport";
-import "../../components/inventoryComp/inventory.scss";
+} from "../../components/inventory/StatusBadge";
+import CompliancePassport from "../../components/inventory/compliance/CompliancePassport";
+import "../../components/inventory/inventory.scss";
 import {
   type Batch,
   type Product,

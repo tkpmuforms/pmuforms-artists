@@ -15,18 +15,18 @@ import {
   getCustomerById,
   getFilledFormsByAppointment,
 } from "../../../services/artistServices";
-import ClientFormsCard from "../../../components/clientsComp/filled-forms/ClientFormsCard";
+import ClientFormsCard from "../../../components/clients/filled-forms/ClientFormsCard";
 import "./appointment-forms-page.scss";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import AppointmentPayments from "../../../components/payments/AppointmentPayments";
-import AppointmentProducts from "../../../components/inventoryComp/AppointmentProducts";
+import AppointmentProducts from "../../../components/inventory/AppointmentProducts";
 import { formServices, isFormFilled } from "../../../utils/appointmentForms";
 import { formatAppointmentTime } from "../../../utils/utils";
 import { useWhoDid } from "../../../utils/teamPeople";
 import { describeIdCheck } from "../../../utils/idCheck";
 import { clearIdCheck } from "../../../services/artistServices";
 import { getApiErrorMessage } from "../../../utils/apiError";
-import IdCheckModal from "../../../components/clientsComp/idCheck/IdCheckModal";
+import IdCheckModal from "../../../components/clients/idCheck/IdCheckModal";
 import toast from "react-hot-toast";
 
 const ClientsFormsForAppointments: React.FC = () => {

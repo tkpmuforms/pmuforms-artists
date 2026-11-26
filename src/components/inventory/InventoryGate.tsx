@@ -2,7 +2,7 @@ import { Boxes } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import useAuth from "../../context/useAuth";
-import SubscriptionModal from "../dashboardComp/SubScriptionModal";
+import SubscriptionModal from "../dashboard/SubScriptionModal";
 
 /** Inventory is part of the paid plan; everyone else sees what it offers. */
 const InventoryGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {

@@ -11,8 +11,8 @@ import {
   SignatureformsSvg,
   SignatureServicesCheckSvg,
 } from "../../../assets/svgs/ClientsSvg";
-import SignatureModal from "../../../components/clientsComp/signature/SignatureModal";
-import AppointmentNextStepModal from "../../../components/clientsComp/appointments/AppointmentNextStepModal";
+import SignatureModal from "../../../components/clients/signature/SignatureModal";
+import AppointmentNextStepModal from "../../../components/clients/appointments/AppointmentNextStepModal";
 import useAuth from "../../../context/useAuth";
 import { storage } from "../../../firebase/firebase";
 import { LoadingSmall } from "../../../components/loading/Loading";

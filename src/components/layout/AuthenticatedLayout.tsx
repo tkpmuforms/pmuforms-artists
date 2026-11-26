@@ -5,7 +5,7 @@ import { type ReactNode, useEffect, useState, useRef } from "react";
 import "./authenticatedLayout.scss";
 import Sidebar, { type SidebarRef } from "./sidebar/Sidebar";
 import AuthenticatedNavbar from "./navbar/AuthenticatedNavbar";
-import SavedOfferPrompt from "../dashboardComp/SavedOfferPrompt";
+import SavedOfferPrompt from "../dashboard/SavedOfferPrompt";
 import TeamGate from "../team/TeamGate";
 import useAuth from "../../context/useAuth";
 

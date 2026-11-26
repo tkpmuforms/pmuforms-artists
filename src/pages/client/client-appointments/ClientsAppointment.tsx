@@ -3,7 +3,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { SendConsentFormSvg } from "../../../assets/svgs/ClientsSvg";
-import SendConsentFormModal from "../../../components/clientsComp/details/SendConsentFormModal";
+import SendConsentFormModal from "../../../components/clients/details/SendConsentFormModal";
 import { ClientAppointmentData } from "../../../redux/types";
 import {
   getAppointmentsForCustomer,
@@ -11,8 +11,8 @@ import {
 } from "../../../services/artistServices";
 import AppointmentCard, {
   type CareAction,
-} from "../../../components/clientsComp/appointments/AppointmentCard";
-import { useAppointmentActions } from "../../../components/clientsComp/appointments/useAppointmentActions";
+} from "../../../components/clients/appointments/AppointmentCard";
+import { useAppointmentActions } from "../../../components/clients/appointments/useAppointmentActions";
 import { LoadingSmall } from "../../../components/loading/Loading";
 import "./client-appointments.scss";
 

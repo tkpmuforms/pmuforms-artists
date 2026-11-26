@@ -19,10 +19,10 @@ vi.mock("../../context/useAuth", () => ({
     },
   }),
 }));
-vi.mock("../../components/clientsComp/ClientSearchModal", () => ({
+vi.mock("../../components/clients/ClientSearchModal", () => ({
   default: () => null,
 }));
-vi.mock("../../components/clientsComp/AddClientModal", () => ({
+vi.mock("../../components/clients/AddClientModal", () => ({
   default: () => null,
 }));
 

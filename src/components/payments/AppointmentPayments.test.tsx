@@ -21,7 +21,7 @@ vi.mock("../../services/paymentServices", async (importOriginal) => {
 vi.mock("react-hot-toast", () => ({ default: { success: vi.fn(), error: vi.fn() } }));
 let mockUser: { stripeSubscriptionActive?: boolean } = { stripeSubscriptionActive: true };
 vi.mock("../../context/useAuth", () => ({ default: () => ({ user: mockUser }) }));
-vi.mock("../dashboardComp/SubScriptionModal", () => ({
+vi.mock("../dashboard/SubScriptionModal", () => ({
   default: () => <p>Plans</p>,
 }));
 

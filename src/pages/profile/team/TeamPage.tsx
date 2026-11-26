@@ -14,7 +14,7 @@ import {
   type TeamMember,
 } from "../../../services/teamServices";
 import { forgetTeamPeople } from "../../../utils/teamPeople";
-import "../../../components/profileComp/edit-business-information-modal.scss";
+import "../../../components/profile/edit-business-information-modal.scss";
 import "./team-page.scss";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

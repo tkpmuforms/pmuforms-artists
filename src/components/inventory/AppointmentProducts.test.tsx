@@ -17,7 +17,7 @@ vi.mock("../../services/inventoryServices", async (importOriginal) => ({
 vi.mock("react-hot-toast", () => ({ default: { success: vi.fn(), error: vi.fn() } }));
 let mockUser: { stripeSubscriptionActive?: boolean } = { stripeSubscriptionActive: true };
 vi.mock("../../context/useAuth", () => ({ default: () => ({ user: mockUser }) }));
-vi.mock("../dashboardComp/SubScriptionModal", () => ({ default: () => <p>Plans</p> }));
+vi.mock("../dashboard/SubScriptionModal", () => ({ default: () => <p>Plans</p> }));
 
 const mocked = vi.mocked(api);
 const ok = <T,>(data: T) => Promise.resolve({ data }) as never;

@@ -22,7 +22,7 @@ vi.mock("../../context/useAuth", () => ({
     },
   }),
 }));
-vi.mock("../../components/profileComp/UpdateServicesModal", () => ({
+vi.mock("../../components/profile/UpdateServicesModal", () => ({
   default: () => null,
 }));
 

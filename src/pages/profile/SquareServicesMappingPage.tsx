@@ -14,8 +14,8 @@ import {
   SquareMappingRequest,
 } from "../../services/artistServices";
 import "./square-services-mapping.scss";
-import "../../components/inventoryComp/inventory.scss";
-import SubscriptionModal from "../../components/dashboardComp/SubScriptionModal";
+import "../../components/inventory/inventory.scss";
+import SubscriptionModal from "../../components/dashboard/SubScriptionModal";
 import { isArtistSubscribed } from "../../utils/subscriptionUtils";
 import { getApiErrorMessage } from "../../utils/apiError";
 

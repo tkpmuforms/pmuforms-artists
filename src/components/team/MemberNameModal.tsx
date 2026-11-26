@@ -4,7 +4,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { teamErrorText, updateMyTeamName } from "../../services/teamServices";
 import { validateOwnerName } from "../../utils/ownerDetails";
-import "../profileComp/edit-business-information-modal.scss";
+import "../profile/edit-business-information-modal.scss";
 
 interface MemberNameModalProps {
   initial: { firstName: string; lastName: string };

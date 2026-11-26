@@ -3,11 +3,11 @@ import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
-import InventoryGate from "../../components/inventoryComp/InventoryGate";
-import ManufacturerModal from "../../components/inventoryComp/ManufacturerModal";
-import SupplierModal from "../../components/inventoryComp/SupplierModal";
-import ChecklistEditor from "../../components/inventoryComp/compliance/ChecklistEditor";
-import "../../components/inventoryComp/inventory.scss";
+import InventoryGate from "../../components/inventory/InventoryGate";
+import ManufacturerModal from "../../components/inventory/ManufacturerModal";
+import SupplierModal from "../../components/inventory/SupplierModal";
+import ChecklistEditor from "../../components/inventory/compliance/ChecklistEditor";
+import "../../components/inventory/inventory.scss";
 import {
   type Category,
   type Manufacturer,
@@ -21,7 +21,7 @@ import {
   updateInventorySettings,
 } from "../../services/inventoryServices";
 import { getApiErrorMessage } from "../../utils/formLinks";
-import Field from "../../components/inventoryComp/Field";
+import Field from "../../components/inventory/Field";
 
 type Tab = "general" | "manufacturers" | "suppliers" | "checklists";
 
