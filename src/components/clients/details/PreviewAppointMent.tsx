@@ -10,6 +10,8 @@ import {
 } from "../../../services/artistServices";
 import { LoadingSmall } from "../../loading/Loading";
 import toast from "react-hot-toast";
+import PlanLimitNotice from "../../plans/PlanLimitNotice";
+import { planLimitFrom, type PlanLimitError } from "../../../utils/planLimits";
 
 interface PreviewAppointmentModalProps {
   onClose: () => void;
@@ -39,6 +41,8 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
   const [formsToSend, setFormsToSend] = useState<FormData[]>([]);
   const [isLoadingForms, setIsLoadingForms] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
+  // a Starter limit: says why, with a way to upgrade
+  const [limit, setLimit] = useState<PlanLimitError | null>(null);
 
   const fetchFormsForServices = async (serviceIds: string[]) => {
     if (!serviceIds || serviceIds.length === 0) return;
@@ -82,6 +86,7 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
 
   const handleContinue = async () => {
     setIsBooking(true);
+    setLimit(null);
 
     try {
       const bookingData = {
@@ -112,6 +117,11 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
       }
     } catch (error) {
       console.error("Error booking appointment:", error);
+      const reached = planLimitFrom(error);
+      if (reached) {
+        setLimit(reached);
+        return;
+      }
 
       alert("Error booking appointment. Please try again.");
     } finally {
@@ -210,6 +220,12 @@ const PreviewAppointmentModal: React.FC<PreviewAppointmentModalProps> = ({
         </div>
 
         <div className="divider"></div>
+
+        {limit && (
+          <div className="preview-appointment-modal__limit">
+            <PlanLimitNotice limit={limit} />
+          </div>
+        )}
 
         <div className="preview-appointment-modal__footer">
           <button

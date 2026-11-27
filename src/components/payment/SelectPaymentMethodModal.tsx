@@ -42,7 +42,7 @@ interface SelectPaymentMethodModalProps {
   priceId?: string;
   planAmount?: number;
   /** for analytics; worked out from the price id when not given */
-  planName?: "monthly" | "yearly";
+  planName?: "starter" | "monthly" | "yearly";
   onPaymentSuccess?: () => void;
   hasActiveSubscription?: boolean;
   /** a code from a link or QR code, already checked: applied from the start */
@@ -201,11 +201,13 @@ const SelectPaymentMethodModal = ({
         toast.success("Payment successful! Subscription activated.");
         trackPurchase(
           planName ??
-            (priceId === import.meta.env.VITE_YEARLY_PRICE_ID
-              ? "yearly"
-              : priceId === import.meta.env.VITE_MONTHLY_PRICE_ID
-                ? "monthly"
-                : "other"),
+            (priceId === import.meta.env.VITE_STARTER_PRICE_ID
+              ? "starter"
+              : priceId === import.meta.env.VITE_YEARLY_PRICE_ID
+                ? "yearly"
+                : priceId === import.meta.env.VITE_MONTHLY_PRICE_ID
+                  ? "monthly"
+                  : "other"),
           planAmount ?? 0,
         );
 
@@ -417,12 +419,14 @@ const SelectPaymentMethodModal = ({
                 </button>
               </div>
               {planAmount != null && (() => {
-                const savings = appliedCoupon.percentOff
+                const off = appliedCoupon.percentOff
                   ? planAmount * (appliedCoupon.percentOff / 100)
                   : appliedCoupon.amountOff
                     ? appliedCoupon.amountOff / 100
                     : null;
-                if (savings == null) return null;
+                if (off == null) return null;
+                // $19.99 off a $9.99 plan saves $9.99: Stripe doesn't carry the rest over
+                const savings = Math.min(off, planAmount);
                 const newTotal = Math.max(0, planAmount - savings);
                 return (
                   <div className="coupon-applied__savings">

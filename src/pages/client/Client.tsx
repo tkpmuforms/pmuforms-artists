@@ -7,6 +7,7 @@ import AddClientModal from "../../components/clients/AddClientModal";
 import ClientCard from "../../components/clients/ClientCard";
 import ClientSearchModal from "../../components/clients/ClientSearchModal";
 import { LoadingSmall } from "../../components/loading/Loading";
+import PlanUsageMeter from "../../components/plans/PlanUsageMeter";
 import { Client, CustomerResponse } from "../../redux/types";
 import {
   ClientActivity,
@@ -78,6 +79,8 @@ const ClientsPage: React.FC = () => {
   };
   const [showSearch, setShowSearch] = useState(false);
   const [showAddClient, setShowAddClient] = useState(false);
+  // Starter's usage meter loads again after a client is added
+  const [usageKey, setUsageKey] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,6 +160,7 @@ const ClientsPage: React.FC = () => {
 
   const handleAddClientSuccess = () => {
     setShowAddClient(false);
+    setUsageKey((key) => key + 1);
     fetchCustomers(currentPage);
   };
 
@@ -189,6 +193,8 @@ const ClientsPage: React.FC = () => {
           Add a New Client
         </button>
       </div>
+
+      <PlanUsageMeter refreshKey={usageKey} className="clients-page__plan-usage" />
 
       <div className="clients-page__search">
         <div className="search-input-wrapper">

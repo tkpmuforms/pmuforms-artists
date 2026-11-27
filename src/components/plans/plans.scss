@@ -1,0 +1,82 @@
+// Starter's usage meter and the notice when a limit stops something
+
+.plan-usage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--pmu-background-light);
+  color: #3b0f3b;
+  font-size: 14px;
+  line-height: 1.4;
+
+  &--close {
+    background: #fff7ed;
+    color: #7c2d12;
+  }
+
+  &__plan {
+    padding: 2px 10px;
+    border-radius: 20px;
+    background: var(--pmu-primary);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  &__counts {
+    font-weight: 500;
+  }
+
+  &__full,
+  &__member {
+    width: 100%;
+  }
+
+  &__upgrade {
+    color: var(--pmu-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+}
+
+.plan-limit-notice {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #7c2d12;
+  text-align: left;
+
+  &__message,
+  &__member {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  &__member {
+    margin-top: 8px;
+    font-weight: 600;
+  }
+
+  &__upgrade {
+    margin-top: 12px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    background: var(--pmu-primary);
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+}

@@ -7,6 +7,8 @@ import "./add-client-modal.scss";
 import { createClient } from "../../services/artistServices";
 import { getApiErrorMessage } from "../../utils/formLinks";
 import toast from "react-hot-toast";
+import PlanLimitNotice from "../plans/PlanLimitNotice";
+import { planLimitFrom, type PlanLimitError } from "../../utils/planLimits";
 
 interface AddClientModalProps {
   onClose: () => void;
@@ -31,6 +33,8 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
     phone: "",
   });
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  // Starter's client limit: says why, with a way to upgrade
+  const [limit, setLimit] = useState<PlanLimitError | null>(null);
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -54,6 +58,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
       return;
     }
 
+    setLimit(null);
     createClient({
       name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
       primaryPhone: formData.phone,
@@ -66,6 +71,11 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
       })
       .catch((error) => {
         console.error("Error adding client:", error);
+        const reached = planLimitFrom(error);
+        if (reached) {
+          setLimit(reached);
+          return;
+        }
         // the API's reason, e.g. this client is already in the list
         toast.error(
           getApiErrorMessage(error, "Failed to add client. Please try again."),
@@ -148,6 +158,8 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
             </div>
           </div>
         </div>
+
+        {limit && <PlanLimitNotice limit={limit} />}
 
         <button className="add-client-modal__submit" onClick={handleSubmit}>
           Add Client

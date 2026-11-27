@@ -109,3 +109,28 @@ describe("SelectPaymentMethodModal: referral discount", () => {
     expect(mocked.createSubscription).toHaveBeenCalledWith("price_monthly", "pm_1", undefined);
   });
 });
+
+describe("SelectPaymentMethodModal: a $19.99 code on Starter", () => {
+  it("shows the first month free and the $9.99 actually saved", async () => {
+    mocked.getReferralSummary.mockResolvedValue(referral(false));
+    render(
+      <SelectPaymentMethodModal
+        cards={[card]}
+        onClose={vi.fn()}
+        priceId="price_starter"
+        planAmount={9.99}
+        initialCoupon={{
+          code: "PMUSTUDIO2027",
+          description: "PMUSTUDIO2027 — $19.99 off your first payment",
+          percentOff: null,
+          amountOff: 1999,
+          duration: "once",
+        }}
+      />,
+    );
+
+    expect(await screen.findByText("$0.00")).toBeInTheDocument();
+    expect(screen.getByText("You save $9.99")).toBeInTheDocument();
+    expect(screen.queryByText("You save $19.99")).not.toBeInTheDocument();
+  });
+});

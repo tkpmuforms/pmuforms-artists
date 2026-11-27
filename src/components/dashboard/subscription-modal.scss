@@ -305,6 +305,13 @@
     font-weight: 600;
   }
 
+  &__name {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+  }
+
   &__price-row {
     display: flex;
     align-items: baseline;
@@ -438,6 +445,19 @@
   &__weekly {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.4);
+  }
+
+  // Starter: what it's for and its limits, on their own lines
+  &__tagline,
+  &__limits {
+    width: 100%;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+  }
+
+  &__limits {
+    color: rgba(255, 255, 255, 0.5);
   }
 
   &__badges {

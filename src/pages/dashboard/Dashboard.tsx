@@ -27,6 +27,7 @@ import StartNewFormFlow, {
 } from "../../components/dashboard/StartNewFormFlow";
 import SubscriptionModal from "../../components/dashboard/SubScriptionModal";
 import FormCard from "../../components/forms/FormCard";
+import PlanUsageMeter from "../../components/plans/PlanUsageMeter";
 import { LoadingSmall } from "../../components/loading/Loading";
 import useAuth from "../../context/useAuth";
 import { Appointment } from "../../redux/types";
@@ -63,6 +64,8 @@ const Dashboard: React.FC = () => {
     Record<string, { name: string; avatar?: string }>
   >({});
   const [recentForms, setRecentForms] = useState<any[]>([]);
+  // Starter's usage meter loads again after a client or appointment is added
+  const [usageKey, setUsageKey] = useState(0);
 
   const [selectedDays, setSelectedDays] = useState(7);
   const [showDaysDropdown, setShowDaysDropdown] = useState(false);
@@ -227,6 +230,7 @@ const Dashboard: React.FC = () => {
     closeAddClient: () => setShowAddClient(false),
     closeAddClientAndRefresh: async () => {
       setShowAddClient(false);
+      setUsageKey((key) => key + 1);
       await refreshMetrics();
     },
   };
@@ -488,6 +492,8 @@ const Dashboard: React.FC = () => {
       {renderHeader()}
 
       <div className="dashboard__content">
+        <PlanUsageMeter refreshKey={usageKey} />
+
         <section className="dashboard__quick-actions">
           <h2 className="dashboard__section-title">QUICK ACTIONS</h2>
           <div className="dashboard__actions-grid">
@@ -574,7 +580,10 @@ const Dashboard: React.FC = () => {
       {showStartNewForm && (
         <StartNewFormFlow
           onClose={() => setShowStartNewForm(false)}
-          onAppointmentCreated={refreshMetrics}
+          onAppointmentCreated={() => {
+            setUsageKey((key) => key + 1);
+            refreshMetrics();
+          }}
         />
       )}
 

@@ -5,8 +5,14 @@ import { X, Check, Star } from "lucide-react";
 import { useState } from "react";
 import "./subscription-modal.scss";
 import SelectPaymentMethodModal from "../payment/SelectPaymentMethodModal";
-import { useSubscriptionPlans } from "../../utils/subscriptionPlans";
+import {
+  planNameOf,
+  planTierOf,
+  STARTER_LIMITS,
+  useSubscriptionPlans,
+} from "../../utils/subscriptionPlans";
 import { priceAfter, useSavedOffer } from "../../utils/savedOffer";
+import useAuth from "../../context/useAuth";
 
 interface SubscriptionModalProps {
   onClose: () => void;
@@ -16,6 +22,7 @@ interface SubscriptionModalProps {
 }
 
 const features = [
+  "Unlimited clients & appointments",
   "Unlimited client forms",
   "Digital signatures",
   "Secure cloud storage",
@@ -32,11 +39,24 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
 
+  const { user } = useAuth();
   const { plans, loading: plansLoading } = useSubscriptionPlans();
   const monthlyPrice = plans?.monthly?.amount;
   const yearlyPrice = plans?.yearly?.amount;
   const monthlyPriceId = plans?.monthly?.priceId ?? "";
   const yearlyPriceId = plans?.yearly?.priceId ?? "";
+  const starter = plans?.starter ?? null;
+
+  // the plan they're on: from the subscription when the page has it
+  const tier = currentPriceId
+    ? currentPriceId === starter?.priceId
+      ? "starter"
+      : "pro"
+    : planTierOf(user, plans);
+  const onStarter = tier === "starter";
+  // Starter is for a first subscription or coming back; Pro subscribers can't
+  // switch down to it (the API refuses that too)
+  const showStarter = !!starter && tier !== "pro";
 
   const yearlyPricePerWeek = yearlyPrice ? yearlyPrice / 52 : null;
   const monthlyPricePerWeek = monthlyPrice ? monthlyPrice / 4.33 : null;
@@ -74,9 +94,13 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
   const getButtonText = (planName: string, priceId: string) => {
     if (isCurrentPlan(priceId)) return "Current Plan";
+    if (onStarter) return "Upgrade to Pro";
     if (currentPriceId) return "Upgrade Subscription";
+    if (showStarter) return "Subscribe to Pro";
     return planName === "monthly" ? "Subscribe" : "Continue with Yearly Plan";
   };
+
+  const selectedPlanName = planNameOf(selectedPriceId, plans);
 
   return (
     <>
@@ -111,11 +135,21 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               </>
             ) : (
               <>
-                <h2>Continue Creating Without Limits</h2>
+                <h2>
+                  {onStarter
+                    ? "Upgrade to Pro"
+                    : showStarter
+                      ? "Choose Your Plan"
+                      : "Continue Creating Without Limits"}
+                </h2>
                 <p>
-                  {currentPriceId
-                    ? "Select a new plan to switch your subscription"
-                    : "Keep access to your PMU client forms and all premium features"}
+                  {onStarter
+                    ? "Unlimited clients and appointments. Your plan switches to Pro right away."
+                    : currentPriceId
+                      ? "Select a new plan to switch your subscription"
+                      : showStarter
+                        ? "Every plan includes all features. Pro has no limits."
+                        : "Keep access to your PMU client forms and all premium features"}
                 </p>
                 {offer.status === "checking" && (
                   <p className="subscription-modal__offer" role="status">
@@ -147,6 +181,8 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               {isCurrentPlan(monthlyPriceId) && (
                 <div className="featured-plan__current-tag">Current Plan</div>
               )}
+
+              {showStarter && <div className="featured-plan__name">Pro</div>}
 
               <div className="featured-plan__price-row">
                 <span className="featured-plan__amount">
@@ -228,7 +264,9 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                     </span>
                   )}
                 </div>
-                <span className="alt-plan__name">Yearly</span>
+                <span className="alt-plan__name">
+                  {showStarter ? "Pro Yearly" : "Yearly"}
+                </span>
                 <span className="alt-plan__price">{money(yearlyPrice)}/year</span>
                 <span className="alt-plan__weekly">
                   ({money(yearlyPricePerWeek)}/week)
@@ -238,11 +276,48 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 <span className="alt-plan__current-badge">Current</span>
               ) : (
                 <span className="alt-plan__select">
-                  {currentPriceId ? "Switch" : "Select"}
+                  {onStarter ? "Upgrade" : currentPriceId ? "Switch" : "Select"}
                 </span>
               )}
             </div>
           </div>
+          )}
+
+          {showStarter && starter && (
+            <div className="subscription-modal__alt-plan">
+              <div
+                className={`alt-plan alt-plan--starter ${
+                  onStarter ? "alt-plan--current" : ""
+                }`}
+                onClick={() =>
+                  !onStarter &&
+                  offer.status !== "checking" &&
+                  handleSubscribeClick(starter.priceId)
+                }
+                role="button"
+                aria-label={`Starter, ${money(starter.amount)} a month`}
+              >
+                <div className="alt-plan__info">
+                  <span className="alt-plan__name">Starter</span>
+                  <span className="alt-plan__price">
+                    {money(starter.amount)}/month
+                  </span>
+                  <span className="alt-plan__tagline">
+                    Best for part-time artists — we've got you covered.
+                  </span>
+                  <span className="alt-plan__limits">
+                    Every feature, for up to {STARTER_LIMITS.clients} clients
+                    and {STARTER_LIMITS.appointmentsPerMonth} appointments a
+                    month.
+                  </span>
+                </div>
+                {onStarter ? (
+                  <span className="alt-plan__current-badge">Current</span>
+                ) : (
+                  <span className="alt-plan__select">Select</span>
+                )}
+              </div>
+            </div>
           )}
 
           <div className="subscription-modal__testimonial">
@@ -274,11 +349,24 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           cards={[]}
           onClose={() => setShowPaymentModal(false)}
           priceId={selectedPriceId}
-          planAmount={selectedPriceId === yearlyPriceId ? yearlyPrice : monthlyPrice}
-          planName={selectedPriceId === yearlyPriceId ? "yearly" : "monthly"}
+          planAmount={
+            selectedPlanName === "starter"
+              ? starter?.amount
+              : selectedPlanName === "yearly"
+                ? yearlyPrice
+                : monthlyPrice
+          }
+          planName={
+            selectedPlanName === "other" ? "monthly" : selectedPlanName
+          }
           onPaymentSuccess={handlePaymentSuccess}
-          hasActiveSubscription={!!currentPriceId}
-          initialCoupon={selectedPriceId === monthlyPriceId ? codeOffer : null}
+          hasActiveSubscription={!!currentPriceId || onStarter}
+          // a link's code is for a monthly plan: Pro monthly or Starter
+          initialCoupon={
+            selectedPlanName === "monthly" || selectedPlanName === "starter"
+              ? codeOffer
+              : null
+          }
         />
       )}
     </>

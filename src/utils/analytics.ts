@@ -5,6 +5,7 @@
  *
  *   sign_up   a new PMU Forms account was created   { method }
  *   purchase  a web subscription was started        { value, currency, plan }
+ *             plan: "starter", "monthly" or "yearly" (Pro), or "other"
  */
 
 declare global {
@@ -39,7 +40,10 @@ export function trackEvent(name: string, params: Record<string, unknown> = {}): 
 
 export const trackSignUp = (method: string) => trackEvent("sign_up", { method });
 
-export const trackPurchase = (plan: "monthly" | "yearly" | "other", value: number) =>
+export const trackPurchase = (
+  plan: "starter" | "monthly" | "yearly" | "other",
+  value: number,
+) =>
   trackEvent("purchase", {
     plan,
     value: Number.isFinite(value) ? value : 0,

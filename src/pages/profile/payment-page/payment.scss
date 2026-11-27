@@ -232,6 +232,18 @@
     }
   }
 
+  // Starter: what's used of its limits
+  &__plan-usage {
+    margin-top: 16px;
+  }
+
+  &__plan-note {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.5;
+  }
+
   // what's happening with the subscription: a free first month, or a
   // cancellation that hasn't taken effect yet
   &__notice {

@@ -416,13 +416,35 @@ export interface SubscriptionPlan {
 }
 
 export interface SubscriptionPlans {
+  /** Pro, paid monthly */
   monthly: SubscriptionPlan | null;
+  /** Pro, paid yearly */
   yearly: SubscriptionPlan | null;
+  /** Starter: monthly, with limits; null (or missing) when not offered */
+  starter?: SubscriptionPlan | null;
 }
 
-/** the monthly and yearly web plans, as set up in Stripe */
+/** the web plans (Starter, Pro monthly and Pro yearly), as set up in Stripe */
 export const getSubscriptionPlans = async () =>
   axiosInstance.get<SubscriptionPlans>("/api/subscriptions/stripe/plans");
+
+export interface PlanUsage {
+  plan: "starter" | "pro" | "none";
+  /** Starter only */
+  limits: { clients: number; appointmentsPerMonth: number } | null;
+  usage: {
+    clients: number;
+    appointmentsThisMonth: number;
+    /** e.g. "2026-12" */
+    month: string;
+  };
+}
+
+/** the account's plan and what's used of its limits; members see the owner's */
+export const getPlanUsage = (timeZone?: string) =>
+  axiosInstance.get<PlanUsage>("/api/plans/usage", {
+    params: timeZone ? { tz: timeZone } : undefined,
+  });
 
 /** what a code from a link is worth; works before signing in */
 export interface CodePreview {

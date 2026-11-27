@@ -32,6 +32,8 @@ export interface User {
   };
   signature_url?: string;
   stripeSubscriptionActive?: boolean;
+  /** the Stripe price of the web subscription: Starter or Pro */
+  activeStripePriceId?: string | null;
   stripeCustomerId?: string;
   defaultStripePaymentMethod?: string;
   stripeSubscriptionId?: string;

@@ -15,6 +15,10 @@ vi.mock("../../services/artistServices", async (importOriginal) => ({
   getSignupOffer: vi.fn(),
 }));
 vi.mock("react-redux", () => ({ useDispatch: () => vi.fn() }));
+const auth = vi.hoisted(() => ({ user: {} as Record<string, unknown> }));
+vi.mock("../../context/useAuth", () => ({
+  default: () => ({ user: auth.user, isMember: false }),
+}));
 vi.mock("../../utils/authUtils", () => ({ refreshAuthUser: vi.fn() }));
 vi.mock("react-hot-toast", () => ({
   default: { success: vi.fn(), error: vi.fn() },
@@ -34,8 +38,19 @@ const noBuildPlans = () => {
   }
 };
 
+const STARTER = { priceId: "price_starter", amount: 9.99, currency: "usd" };
+const withStarter = () =>
+  mocked.getSubscriptionPlans.mockResolvedValue({
+    data: {
+      monthly: { priceId: "price_month", amount: 19.99, currency: "usd" },
+      yearly: { priceId: "price_year", amount: 149.99, currency: "usd" },
+      starter: STARTER,
+    },
+  } as never);
+
 beforeEach(() => {
   vi.clearAllMocks();
+  auth.user = {};
   resetSavedOfferChecks();
   noBuildPlans();
   mocked.getSignupOffer.mockResolvedValue({ data: { offer: null } } as never);
@@ -127,5 +142,85 @@ describe("Subscription pop-up", () => {
         "GLOWACADEMY",
       ),
     );
+  });
+});
+
+describe("Subscription pop-up with Starter", () => {
+  it("offers Starter, with its limits, to an artist choosing a plan", async () => {
+    withStarter();
+    mocked.createSubscription.mockResolvedValue({ data: { status: "active" } } as never);
+    const user = userEvent.setup();
+    render(<SubscriptionModal onClose={vi.fn()} />);
+
+    expect(await screen.findByText("Starter")).toBeInTheDocument();
+    expect(screen.getByText("Choose Your Plan")).toBeInTheDocument();
+    expect(screen.getByText("$9.99/month")).toBeInTheDocument();
+    expect(
+      screen.getByText("Best for part-time artists — we've got you covered."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Every feature, for up to 10 clients and 5 appointments a month.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Pro")).toBeInTheDocument();
+    expect(screen.getByText("Pro Yearly")).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Subscribe to Pro" }),
+      ).toBeEnabled(),
+    );
+    await user.click(screen.getByRole("button", { name: /^Starter/ }));
+    const pay = await screen.findByRole("button", { name: "Make Payment" });
+    await waitFor(() => expect(pay).toBeEnabled());
+    await user.click(pay);
+    await waitFor(() =>
+      expect(mocked.createSubscription).toHaveBeenCalledWith(
+        "price_starter",
+        "pm_1",
+        undefined,
+      ),
+    );
+  });
+
+  it("hides Starter when it isn't set up", async () => {
+    render(<SubscriptionModal onClose={vi.fn()} />);
+
+    expect(await screen.findByText("$19.99")).toBeInTheDocument();
+    expect(screen.queryByText("Starter")).toBeNull();
+    expect(screen.getByText("Continue Creating Without Limits")).toBeInTheDocument();
+  });
+
+  it("never offers Starter to a Pro subscriber", async () => {
+    withStarter();
+    render(<SubscriptionModal onClose={vi.fn()} currentPriceId="price_month" />);
+
+    expect(await screen.findByText("$19.99")).toBeInTheDocument();
+    expect(screen.queryByText("Starter")).toBeNull();
+    expect(screen.queryByText("$9.99/month")).toBeNull();
+  });
+
+  it("never offers Starter to a Pro subscriber known only from their account", async () => {
+    withStarter();
+    auth.user = { stripeSubscriptionActive: true, activeStripePriceId: "price_year" };
+    render(<SubscriptionModal onClose={vi.fn()} />);
+
+    expect(await screen.findByText("$19.99")).toBeInTheDocument();
+    expect(screen.queryByText("Starter")).toBeNull();
+  });
+
+  it("lets a Starter subscriber upgrade to Pro monthly or yearly", async () => {
+    withStarter();
+    render(<SubscriptionModal onClose={vi.fn()} currentPriceId="price_starter" />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Upgrade to Pro" }),
+    ).toBeInTheDocument();
+    // Starter is theirs, marked current; Pro monthly and yearly are upgrades
+    expect(screen.getByText("Starter")).toBeInTheDocument();
+    expect(screen.getByText("Current")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Upgrade to Pro" })).toBeInTheDocument();
+    expect(screen.getByText("Upgrade")).toBeInTheDocument();
   });
 });

@@ -8,6 +8,7 @@ import DeleteModal from "../../../components/clients/details/DeleteModal";
 import SubscriptionModal from "../../../components/dashboard/SubScriptionModal";
 import AddCardModal from "../../../components/payment/AddCardModal";
 import SelectPaymentMethodModal from "../../../components/payment/SelectPaymentMethodModal";
+import PlanUsageMeter from "../../../components/plans/PlanUsageMeter";
 import useAuth from "../../../context/useAuth";
 import { Card, SubscriptionHistory } from "../../../redux/types";
 import {
@@ -35,6 +36,10 @@ import {
 } from "../../../utils/utils";
 import "./payment.scss";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import {
+  STARTER_LIMITS,
+  useSubscriptionPlans,
+} from "../../../utils/subscriptionPlans";
 
 const PaymentPage = () => {
   const { user } = useAuth();
@@ -55,6 +60,7 @@ const PaymentPage = () => {
   const [subscriptionData, setSubscriptionData] =
     useState<SubscriptionData | null>(null);
   const [resuming, setResuming] = useState(false);
+  const { plans } = useSubscriptionPlans();
 
   useEffect(() => {
     fetchPaymentMethods();
@@ -213,11 +219,22 @@ const PaymentPage = () => {
       ? isSubscriptionActive(subscriptionData.status)
       : user?.stripeSubscriptionActive;
 
+  // Starter is its own Stripe price; every other web plan is Pro
+  const starterPriceId = plans?.starter?.priceId;
+  const activePriceId = subscriptionData?.priceId ?? user?.activeStripePriceId;
+  const isStarter =
+    !isMobileSub && !!isActive && !!starterPriceId && activePriceId === starterPriceId;
+
   const currentPlan = isMobileSub
     ? null
-    : subscriptionData
-      ? getPlanName(subscriptionData.interval, subscriptionData.intervalCount)
-      : "No Active Plan";
+    : isStarter
+      ? "Starter"
+      : subscriptionData
+        ? `${isActive && starterPriceId ? "Pro · " : ""}${getPlanName(
+            subscriptionData.interval,
+            subscriptionData.intervalCount,
+          )}`
+        : "No Active Plan";
 
   // cancelled, but paid up until the end of the period
   const isCancelled =
@@ -324,9 +341,27 @@ const PaymentPage = () => {
                     className="payment-page__btn payment-page__btn--primary"
                     onClick={() => setShowUpgradeSubscription(true)}
                   >
-                    {isActive ? "Change Plan" : "Upgrade Subscription"}
+                    {isStarter
+                      ? "Upgrade to Pro"
+                      : isActive
+                        ? "Change Plan"
+                        : "Upgrade Subscription"}
                   </button>
                 </div>
+              )}
+            </div>
+          )}
+
+          {isStarter && (
+            <div className="payment-page__plan-usage">
+              <PlanUsageMeter showUpgrade={false} />
+              {!isCancelled && (
+                <p className="payment-page__plan-note">
+                  Starter includes every feature for up to{" "}
+                  {STARTER_LIMITS.clients} clients and{" "}
+                  {STARTER_LIMITS.appointmentsPerMonth} appointments a month.
+                  Pro has no limits: upgrade anytime, monthly or yearly.
+                </p>
               )}
             </div>
           )}
@@ -509,7 +544,9 @@ const PaymentPage = () => {
         <SubscriptionModal
           onClose={() => setShowUpgradeSubscription(false)}
           onSubscribe={handleSubscriptionSuccess}
-          currentPriceId={subscriptionData?.priceId}
+          // an ended subscription isn't a plan to switch from: choosing one
+          // starts a new subscription, and Starter is offered again
+          currentPriceId={isActive ? subscriptionData?.priceId : undefined}
         />
       )}
 

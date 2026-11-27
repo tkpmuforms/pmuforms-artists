@@ -12,6 +12,7 @@ vi.mock("../../../services/artistServices", async (importOriginal) => ({
   cancelSubscription: vi.fn(),
   resumeSubscription: vi.fn(),
   getSubscriptionPlans: vi.fn(),
+  getPlanUsage: vi.fn(),
 }));
 vi.mock("react-redux", () => ({ useDispatch: () => vi.fn() }));
 vi.mock("../../../utils/authUtils", () => ({ refreshAuthUser: vi.fn() }));
@@ -138,5 +139,75 @@ describe("Payment page subscription", () => {
 
     expect(await screen.findByRole("button", { name: "Change Plan" })).toBeInTheDocument();
     expect(screen.queryByText(/is free/)).toBeNull();
+  });
+});
+
+describe("Payment page with Starter", () => {
+  const plansWithStarter = {
+    monthly: { priceId: "price_month", amount: 19.99, currency: "usd" },
+    yearly: { priceId: "price_year", amount: 149.99, currency: "usd" },
+    starter: { priceId: "price_starter", amount: 9.99, currency: "usd" },
+  };
+  const starterSubscription = () =>
+    subscription({
+      latest_invoice: { billing_reason: "subscription_create", total: 999, subtotal: 999 },
+      discounts: [],
+      items: {
+        data: [
+          {
+            current_period_end: DEC_24,
+            current_period_start: DEC_24 - 30 * 86400,
+            price: {
+              id: "price_starter",
+              unit_amount: 999,
+              currency: "usd",
+              recurring: { interval: "month", interval_count: 1 },
+            },
+          },
+        ],
+      },
+    });
+
+  beforeEach(() => {
+    mocked.getSubscriptionPlans.mockResolvedValue({ data: plansWithStarter } as never);
+    mocked.getPlanUsage.mockResolvedValue({
+      data: {
+        plan: "starter",
+        limits: { clients: 10, appointmentsPerMonth: 5 },
+        usage: { clients: 7, appointmentsThisMonth: 3, month: "2026-12" },
+      },
+    } as never);
+  });
+
+  it("shows Starter with its usage and an upgrade to Pro, monthly or yearly", async () => {
+    mocked.getSubscription.mockResolvedValue({ data: starterSubscription() } as never);
+    const user = userEvent.setup();
+    render(<PaymentPage />);
+
+    expect(
+      await screen.findByText("7 of 10 clients · 3 of 5 appointments in December"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Current Plan").nextSibling).toHaveTextContent(/^Starter$/);
+    expect(screen.queryByRole("button", { name: "Change Plan" })).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "Upgrade to Pro" }));
+    expect(
+      await screen.findByRole("heading", { name: "Upgrade to Pro" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Pro Yearly")).toBeInTheDocument();
+    expect(screen.getByText("Current")).toBeInTheDocument();
+  });
+
+  it("never offers a Pro subscriber Starter", async () => {
+    mocked.getSubscription.mockResolvedValue({ data: subscription() } as never);
+    const user = userEvent.setup();
+    render(<PaymentPage />);
+
+    await user.click(await screen.findByRole("button", { name: "Change Plan" }));
+    expect(await screen.findByText("Select a new plan to switch your subscription")).toBeInTheDocument();
+    expect(screen.getByText("Pro · Monthly Plan")).toBeInTheDocument();
+    expect(screen.queryByText("Starter")).toBeNull();
+    expect(screen.queryByText("$9.99/month")).toBeNull();
+    expect(mocked.getPlanUsage).not.toHaveBeenCalled();
   });
 });
