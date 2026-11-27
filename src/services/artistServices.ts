@@ -1,5 +1,6 @@
 import axiosInstance from "../utils/axios/axiosSetup";
 import { type Attribution, readAttribution } from "../utils/attribution";
+import { savedTeamInvite } from "../utils/teamInvite";
 
 /**
  * Signs in, creating the account the first time. `signup` (where the artist
@@ -7,18 +8,26 @@ import { type Attribution, readAttribution } from "../utils/attribution";
  */
 export const createArtist = async (
   accessToken: string,
-  signup?: { attribution?: Attribution | null; platform?: "web" },
+  signup?: {
+    attribution?: Attribution | null;
+    platform?: "web";
+    /** joining a team from an invite: the API never starts a business then */
+    joinTeam?: boolean;
+  },
 ) =>
   axiosInstance.post("/api/auth/artist/create", {
     accessToken,
     ...(signup?.attribution ? { attribution: signup.attribution } : {}),
     ...(signup?.platform ? { platform: signup.platform } : {}),
+    ...(signup?.joinTeam ? { joinTeam: true } : {}),
   });
 
 /** For sign-ins from this web app's login page. */
 export const webSignup = () => ({
   attribution: readAttribution(),
   platform: "web" as const,
+  // came in from an invite link (/join/:token)
+  ...(savedTeamInvite() ? { joinTeam: true } : {}),
 });
 
 export interface ReferralSummary {

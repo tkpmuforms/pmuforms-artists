@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../../services/artistServices";
 import { ATTRIBUTION_COOKIE, captureAttribution } from "../../utils/attribution";
 import { SignInSuccessWithAuthResult } from "./authUtils";
+import { forgetTeamInvite, saveTeamInvite } from "../../utils/teamInvite";
 
 vi.mock("../../firebase/firebase", () => ({ auth: {}, signInWithPopup: vi.fn() }));
 vi.mock("../../services/artistServices", async (importOriginal) => ({
@@ -53,5 +54,21 @@ describe("signing up from the web app", () => {
       platform: "web",
     });
     expect(navigate).toHaveBeenCalled();
+  });
+
+  it("tells the API it's joining a team when an invite link was opened", async () => {
+    saveTeamInvite({ email: "ada@example.com", businessName: "Glow" });
+    mocked.createArtist.mockResolvedValue({
+      data: { userCreated: false, access_token: "t", artist: { id: "o1", services: [] }, teamMember: { id: "m1" } },
+    } as never);
+
+    await SignInSuccessWithAuthResult(authResult, vi.fn(), vi.fn(), vi.fn());
+
+    expect(mocked.createArtist).toHaveBeenCalledWith("firebase-token", {
+      attribution: null,
+      platform: "web",
+      joinTeam: true,
+    });
+    forgetTeamInvite();
   });
 });
