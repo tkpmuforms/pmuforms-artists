@@ -75,6 +75,9 @@ const FormLinkModal: React.FC<FormLinkModalProps> = ({
           <p className="form-link-modal__instruction">
             Copy and paste this link into your appointment confirmation email.
           </p>
+          <p className="form-link-modal__tip">
+            <strong>Tip:</strong> Add this link to your Instagram bio or Linktree so new clients can book and fill out their forms before they arrive.
+          </p>
           <div className="form-link-modal__divider"></div>
           <div className="form-link-modal__actions">
             <button

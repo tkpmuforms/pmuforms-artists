@@ -124,6 +124,16 @@
   &__instruction {
     font-size: 0.875rem;
     color: #6b7280;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+  }
+
+  &__tip {
+    font-size: 0.875rem;
+    color: #4a1f4a;
+    background: #f8eef8;
+    border-radius: 8px;
+    padding: 10px 12px;
     margin: 0 0 24px 0;
     line-height: 1.5;
   }
